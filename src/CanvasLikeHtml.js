@@ -57,6 +57,7 @@ export default function CanvasLikeHtml(props) {
             const comps = propsObj.render.call(this, render.bind(this))
             if (comps) {
                 if (Array.isArray(comps)) {
+                    console.log(comps)
                     comps.forEach(comp => comp.render())
                 } else {
                     comps.render()

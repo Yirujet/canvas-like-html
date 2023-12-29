@@ -68,6 +68,13 @@ export default function Checkbox(props) {
             }
         }
     }
+    this.x = parseFloat(this.x)
+    this.y = parseFloat(this.y)
+    this.ctx.save
+    if (this.fontSize) {
+        this.ctx.font = `400 ${this.fontSize}px Helvetica`
+    }
+    this.ctx.restore
     const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
     this.width = Checkbox.CHECKBOX_BOX_WIDTH + (this.text ? wordWidth + Checkbox.CHECKBOX_LABEL_MARGIN : 0)
     this.height = wordHeight
@@ -141,6 +148,9 @@ export default function Checkbox(props) {
         }
         initDefaultAttrs()
         this.ctx.save()
+        if (this.fontSize) {
+            this.ctx.font = `400 ${this.fontSize}px Helvetica`
+        }
         this.ctx.textBaseline = 'middle'
         const type = this.disabled 
             ? 'disabled' 

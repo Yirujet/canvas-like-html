@@ -93,6 +93,8 @@ export default function Button(props) {
             }
         }
     }
+    this.x = parseFloat(this.x)
+    this.y = parseFloat(this.y)
     const { width: wordWidth, height: wordHeight } = getTextMetrics(this.text, this.fontSize)
     this.width = wordWidth + (this.type !== 'text' ? Button.BUTTON_PADDING_HORIZONTAL * 2 : 0)
     this.height = wordHeight + (this.type !== 'text' ? Button.BUTTON_PADDING_VERTICAL * 2 : 0)
@@ -171,6 +173,7 @@ export default function Button(props) {
         if (this.color) {
             colorObj[this.type][type].font = this.color
         }
+        this.ctx.save()
         this.ctx.textBaseline = 'middle'
         if (this.fontSize) {
             this.ctx.font = `400 ${this.fontSize}px Helvetica`
@@ -189,6 +192,7 @@ export default function Button(props) {
         this.ctx.beginPath()
         this.ctx.fillStyle = colorObj[this.type][type].font
         this.ctx.fillText(this.text, this.x + (this.type === 'text' ? 0 : Button.BUTTON_PADDING_HORIZONTAL), this.y + (this.type === 'text' ? this.height / 2 : Button.BUTTON_PADDING_VERTICAL * 2))
+        this.ctx.restore()
     }
     this.render = function(config) {
         if (config) {

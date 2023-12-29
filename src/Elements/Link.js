@@ -92,6 +92,8 @@ export default function Link(props) {
             }
         }
     }
+    this.x = parseFloat(this.x)
+    this.y = parseFloat(this.y)
     const { width: wordWidth, height: wordHeight } = getTextMetrics(this.text, this.fontSize)
     this.width = wordWidth
     this.height = wordHeight

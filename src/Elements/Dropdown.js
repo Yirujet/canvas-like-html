@@ -34,6 +34,13 @@ export default function Dropdown(props) {
             }
         }
     }
+    this.x = parseFloat(this.x)
+    this.y = parseFloat(this.y)
+    this.ctx.save()
+    if (this.fontSize) {
+        this.ctx.font = `400 ${this.fontSize}px Helvetica`
+    }
+    this.ctx.restore()
     const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
     this.width = wordWidth + Dropdown.DROPDOWN_ARROW_MARGIN + Dropdown.CHAR_WIDTH
     this.height = wordHeight

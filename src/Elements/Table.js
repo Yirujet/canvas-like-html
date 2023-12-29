@@ -43,6 +43,8 @@ export default function Table(props) {
             }
         }
     }
+    this.x = parseFloat(this.x)
+    this.y = parseFloat(this.y)
     const initEvents = () => {
         this.registerListenerFromOnProp(this?.on)
     }

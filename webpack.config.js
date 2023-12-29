@@ -9,6 +9,13 @@ module.exports = {
         open: true,
         hot: true
     },
+    resolveLoader: {
+        modules: ['node_modules', './loaders'],
+        extensions: ['.canvas'],
+        alias: {
+            'canvas-loader': './loaders/canvas-loader.js'
+        }
+    },
     entry: {
         index: './src/demo.js'
     },
@@ -23,10 +30,12 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
-                // options: {
-                //     presets: ["@babel/preset-env"],
-                //     plugins: [["@babel/plugin-transform-runtime"]],
-                // },
+            },
+            {
+                test: /\.canvas$/,
+                use: [
+                    'canvas-loader'
+                ]
             }
         ]
     },
