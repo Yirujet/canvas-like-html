@@ -1,0 +1,23 @@
+{
+  "name": "canvas-like-html",
+  "version": "1.0.0",
+  "description": "draw canvas like html",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yirujet/canvas-like-html.git"
+  },
+  "keywords": [
+    "canvas",
+    "html"
+  ],
+  "author": "yirujet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yirujet/canvas-like-html/issues"
+  },
+  "homepage": "https://github.com/Yirujet/canvas-like-html#readme"
+}
