@@ -1,5 +1,7 @@
 const HTMLParser = require('./htmlparser')
 
+const evalFn = exp => new Function(`return (${exp})`)
+
 module.exports = function(content, map, meta) {
     const nodeList = []
     HTMLParser(content, (function() {
@@ -47,50 +49,108 @@ module.exports = function(content, map, meta) {
     const elList = []
     nodeList.forEach(node => createTree(root, node))
 
-    console.log(root)
-
     if (root.children) {
-        for (let item in root.children) {
-            if (item.description === 'canvas') {
-                for (let elName in root.children[item].children) {
-                    const elProps = {}
-                    for (let elAttrName in root.children[item].children[elName].attrs) {
-                        let elAttrValue = root.children[item].children[elName].attrs[elAttrName]
-                        if (elAttrName.startsWith(':')) {
+        const rootNodeKeys = Reflect.ownKeys(root.children)
+        const canvasNodeIndex = rootNodeKeys.findIndex(item => item.description === 'canvas')
+        const scriptNodeIndex = rootNodeKeys.findIndex(item => item.description === 'script')
+        const canvasNode = root.children[rootNodeKeys[canvasNodeIndex]]
+        const scriptNode = root.children[rootNodeKeys[scriptNodeIndex]]
+        const scriptObj = (evalFn(scriptNode.content))()
+        const collectCanvasElList = node => {
+            Reflect.ownKeys(canvasNode.children).forEach(elName => {
+                const elProps = {}
+                for (let elAttrName in canvasNode.children[elName].attrs) {
+                    let elAttrValue = canvasNode.children[elName].attrs[elAttrName]
+                    if (elAttrName.startsWith(':')) {
+                        const attrName = elAttrName.slice(1)
+                        try {
+                            elProps[attrName] = (evalFn(elAttrValue))()
+                        } catch (e) {
                             try {
-                                elProps[elAttrName.slice(1)] = (new Function(`return ${elAttrValue}`))()
+                                elProps[attrName] = scriptObj.data[elAttrValue]
                             } catch (e) {
                                 console.error(e)
                             }
+                        }
+                    } else if (elAttrName.startsWith('@')) {
+                        const eventName = elAttrName.slice(1)
+                        if (!elProps.on) {
+                            elProps.on = {}
+                        }
+                        let fn
+                        try {
+                            fn = evalFn(elAttrValue)()
+                            elProps.on[eventName] = fn
+                        } catch (e) {
+                            try {
+                                fn = scriptObj.methods[elAttrValue]
+                                elProps.on[eventName] = fn
+                            } catch (e) {
+                                console.error(e)
+                            }
+                        }
+                    } else {
+                        elProps[elAttrName] = elAttrValue
+                    }
+                }
+                switch (elName.description) {
+                    case 'button':
+                    case 'checkbox':
+                    case 'dropdown':
+                    case 'link':
+                    case 'span':
+                        if (canvasNode.children[elName].content) {
+                            elProps.text = canvasNode.children[elName].content
+                        }
+                        break
+                    default:
+                        break
+                }
+                const obj2Str = target => {
+                    let str = ''
+                    for (let item in target) {
+                        if (Object.prototype.toString.call(target[item]) === '[object Object]') {
+                            str += `${item}:{${obj2Str(target[item])}},`
+                        } else if (Array.isArray(target[item])) {
+                            str += `${item}:${JSON.stringify(target[item])},`
+                        } else if (typeof target[item] === 'function') {
+                            let fnBody, fnArgs
+                            const isArrowFunction = fn => {
+                                const str = fn.toString()
+                                if (str.match(/{[\s\S]*}/)) {
+                                    return str.replace(/{[\s\S]*}/, '').includes('=>')
+                                } else {
+                                    return true
+                                }
+                            }
+                            if (isArrowFunction(target[item])) {
+                                fnBody = target[item].toString().slice(target[item].toString().indexOf('>') + 1)
+                                fnArgs = target[item].toString().replace(fnBody, '').replace('=>', '').trim()
+                                if (fnArgs.startsWith('(') && fnArgs.endsWith(')')) {
+                                    fnArgs = fnArgs.slice(1,  -1)
+                                }
+                            } else {
+                                fnBody = target[item].toString().slice(target[item].toString().indexOf('{') + 1, target[item].toString().indexOf('}'))
+                                fnArgs = target[item].toString().replace(fnBody, '').trim()
+                                fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
+                            }
+                            str += `${item}:function(${fnArgs}) {${fnBody}},`
                         } else {
-                            elProps[elAttrName] = elAttrValue
+                            str += `${item}:"${target[item]}",`
                         }
                     }
-                    switch (elName.description) {
-                        case 'button':
-                        case 'checkbox':
-                        case 'dropdown':
-                        case 'link':
-                        case 'span':
-                            if (root.children[item].children[elName].content) {
-                                elProps.text = root.children[item].children[elName].content
-                            }
-                            break
-                        default:
-                            break
-                    }
-                    elList.push(`h('${elName.description}', ${JSON.stringify(elProps)})`)
+                    return str
                 }
-            }
+                elList.push(`h('${elName.description}', {${obj2Str(elProps)}})`)
+            })
         }
+        collectCanvasElList(canvasNode)
     }
     const result = `
         import CanvasLikeHtml from './CanvasLikeHtml.js';
-        document.body.onload = () => {
-            new CanvasLikeHtml({
-                render: h => [${elList}]
-            }).mount(document.getElementById('canvas'))
-        }
+        export default new CanvasLikeHtml({
+            render: h => [${elList}]
+        })
     `
     return result
 }

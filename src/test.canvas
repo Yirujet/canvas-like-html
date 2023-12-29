@@ -1,11 +1,11 @@
 <canvas width="800" height="500">
-    <button x="10" y="10">默认按钮</button>
-    <button x="80" y="10" type="primary">主要按钮</button>
+    <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
+    <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
     <checkbox x="130" y="70" text="custom-checkbox"></checkbox>
     <dropdown 
         x="30" 
         y="130" 
-        :list="[{ name: 'dropdown-item-1', value: 'dropdown-item-1' }]"
+        :list="list1"
     >下拉菜单</dropdown>
     <dropdown 
         x="30" 
@@ -15,13 +15,20 @@
             { name: 'dropdown-item-2', value: 'dropdown-item-2' }
         ]"
         trigger="click"
+        @command="handleCommand"
     >下拉菜单-点击触发</dropdown>
 </canvas>
 <script>
 {
+    data: {
+        list1: [{ name: 'dropdown-item-1', value: 'dropdown-item-1' }]
+    },
     methods: {
         handleClick() {
             console.log(this)
+        },
+        handleCommand(val) {
+            console.log(val)
         }
     }
 }
