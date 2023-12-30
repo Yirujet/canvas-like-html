@@ -44,6 +44,7 @@ export default function CanvasLikeHtml(props) {
             }
         }
     }
+    this._c = render.bind(this)
     this.mount = function(target) {
         this.target = target
         this.ctx = this.target.getContext('2d')
@@ -54,7 +55,7 @@ export default function CanvasLikeHtml(props) {
             this.height = this.target.height
         }
         if (propsObj?.render) {
-            const comps = propsObj.render.call(this, render.bind(this))
+            const comps = propsObj.render.call(this, this._c)
             if (comps) {
                 if (Array.isArray(comps)) {
                     console.log(comps)
