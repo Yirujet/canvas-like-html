@@ -30,6 +30,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
-    "canvas-loaders": "^1.0.0"
+    "axios": "^1.6.3",
+    "canvas-loaders": "^1.0.3"
   }
 }

@@ -9,6 +9,13 @@ module.exports = {
         open: true,
         hot: true
     },
+    resolveLoader: {
+        modules: ['node_modules', './loaders'],
+        extensions: ['.canvas'],
+        alias: {
+            'canvas-loader': './loaders/index.js'
+        }
+    },
     entry: {
         index: './src/demo.js'
     },
@@ -27,7 +34,7 @@ module.exports = {
             {
                 test: /\.canvas$/,
                 use: [
-                    'canvas-loaders'
+                    'canvas-loader'
                 ]
             }
         ]

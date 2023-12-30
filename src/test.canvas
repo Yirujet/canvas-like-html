@@ -1,14 +1,15 @@
 <canvas width="800" height="500">
     <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
-    <checkbox x="130" y="70" text="custom-checkbox"></checkbox>
+    <checkbox x="10" y="70" text="custom-checkbox"></checkbox>
+    <link x="10" y="100" text="文字链接"></link>
     <dropdown 
-        x="30" 
+        x="10" 
         y="130" 
         :list="list1"
     >下拉菜单</dropdown>
     <dropdown 
-        x="30" 
+        x="10" 
         y="180" 
         :list="[
             { name: 'dropdown-item-1', value: 'dropdown-item-1' },
@@ -19,6 +20,8 @@
     >下拉菜单-点击触发</dropdown>
 </canvas>
 <script>
+import axios from 'axios'
+
 {
     data: {
         list1: [{ name: 'dropdown-item-1', value: 'dropdown-item-1' }]
@@ -27,8 +30,9 @@
         handleClick() {
             console.log(this)
         },
-        handleCommand(val) {
-            console.log(val)
+        async handleCommand(val) {
+            const res = await axios.get('https://api.uomg.com/api/comments.163?format=json')
+            console.log(res.data.data.name)
         }
     }
 }
