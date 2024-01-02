@@ -34,6 +34,12 @@ import axios from 'axios'
             const res = await axios.get('https://api.uomg.com/api/comments.163?format=json')
             console.log(res.data.data.name)
         }
+    },
+    created() {
+        console.log(this)
+    },
+    mounted() {
+        console.log(this)
     }
 }
 </script>

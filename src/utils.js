@@ -42,7 +42,11 @@ export const getEllipsisText = (text, limitWidth, fontSize) => {
 export function render(compName, compProps) {
     let comp = null
     if (typeof compName === 'object' && compName.render && typeof compName.render === 'function') {
-        comp = compName.render.call(this, render.bind(this))
+        comp = {
+            created: compName.created,
+            mounted: compName.mounted,
+            comps: compName.render.call(this, render.bind(this))
+        }
     } else {
         if (CanvasLikeHtml.elements.has(compName)) {
             const compConstructor = CanvasLikeHtml.elements.get(compName)
@@ -50,6 +54,7 @@ export function render(compName, compProps) {
                 fontSize: this.globalProps.fontSize,
                 globalProps: this.globalProps,
                 ...(compProps || {}),
+                root: this,
                 ctx: this.ctx,
                 eventObserver: this.eventObserver
             })

@@ -12,4 +12,5 @@ export default function Element() {
     this.eventObserver = null
     this.mouseEntered = false
     this.globalProps = null
+    this.root = null
 }

@@ -55,10 +55,41 @@ module.exports = function(source) {
             curNode.content = content
         }
     }
+    const obj2Str = target => {
+        let str = ''
+        let isAsync = false
+        for (let item in target) {
+            if (Object.prototype.toString.call(target[item]) === '[object Object]') {
+                str += `${item}:{${obj2Str(target[item])}},`
+            } else if (Array.isArray(target[item])) {
+                str += `${item}:${JSON.stringify(target[item])},`
+            } else if (typeof target[item] === 'function') {
+                let fnBody, fnArgs
+                if (isArrowFunction(target[item])) {
+                    fnBody = target[item].toString().slice(target[item].toString().indexOf('>') + 1)
+                    fnArgs = target[item].toString().replace(fnBody, '').replace('=>', '').trim()
+                    if (fnArgs.startsWith('(') && fnArgs.endsWith(')')) {
+                        fnArgs = fnArgs.slice(1,  -1)
+                    }
+                } else {
+                    fnBody = target[item].toString().slice(target[item].toString().indexOf('{') + 1, target[item].toString().indexOf('}'))
+                    fnArgs = target[item].toString().replace(fnBody, '').trim()
+                    isAsync = fnArgs.startsWith('async')
+                    fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
+                }
+                str += `${item}:${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
+            } else {
+                str += `${item}:"${target[item]}",`
+            }
+        }
+        return str
+    }
     const root = {}
     const elList = []
     nodeList.forEach(node => createTree(root, node))
     let scriptImport = ''
+    let mountedFn = null
+    let createdFn = null
     if (root.children) {
         const rootNodeKeys = Reflect.ownKeys(root.children)
         const canvasNodeIndex = rootNodeKeys.findIndex(item => item.description === 'canvas')
@@ -72,6 +103,12 @@ module.exports = function(source) {
             scriptObj = (evalFn(scriptContent.slice(scriptContent.indexOf('{'))))()
         } else {
             scriptObj = (evalFn(scriptContent))()
+        }
+        if (scriptObj.created) {
+            createdFn = scriptObj.created
+        }
+        if (scriptObj.mounted) {
+            mountedFn = scriptObj.mounted
         }
         const collectCanvasElList = node => {
             Reflect.ownKeys(canvasNode.children).forEach(elName => {
@@ -123,35 +160,6 @@ module.exports = function(source) {
                     default:
                         break
                 }
-                const obj2Str = target => {
-                    let str = ''
-                    let isAsync = false
-                    for (let item in target) {
-                        if (Object.prototype.toString.call(target[item]) === '[object Object]') {
-                            str += `${item}:{${obj2Str(target[item])}},`
-                        } else if (Array.isArray(target[item])) {
-                            str += `${item}:${JSON.stringify(target[item])},`
-                        } else if (typeof target[item] === 'function') {
-                            let fnBody, fnArgs
-                            if (isArrowFunction(target[item])) {
-                                fnBody = target[item].toString().slice(target[item].toString().indexOf('>') + 1)
-                                fnArgs = target[item].toString().replace(fnBody, '').replace('=>', '').trim()
-                                if (fnArgs.startsWith('(') && fnArgs.endsWith(')')) {
-                                    fnArgs = fnArgs.slice(1,  -1)
-                                }
-                            } else {
-                                fnBody = target[item].toString().slice(target[item].toString().indexOf('{') + 1, target[item].toString().indexOf('}'))
-                                fnArgs = target[item].toString().replace(fnBody, '').trim()
-                                isAsync = fnArgs.startsWith('async')
-                                fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
-                            }
-                            str += `${item}:${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
-                        } else {
-                            str += `${item}:"${target[item]}",`
-                        }
-                    }
-                    return str
-                }
                 elList.push(`h('${elName.description}', {${obj2Str(elProps)}})`)
             })
         }
@@ -160,6 +168,8 @@ module.exports = function(source) {
     const result = `
         ${ scriptImport }
         export default {
+            ${createdFn ? obj2Str({created: createdFn}) : ''}
+            ${mountedFn ? obj2Str({mounted: mountedFn}) : ''}
             render: h => [${elList}]
         }
     `

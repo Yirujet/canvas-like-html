@@ -17,7 +17,7 @@ export default function Event() {
         const eventList = this.events[eventName]
         if (eventList) {
             eventList.forEach(event => {
-                event.call(this, ...params)
+                event.call(this.root, ...params)
             })
         }
     }
@@ -27,7 +27,7 @@ export default function Event() {
         const eventList = this.events[eventName]
         if (eventList) {
             eventList.forEach(event => {
-                event.call(this, ...params)
+                event.call(this.root, ...params)
             })
         }
     }

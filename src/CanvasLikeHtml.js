@@ -55,13 +55,18 @@ export default function CanvasLikeHtml(props) {
             this.height = this.target.height
         }
         if (propsObj?.render) {
-            const comps = propsObj.render.call(this, this._c)
-            if (comps) {
-                if (Array.isArray(comps)) {
-                    console.log(comps)
-                    comps.forEach(comp => comp.render())
+            const renderObj = propsObj.render.call(this, this._c)
+            if (renderObj.comps) {
+                if (renderObj.created) {
+                    renderObj.created.call(this)
+                }
+                if (Array.isArray(renderObj.comps)) {
+                    renderObj.comps.forEach(comp => comp.render())
                 } else {
-                    comps.render()
+                    renderObj.comps.render()
+                }
+                if (renderObj.mounted) {
+                    renderObj.mounted.call(this)
                 }
             }
         }
