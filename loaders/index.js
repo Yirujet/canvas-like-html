@@ -117,11 +117,15 @@ module.exports = function(source) {
                     let elAttrValue = canvasNode.children[elName].attrs[elAttrName]
                     if (elAttrName.startsWith(':')) {
                         const attrName = elAttrName.slice(1)
+                        if (!elProps.watchedProps) {
+                            elProps.watchedProps = []
+                        }
                         try {
                             elProps[attrName] = (evalFn(elAttrValue))()
                         } catch (e) {
                             try {
                                 elProps[attrName] = scriptObj.data[elAttrValue]
+                                elProps.watchedProps.push(attrName)
                             } catch (e) {
                                 console.error(e)
                             }

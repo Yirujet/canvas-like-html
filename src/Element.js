@@ -13,4 +13,5 @@ export default function Element() {
     this.mouseEntered = false
     this.globalProps = null
     this.root = null
+    this.watchedProps = []
 }

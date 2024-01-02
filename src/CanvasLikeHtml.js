@@ -57,6 +57,7 @@ export default function CanvasLikeHtml(props) {
         if (propsObj?.render) {
             const renderObj = propsObj.render.call(this, this._c)
             if (renderObj.comps) {
+                console.log(renderObj.comps)
                 if (renderObj.created) {
                     renderObj.created.call(this)
                 }
