@@ -28,7 +28,7 @@ import axios from 'axios'
     },
     methods: {
         handleClick() {
-            console.log(this)
+            this.list1.push({ name: 'dropdown-item-3', value: 'dropdown-item-3' })
         },
         async handleCommand(val) {
             const res = await axios.get('https://api.uomg.com/api/comments.163?format=json')

@@ -43,6 +43,7 @@ export function render(compName, compProps) {
     let comp = null
     if (typeof compName === 'object' && compName.render && typeof compName.render === 'function') {
         comp = {
+            data: compName.data,
             created: compName.created,
             mounted: compName.mounted,
             comps: compName.render.call(this, render.bind(this))

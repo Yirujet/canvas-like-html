@@ -90,6 +90,7 @@ module.exports = function(source) {
     let scriptImport = ''
     let mountedFn = null
     let createdFn = null
+    let data = {}
     if (root.children) {
         const rootNodeKeys = Reflect.ownKeys(root.children)
         const canvasNodeIndex = rootNodeKeys.findIndex(item => item.description === 'canvas')
@@ -111,10 +112,10 @@ module.exports = function(source) {
             mountedFn = scriptObj.mounted
         }
         const collectCanvasElList = node => {
-            Reflect.ownKeys(canvasNode.children).forEach(elName => {
+            Reflect.ownKeys(node.children).forEach(elName => {
                 const elProps = {}
-                for (let elAttrName in canvasNode.children[elName].attrs) {
-                    let elAttrValue = canvasNode.children[elName].attrs[elAttrName]
+                for (let elAttrName in node.children[elName].attrs) {
+                    let elAttrValue = node.children[elName].attrs[elAttrName]
                     if (elAttrName.startsWith(':')) {
                         const attrName = elAttrName.slice(1)
                         if (!elProps.watchedProps) {
@@ -125,7 +126,10 @@ module.exports = function(source) {
                         } catch (e) {
                             try {
                                 elProps[attrName] = scriptObj.data[elAttrValue]
-                                elProps.watchedProps.push(attrName)
+                                elProps.watchedProps.push({
+                                    [attrName]: elAttrValue
+                                })
+                                data[elAttrValue] = scriptObj.data[elAttrValue]
                             } catch (e) {
                                 console.error(e)
                             }
@@ -157,8 +161,8 @@ module.exports = function(source) {
                     case 'dropdown':
                     case 'link':
                     case 'span':
-                        if (canvasNode.children[elName].content) {
-                            elProps.text = canvasNode.children[elName].content
+                        if (node.children[elName].content) {
+                            elProps.text = node.children[elName].content
                         }
                         break
                     default:
@@ -172,6 +176,7 @@ module.exports = function(source) {
     const result = `
         ${ scriptImport }
         export default {
+            ${obj2Str({data})}
             ${createdFn ? obj2Str({created: createdFn}) : ''}
             ${mountedFn ? obj2Str({mounted: mountedFn}) : ''}
             render: h => [${elList}]

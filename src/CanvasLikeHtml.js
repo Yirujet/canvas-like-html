@@ -6,6 +6,7 @@ import Dropdown from './Elements/Dropdown.js'
 import Link from './Elements/Link.js'
 import Span from './Elements/Span.js'
 import Table from './Elements/Table.js'
+import Watcher from './Watcher.js'
 
 CanvasLikeHtml.elements = new Map()
 
@@ -36,6 +37,7 @@ export default function CanvasLikeHtml(props) {
         lineHeight: 12
     }
     this.eventObserver = new EventObserver()
+    const propsLinkedWithComps = {}
     const propsObj = props
     if (props) {
         for (let name in props) {
@@ -45,6 +47,35 @@ export default function CanvasLikeHtml(props) {
         }
     }
     this._c = render.bind(this)
+    const linkCompsWithData = (comps) => {
+        comps.forEach(comp => {
+            if (comp.watchedProps && Array.isArray(comp.watchedProps)) {
+                comp.watchedProps.forEach(prop => {
+                    const [[compProp, bindProp]] = Object.entries(prop)
+                    if (!propsLinkedWithComps[bindProp]) {
+                        propsLinkedWithComps[bindProp] = new Watcher()
+                    }
+                    propsLinkedWithComps[bindProp].add({
+                        comp,
+                        prop: compProp,
+                        value: this[bindProp]
+                    })
+                })
+            }
+        })
+    }
+    const handleWatcher = (data) => {
+        for (let propName in data) {
+            this[propName] = new Proxy(data[propName], {
+                get(target, prop, receiver) {
+                    return Reflect.get(...arguments)
+                },
+                set(obj, prop, value) {
+                    return Reflect.set(...arguments)
+                },
+            })
+        }
+    }
     this.mount = function(target) {
         this.target = target
         this.ctx = this.target.getContext('2d')
@@ -56,8 +87,12 @@ export default function CanvasLikeHtml(props) {
         }
         if (propsObj?.render) {
             const renderObj = propsObj.render.call(this, this._c)
+            if (renderObj.data) {
+                handleWatcher(renderObj.data)
+            }
             if (renderObj.comps) {
-                console.log(renderObj.comps)
+                linkCompsWithData(renderObj.comps)
+                console.log(propsLinkedWithComps)
                 if (renderObj.created) {
                     renderObj.created.call(this)
                 }
@@ -66,9 +101,9 @@ export default function CanvasLikeHtml(props) {
                 } else {
                     renderObj.comps.render()
                 }
-                if (renderObj.mounted) {
-                    renderObj.mounted.call(this)
-                }
+            }
+            if (renderObj.mounted) {
+                renderObj.mounted.call(this)
             }
         }
         this.eventObserver.observe(this.target)
