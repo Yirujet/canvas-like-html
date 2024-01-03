@@ -8,6 +8,8 @@ export default function Watcher() {
         this.comps.splice(i, 1)
     }
     this.notify = function() {
-        this.comps.forEach(comp => comp.render())
+        this.comps.forEach(({comp}) => {
+            comp.render()
+        })
     }
 }

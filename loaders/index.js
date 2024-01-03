@@ -72,7 +72,7 @@ module.exports = function(source) {
                         fnArgs = fnArgs.slice(1,  -1)
                     }
                 } else {
-                    fnBody = target[item].toString().slice(target[item].toString().indexOf('{') + 1, target[item].toString().indexOf('}'))
+                    fnBody = target[item].toString().slice(target[item].toString().indexOf('{') + 1, target[item].toString().lastIndexOf('}'))
                     fnArgs = target[item].toString().replace(fnBody, '').trim()
                     isAsync = fnArgs.startsWith('async')
                     fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))

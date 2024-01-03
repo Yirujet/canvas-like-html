@@ -2,7 +2,7 @@
     <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
     <checkbox x="10" y="70" text="custom-checkbox"></checkbox>
-    <link x="10" y="100" text="文字链接"></link>
+    <link x="10" y="100" :text="text"></link>
     <dropdown 
         x="10" 
         y="130" 
@@ -24,7 +24,8 @@ import axios from 'axios'
 
 {
     data: {
-        list1: [{ name: 'dropdown-item-1', value: 'dropdown-item-1' }]
+        list1: [{ name: 'dropdown-item-1', value: 'dropdown-item-1' }],
+        text: 'content changed after 2s'
     },
     methods: {
         handleClick() {
@@ -39,7 +40,9 @@ import axios from 'axios'
         console.log(this)
     },
     mounted() {
-        console.log(this)
+        setTimeout(() => {
+            this.text.value = 'happy yirujet'
+        }, 2000)
     }
 }
 </script>

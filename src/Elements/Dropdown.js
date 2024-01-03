@@ -143,12 +143,7 @@ export default function Dropdown(props) {
             `
             document.head.appendChild(styleEl)
         }
-        if (document.body.contains(this.dropdownOverlay)) {
-            this.dropdownOverlay.style.display = 'block'
-            this.dropdownOverlay.style.left = `${ this.area.leftBottom.x }px`
-            this.dropdownOverlay.style.top = `${ this.area.leftBottom.y + Dropdown.DROPDOWN_OVERLAY_MARGIN_TOP }px`
-        } else {
-            this.dropdownOverlay = document.createElement('div')
+        const createListEl = () => {
             const listEl = document.createElement('ul')
             listEl.className = 'dropdown-list'
             this.list.forEach(item => {
@@ -162,12 +157,26 @@ export default function Dropdown(props) {
                 })
                 listEl.appendChild(listItemEl) 
             })
-            const emptyEl = document.createElement('div')
-            emptyEl.innerHTML = '暂无数据'
+            return listEl
+        }
+        const emptyEl = document.createElement('div')
+        emptyEl.innerHTML = '暂无数据'
+        if (document.body.contains(this.dropdownOverlay)) {
+            this.dropdownOverlay.style.display = 'block'
+            this.dropdownOverlay.style.left = `${ this.area.leftBottom.x }px`
+            this.dropdownOverlay.style.top = `${ this.area.leftBottom.y + Dropdown.DROPDOWN_OVERLAY_MARGIN_TOP }px`
+            this.dropdownOverlay.innerHTML = ''
             if (this.list.length === 0) {
                 this.dropdownOverlay.appendChild(emptyEl)
             } else {
-                this.dropdownOverlay.appendChild(listEl)
+                this.dropdownOverlay.appendChild(createListEl())
+            }
+        } else {
+            this.dropdownOverlay = document.createElement('div')
+            if (this.list.length === 0) {
+                this.dropdownOverlay.appendChild(emptyEl)
+            } else {
+                this.dropdownOverlay.appendChild(createListEl())
             }
             this.dropdownOverlay.className = 'dropdown-overlay'
             this.dropdownOverlay.style.left = `${ this.area.leftBottom.x }px`

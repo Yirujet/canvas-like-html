@@ -137,10 +137,13 @@ export default function Link(props) {
             this.x = config.x || 0
             this.y = config.y || 0
         }
+        this.ctx.clearRect(this.x, this.y, this.width + Link.LINK_UNDERLINE_MARGIN, this.height + Link.LINK_UNDERLINE_MARGIN)
+        const { width: wordWidth, height: wordHeight } = getTextMetrics(this.text, this.fontSize)
+        this.width = wordWidth
+        this.height = wordHeight
         initDefaultAttrs()
         this.ctx.save()
         const type = this.disabled ? 'disabled' : this.mouseEntered ? 'hover' : 'default'
-        this.ctx.clearRect(this.x, this.y, this.width + Link.LINK_UNDERLINE_MARGIN, this.height + Link.LINK_UNDERLINE_MARGIN)
         this.ctx.beginPath()
         this.ctx.textBaseline = 'middle'
         if (this.fontSize) {

@@ -36,9 +36,11 @@ export default function CanvasLikeHtml(props) {
         fontFamily: 'Helvetica',
         lineHeight: 12
     }
+    this.elements = []
     this.eventObserver = new EventObserver()
     const propsLinkedWithComps = {}
     const propsObj = props
+    const primitiveProps = {}
     if (props) {
         for (let name in props) {
             if (name in this) {
@@ -47,8 +49,8 @@ export default function CanvasLikeHtml(props) {
         }
     }
     this._c = render.bind(this)
-    const linkCompsWithData = (comps) => {
-        comps.forEach(comp => {
+    const linkCompsWithData = () => {
+        this.elements.forEach(comp => {
             if (comp.watchedProps && Array.isArray(comp.watchedProps)) {
                 comp.watchedProps.forEach(prop => {
                     const [[compProp, bindProp]] = Object.entries(prop)
@@ -58,7 +60,6 @@ export default function CanvasLikeHtml(props) {
                     propsLinkedWithComps[bindProp].add({
                         comp,
                         prop: compProp,
-                        value: this[bindProp]
                     })
                 })
             }
@@ -66,11 +67,32 @@ export default function CanvasLikeHtml(props) {
     }
     const handleWatcher = (data) => {
         for (let propName in data) {
-            this[propName] = new Proxy(data[propName], {
+            let target
+            if (['string', 'number', 'boolean'].includes(typeof data[propName])) {
+                primitiveProps[propName] = true
+                target = {
+                    value: data[propName]
+                }
+            } else {
+                target = data[propName]
+            }
+            this[propName] = new Proxy(target, {
                 get(target, prop, receiver) {
                     return Reflect.get(...arguments)
                 },
                 set(obj, prop, value) {
+                    obj[prop] = value
+                    if (propsLinkedWithComps[propName]) {
+                        const propWatcher = propsLinkedWithComps[propName]
+                        propWatcher.comps.forEach(({comp, prop}) => {
+                            if (primitiveProps[propName]) {
+                                comp[prop] = value
+                            } else {
+                                comp[prop] = obj
+                            }
+                            comp.render()
+                        })
+                    }
                     return Reflect.set(...arguments)
                 },
             })
@@ -91,15 +113,15 @@ export default function CanvasLikeHtml(props) {
                 handleWatcher(renderObj.data)
             }
             if (renderObj.comps) {
-                linkCompsWithData(renderObj.comps)
-                console.log(propsLinkedWithComps)
+                this.elements = renderObj.comps
+                linkCompsWithData()
                 if (renderObj.created) {
                     renderObj.created.call(this)
                 }
-                if (Array.isArray(renderObj.comps)) {
-                    renderObj.comps.forEach(comp => comp.render())
+                if (Array.isArray(this.elements)) {
+                    this.elements.forEach(comp => comp.render())
                 } else {
-                    renderObj.comps.render()
+                    this.elements.render()
                 }
             }
             if (renderObj.mounted) {
