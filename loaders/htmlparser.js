@@ -258,12 +258,12 @@ var HTMLParser = this.HTMLParser = function (html, handler) {
                 var value = arguments[2] ? arguments[2] :
                     arguments[3] ? arguments[3] :
                     arguments[4] ? arguments[4] :
-                    fillAttrs[name] ? name : "";
+                    fillAttrs[name] ? true : false;
 
                 attrs.push({
                     name: name,
                     value: value,
-                    escaped: value.replace(/(^|[^\\])"/g, '$1\\\"') //"
+                    // escaped: value.replace(/(^|[^\\])"/g, '$1\\\"') //"
                 });
             });
 

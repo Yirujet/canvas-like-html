@@ -1,8 +1,10 @@
 <canvas width="800" height="500">
     <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
+    <button x="250" y="10" disabled>禁用按钮</button>
     <checkbox x="10" y="70" text="custom-checkbox"></checkbox>
-    <link x="10" y="100" :text="text"></link>
+    <radio x="10" y="160" text="单选框"></radio>
+    <link x="10" y="100" :underline="false" type="warning" href="https://www.baidu.com/" :text="text"></link>
     <dropdown 
         x="10" 
         y="130" 
@@ -10,7 +12,7 @@
     >下拉菜单</dropdown>
     <dropdown 
         x="10" 
-        y="180" 
+        y="190" 
         :list="[
             { name: 'dropdown-item-1', value: 'dropdown-item-1' },
             { name: 'dropdown-item-2', value: 'dropdown-item-2' }

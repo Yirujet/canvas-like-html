@@ -78,6 +78,8 @@ module.exports = function(source) {
                     fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
                 }
                 str += `${item}:${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
+            } else if (['boolean', 'number'].includes(typeof target[item])) {
+                str += `${item}:${target[item]},`
             } else {
                 str += `${item}:"${target[item]}",`
             }

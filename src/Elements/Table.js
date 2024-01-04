@@ -49,7 +49,6 @@ export default function Table(props) {
         this.registerListenerFromOnProp(this?.on)
     }
     const initCanvas = () => {
-        this.ctx.translate(0.5, 0.5)
         this.ctx.font = `${ this.globalProps.fontSize }px ${ this.globalProps.fontFamily }`
         this.globalProps.rowHeight = this.globalProps.padding * 2 + this.globalProps.lineHeight
         this.bodyRealHeight = this.data.length * this.globalProps.rowHeight

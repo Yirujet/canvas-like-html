@@ -2,6 +2,7 @@ import EventObserver from './EventObserver.js'
 import { render } from './utils.js'
 import Button from './Elements/Button.js'
 import Checkbox from './Elements/Checkbox.js'
+import Radio from './Elements/Radio.js'
 import Dropdown from './Elements/Dropdown.js'
 import Link from './Elements/Link.js'
 import Span from './Elements/Span.js'
@@ -20,6 +21,7 @@ const toLowerCase = target => String(target).toLocaleLowerCase()
 
 CanvasLikeHtml.element(toLowerCase(Button.name), Button)
 CanvasLikeHtml.element(toLowerCase(Checkbox.name), Checkbox)
+CanvasLikeHtml.element(toLowerCase(Radio.name), Radio)
 CanvasLikeHtml.element(toLowerCase(Dropdown.name), Dropdown)
 CanvasLikeHtml.element(toLowerCase(Link.name), Link)
 CanvasLikeHtml.element(toLowerCase(Span.name), Span)
@@ -101,6 +103,7 @@ export default function CanvasLikeHtml(props) {
     this.mount = function(target) {
         this.target = target
         this.ctx = this.target.getContext('2d')
+        this.ctx.translate(0.5, 0.5)
         if (this.width === null) {
             this.width = this.target.width
         }

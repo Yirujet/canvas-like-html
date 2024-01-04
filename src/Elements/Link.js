@@ -84,6 +84,7 @@ export default function Link(props) {
     this.underline = true
     this.fontSize = null
     this.disabled = false
+    this.href = ''
     const propsObj = props
     if (props) {
         for (let name in props) {
@@ -127,6 +128,12 @@ export default function Link(props) {
                     this.mouseEntered = false
                     e.target.style.cursor = 'default'
                     this.render()
+                }
+            },
+            click: () => {
+                if (!this.mouseEntered) return
+                if (this.href) {
+                    window.open(this.href)
                 }
             }
         }
