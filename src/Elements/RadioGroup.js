@@ -54,18 +54,21 @@ export default function RadioGroup(props) {
             this.ctx.clearRect(this.x, this.y, this.width, this.height)
             this.children.forEach((radio, i, ary) => {
                 let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width + RadioGroup.RADIO_GROUP_ITEM_MARGIN, this.x)
-                radio.render({ 
+                let radioConfig = {
                     x: preWidth, 
                     y: this.y, 
                     checked: radio.value === this.value,
-                    on: {
+                }
+                if (!radio.events.change) {
+                    radioConfig.on = {
                         change: e => {
                             this.value = e
                             this.triggerEvent('change', this.value)
                             draw()
                         }
-                    } 
-                })
+                    }
+                }
+                radio.render(radioConfig)
             })
         }
         draw()
