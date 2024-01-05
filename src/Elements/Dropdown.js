@@ -11,6 +11,8 @@ Dropdown.DROPDOWN_ARROW_MARGIN = DROPDOWN_ARROW_MARGIN
 Dropdown.DROPDOWN_OVERLAY_MARGIN_TOP = DROPDOWN_OVERLAY_MARGIN_TOP
 Dropdown.CHAR_WIDTH = CHAR_WIDTH
 
+Dropdown.elName = 'dropdown'
+
 inheritProto(Dropdown, Element)
 export default function Dropdown(props) {
     Element.call(this)

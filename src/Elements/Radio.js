@@ -42,6 +42,8 @@ const RADIO_LABEL_MARGIN = 10
 Radio.RADIO_BOX_WIDTH = RADIO_BOX_WIDTH
 Radio.RADIO_LABEL_MARGIN = RADIO_LABEL_MARGIN
 
+Radio.elName = 'radio'
+
 inheritProto(Radio, Element)
 export default function Radio(props) {
     Element.call(this)

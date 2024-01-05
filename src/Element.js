@@ -14,4 +14,5 @@ export default function Element() {
     this.globalProps = null
     this.root = null
     this.watchedProps = []
+    this.$$render_children = null
 }

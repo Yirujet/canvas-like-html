@@ -76,6 +76,8 @@ const colorObj = {
 
 Link.LINK_UNDERLINE_MARGIN = LINK_UNDERLINE_MARGIN
 
+Link.elName = 'link'
+
 inheritProto(Link, Element)
 export default function Link(props) {
     Element.call(this)

@@ -50,6 +50,8 @@ const colorObj = {
 Checkbox.CHECKBOX_BOX_WIDTH = CHECKBOX_BOX_WIDTH
 Checkbox.CHECKBOX_LABEL_MARGIN = CHECKBOX_LABEL_MARGIN
 
+Checkbox.elName = 'checkbox'
+
 inheritProto(Checkbox, Element)
 export default function Checkbox(props) {
     Element.call(this)
@@ -60,6 +62,7 @@ export default function Checkbox(props) {
     this.checked = false
     this.disabled = false
     this.indeterminate = false
+    this.value = ''
     const propsObj = props
     if (props) {
         for (let name in props) {
@@ -133,7 +136,7 @@ export default function Checkbox(props) {
             click: () => {
                 if (!this.mouseEntered) return
                 this.checked = !this.checked
-                this.triggerEvent('change', this.checked)
+                this.triggerEvent('change', { value: this.value, checked: this.checked })
                 this.render()
             }
         }
@@ -145,6 +148,7 @@ export default function Checkbox(props) {
             this.y = config.y || 0
             this.checked = config.checked || false
             this.indeterminate = config.indeterminate || false
+            this.registerListenerFromOnProp(config?.on)
         }
         initDefaultAttrs()
         this.ctx.save()

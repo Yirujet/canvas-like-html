@@ -3,6 +3,8 @@ import inheritProto from '../inherite.js'
 import Element from '../Element.js'
 import EventObserver from '../EventObserver.js'
 
+Span.elName = 'span'
+
 inheritProto(Span, Element)
 export default function Span(props) {
     Element.call(this)

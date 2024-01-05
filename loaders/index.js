@@ -62,7 +62,11 @@ module.exports = function(source) {
             if (Object.prototype.toString.call(target[item]) === '[object Object]') {
                 str += `${item}:{${obj2Str(target[item])}},`
             } else if (Array.isArray(target[item])) {
-                str += `${item}:${JSON.stringify(target[item])},`
+                if (item === '$$render_children') {
+                    str += `${item}: h => [${target[item]}],`
+                } else {
+                    str += `${item}:${JSON.stringify(target[item])},`
+                }
             } else if (typeof target[item] === 'function') {
                 let fnBody, fnArgs
                 if (isArrowFunction(target[item])) {
@@ -87,7 +91,7 @@ module.exports = function(source) {
         return str
     }
     const root = {}
-    const elList = []
+    let elList = []
     nodeList.forEach(node => createTree(root, node))
     let scriptImport = ''
     let mountedFn = null
@@ -114,6 +118,7 @@ module.exports = function(source) {
             mountedFn = scriptObj.mounted
         }
         const collectCanvasElList = node => {
+            let elList = []
             Reflect.ownKeys(node.children).forEach(elName => {
                 const elProps = {}
                 for (let elAttrName in node.children[elName].attrs) {
@@ -167,13 +172,19 @@ module.exports = function(source) {
                             elProps.text = node.children[elName].content
                         }
                         break
+                    case 'checkbox-group':
+                        if (node.children[elName].children) {
+                            elProps.$$render_children = collectCanvasElList(node.children[elName])
+                        }
+                        break
                     default:
                         break
                 }
                 elList.push(`h('${elName.description}', {${obj2Str(elProps)}})`)
             })
+            return elList
         }
-        collectCanvasElList(canvasNode)
+        elList = collectCanvasElList(canvasNode)
     }
     const result = `
         ${ scriptImport }

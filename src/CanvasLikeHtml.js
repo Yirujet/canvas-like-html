@@ -2,6 +2,7 @@ import EventObserver from './EventObserver.js'
 import { render } from './utils.js'
 import Button from './Elements/Button.js'
 import Checkbox from './Elements/Checkbox.js'
+import CheckboxGroup from './Elements/CheckboxGroup.js'
 import Radio from './Elements/Radio.js'
 import Dropdown from './Elements/Dropdown.js'
 import Link from './Elements/Link.js'
@@ -13,19 +14,20 @@ CanvasLikeHtml.elements = new Map()
 
 CanvasLikeHtml.element = function(elName, elConstructor) {
     if (typeof elConstructor === 'function') {
-        CanvasLikeHtml.elements.set(elName || elConstructor.name, elConstructor)
+        CanvasLikeHtml.elements.set(elName || elConstructor.elName, elConstructor)
     }
 }
 
 const toLowerCase = target => String(target).toLocaleLowerCase()
 
-CanvasLikeHtml.element(toLowerCase(Button.name), Button)
-CanvasLikeHtml.element(toLowerCase(Checkbox.name), Checkbox)
-CanvasLikeHtml.element(toLowerCase(Radio.name), Radio)
-CanvasLikeHtml.element(toLowerCase(Dropdown.name), Dropdown)
-CanvasLikeHtml.element(toLowerCase(Link.name), Link)
-CanvasLikeHtml.element(toLowerCase(Span.name), Span)
-CanvasLikeHtml.element(toLowerCase(Table.name), Table)
+CanvasLikeHtml.element(toLowerCase(Button.elName), Button)
+CanvasLikeHtml.element(toLowerCase(Checkbox.elName), Checkbox)
+CanvasLikeHtml.element(toLowerCase(CheckboxGroup.elName), CheckboxGroup)
+CanvasLikeHtml.element(toLowerCase(Radio.elName), Radio)
+CanvasLikeHtml.element(toLowerCase(Dropdown.elName), Dropdown)
+CanvasLikeHtml.element(toLowerCase(Link.elName), Link)
+CanvasLikeHtml.element(toLowerCase(Span.elName), Span)
+CanvasLikeHtml.element(toLowerCase(Table.elName), Table)
 
 export default function CanvasLikeHtml(props) {
     this.target = null

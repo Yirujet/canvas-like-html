@@ -74,6 +74,8 @@ Button.BUTTON_PADDING_HORIZONTAL = BUTTON_PADDING_HORIZONTAL
 Button.BUTTON_BORDER_RADIUS = BUTTON_BORDER_RADIUS
 Button.BUTTON_CIRCLE_RADIUS = BUTTON_CIRCLE_RADIUS
 
+Button.elName = 'button'
+
 inheritProto(Button, Element)
 export default function Button(props) {
     Element.call(this)

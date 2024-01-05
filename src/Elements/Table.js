@@ -6,6 +6,8 @@ import inheritProto from '../inherite.js'
 import Checkbox from './Checkbox.js'
 import Element from '../Element.js'
 
+Table.elName = 'table'
+
 inheritProto(Table, Element)
 export default function Table(props) {
     Element.call(this)
