@@ -2,8 +2,8 @@
     <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
     <button x="250" y="10" disabled>禁用按钮</button>
-    <checkbox x="10" y="70">custom-checkbox</checkbox>
-    <checkbox-group x="10" y="130" @change="handleCheckboxGroupChange">
+    <checkbox x="10" y="80">custom-checkbox</checkbox>
+    <checkbox-group x="10" y="120" @change="handleCheckboxGroupChange">
         <checkbox value="value1">复选框1</checkbox>
         <checkbox value="value2">复选框2</checkbox>
     </checkbox-group>
@@ -24,6 +24,11 @@
         trigger="click"
         @command="handleCommand"
     >下拉菜单-点击触发</dropdown>
+    <radio-group x="10" y="280">
+        <radio value="备选项1">备选项1</radio>
+        <radio value="备选项2">备选项2</radio>
+        <radio value="备选项3">备选项3</radio>
+    </radio-group>
 </canvas>
 <script>
 import axios from 'axios'

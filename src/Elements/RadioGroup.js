@@ -1,0 +1,74 @@
+import Element from "../Element"
+import inheritProto from "../inherite"
+
+const RADIO_GROUP_ITEM_MARGIN = 30
+
+RadioGroup.elName = 'radio-group'
+RadioGroup.RADIO_GROUP_ITEM_MARGIN = RADIO_GROUP_ITEM_MARGIN
+
+inheritProto(RadioGroup, Element)
+export default function RadioGroup(props) {
+    Element.call(this)
+    this.value = []
+    this.children = []
+    const propsObj = props
+    if (props) {
+        for (let name in props) {
+            if (name in this) {
+                this[name] = props[name]
+            }
+        }
+    }
+    this.x = parseFloat(this.x)
+    this.y = parseFloat(this.y)
+
+    const initDefaultAttrs = () => {
+        if (this.children.length > 0) {
+            this.width = this.children.reduce((p, c) => p + c.width, 0)
+            this.height = this.children[0].height
+            this.width += (this.children.length - 1) * RadioGroup.RADIO_GROUP_ITEM_MARGIN
+        }
+        this.area = {
+            leftTop: { x: this.x, y: this.y },
+            rightTop: { x: this.x + this.width, y: this.y },
+            leftBottom: { x: this.x, y: this.y + this.height },
+            rightBottom: { x: this.x + this.width, y: this.y + this.height },
+        }
+    }
+    const initEvents = () => {
+        if (!this.eventObserver) {
+            this.eventObserver = new EventObserver()
+        }
+        this.registerListenerFromOnProp(propsObj?.on)
+    }
+    this.render = function(config) {
+        if (this.$$render_children) {
+            this.children = this.$$render_children.call(this, this.root._c)
+        }
+        initDefaultAttrs()
+        if (config) {
+            this.x = config.x || 0
+            this.y = config.y || 0
+        }
+        const draw = () => {
+            this.ctx.clearRect(this.x, this.y, this.width, this.height)
+            this.children.forEach((radio, i, ary) => {
+                let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width + RadioGroup.RADIO_GROUP_ITEM_MARGIN, this.x)
+                radio.render({ 
+                    x: preWidth, 
+                    y: this.y, 
+                    checked: radio.value === this.value,
+                    on: {
+                        change: e => {
+                            this.value = e
+                            this.triggerEvent('change', this.value)
+                            draw()
+                        }
+                    } 
+                })
+            })
+        }
+        draw()
+    }
+    initEvents()
+}

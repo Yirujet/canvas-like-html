@@ -126,8 +126,9 @@ export default function Radio(props) {
             },
             click: () => {
                 if (!this.mouseEntered) return
-                this.checked = !this.checked
-                this.triggerEvent('change', this.checked)
+                // this.checked = !this.checked
+                this.checked = true
+                this.triggerEvent('change', this.value)
                 this.render()
             }
         }
@@ -138,6 +139,7 @@ export default function Radio(props) {
             this.x = config.x || 0
             this.y = config.y || 0
             this.checked = config.checked || false
+            this.registerListenerFromOnProp(config?.on)
         }
         initDefaultAttrs()
         this.ctx.save()

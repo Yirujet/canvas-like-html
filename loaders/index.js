@@ -168,11 +168,13 @@ module.exports = function(source) {
                     case 'dropdown':
                     case 'link':
                     case 'span':
+                    case 'radio':
                         if (node.children[elName].content) {
                             elProps.text = node.children[elName].content
                         }
                         break
                     case 'checkbox-group':
+                    case 'radio-group':
                         if (node.children[elName].children) {
                             elProps.$$render_children = collectCanvasElList(node.children[elName])
                         }

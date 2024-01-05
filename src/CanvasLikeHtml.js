@@ -4,6 +4,7 @@ import Button from './Elements/Button.js'
 import Checkbox from './Elements/Checkbox.js'
 import CheckboxGroup from './Elements/CheckboxGroup.js'
 import Radio from './Elements/Radio.js'
+import RadioGroup from './Elements/RadioGroup.js'
 import Dropdown from './Elements/Dropdown.js'
 import Link from './Elements/Link.js'
 import Span from './Elements/Span.js'
@@ -24,6 +25,7 @@ CanvasLikeHtml.element(toLowerCase(Button.elName), Button)
 CanvasLikeHtml.element(toLowerCase(Checkbox.elName), Checkbox)
 CanvasLikeHtml.element(toLowerCase(CheckboxGroup.elName), CheckboxGroup)
 CanvasLikeHtml.element(toLowerCase(Radio.elName), Radio)
+CanvasLikeHtml.element(toLowerCase(RadioGroup.elName), RadioGroup)
 CanvasLikeHtml.element(toLowerCase(Dropdown.elName), Dropdown)
 CanvasLikeHtml.element(toLowerCase(Link.elName), Link)
 CanvasLikeHtml.element(toLowerCase(Span.elName), Span)
