@@ -1,5 +1,6 @@
 import inheritProto from "../../inherite.js";
 import Scrollbar from "./Scrollbar.js";
+import _ from 'lodash'
 
 inheritProto(VerticalScrollbar, Scrollbar)
 export default function VerticalScrollbar(layout, sliceUnitVal, dataSize, callback, eventObserver) {

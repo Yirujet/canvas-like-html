@@ -1,8 +1,3 @@
-import Span from './Elements/Span.js'
-import Button from './Elements/Button.js'
-import Checkbox from './Elements/Checkbox.js'
-import Link from './Elements/Link.js'
-import Dropdown from './Elements/Dropdown.js'
 import CanvasLikeHtml from './CanvasLikeHtml.js'
 
 export const getTextMetrics = (text, fontSize) => {

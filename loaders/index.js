@@ -12,7 +12,6 @@ const isArrowFunction = fn => {
 }
 
 module.exports = function(source) {
-    console.log(this)
     const nodeList = []
     HTMLParser(source, (function() {
         var obj = {}
@@ -132,11 +131,34 @@ module.exports = function(source) {
                             elProps[attrName] = (evalFn(elAttrValue))()
                         } catch (e) {
                             try {
-                                elProps[attrName] = scriptObj.data[elAttrValue]
+                                //  binding the prop of object
+                                if (elAttrValue.includes('.')) {
+                                    const bindingChain = elAttrValue.split('.')
+                                    const bindingValue = bindingChain.reduce((p, c) => p[c], scriptObj.data)
+                                    elProps[attrName] = bindingValue
+                                    let attrObj
+                                    bindingChain.forEach((attr, i, arr) => {
+                                        if (i === 0) {
+                                            if (!data[attr]) {
+                                                data[attr] = {}
+                                            }
+                                            attrObj = data[attr]
+                                        } else if (i < arr.length - 1) {
+                                            if (!attrObj[attr]) {
+                                                attrObj[attr] = {}
+                                            }
+                                            attrObj = attrObj[attr]
+                                        } else {
+                                            attrObj[attr] = bindingValue
+                                        }
+                                    })
+                                } else {
+                                    elProps[attrName] = scriptObj.data[elAttrValue]
+                                    data[elAttrValue] = scriptObj.data[elAttrValue]
+                                }
                                 elProps.watchedProps.push({
                                     [attrName]: elAttrValue
                                 })
-                                data[elAttrValue] = scriptObj.data[elAttrValue]
                             } catch (e) {
                                 console.error(e)
                             }

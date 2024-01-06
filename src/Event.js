@@ -45,6 +45,5 @@ export default function Event() {
                 }
             })
         }
-        // console.log(this.eventObserver)
     }
 }

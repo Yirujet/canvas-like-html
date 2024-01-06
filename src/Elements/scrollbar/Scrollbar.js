@@ -1,6 +1,7 @@
 import EventObserver from '../../EventObserver.js'
 import inheritProto from '../../inherite.js'
 import Element from '../../Element.js'
+import _ from 'lodash'
 
 inheritProto(Scrollbar, Element)
 export default function Scrollbar(layout, dataSize, callback, eventObserver) {

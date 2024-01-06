@@ -1,17 +1,31 @@
 <canvas width="800" height="500">
     <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
-    <button x="250" y="10" disabled>禁用按钮</button>
-    <checkbox x="10" y="80">custom-checkbox</checkbox>
-    <checkbox-group x="10" y="120" @change="handleCheckboxGroupChange">
-        <checkbox value="value1">复选框1</checkbox>
-        <checkbox value="value2">复选框2</checkbox>
-    </checkbox-group>
-    <radio x="10" y="220" text="单选框"></radio>
-    <link x="10" y="160" :underline="false" type="warning" href="https://www.baidu.com/" :text="text"></link>
+    <button x="250" y="10" type="success" @click="handleChangeRadioText">成功按钮</button>
+    <button x="370" y="10" type="info">信息按钮</button>
+    <button x="490" y="10" type="warning">警告按钮</button>
+    <button x="610" y="10" type="danger">危险按钮</button>
+    <button x="10" y="60" plain>朴素按钮</button>
+    <button x="130" y="60" type="primary" plain>主要按钮</button>
+    <button x="250" y="60" type="success" plain>成功按钮</button>
+    <button x="370" y="60" type="info" plain>信息按钮</button>
+    <button x="490" y="60" type="warning" plain>警告按钮</button>
+    <button x="610" y="60" type="danger" plain>危险按钮</button>
+    <button x="10" y="110" round>圆角按钮</button>
+    <button x="130" y="110" type="primary" round>主要按钮</button>
+    <button x="250" y="110" type="success" round>成功按钮</button>
+    <button x="370" y="110" type="info" round>信息按钮</button>
+    <button x="490" y="110" type="warning" round>警告按钮</button>
+    <button x="610" y="110" type="danger" round>危险按钮</button>
+    <button x="10" y="160" disabled>禁用按钮</button>
+    <button x="130" y="160" type="primary" disabled>主要按钮</button>
+    <button x="250" y="160" type="success" disabled>成功按钮</button>
+    <button x="370" y="160" type="info" disabled>信息按钮</button>
+    <button x="490" y="160" type="warning" disabled>警告按钮</button>
+    <button x="610" y="160" type="danger" disabled>危险按钮</button>
     <dropdown 
         x="10" 
-        y="190" 
+        y="220" 
         :list="list1"
     >下拉菜单</dropdown>
     <dropdown 
@@ -24,11 +38,25 @@
         trigger="click"
         @command="handleCommand"
     >下拉菜单-点击触发</dropdown>
-    <radio-group x="10" y="280">
+    <radio-group x="10" y="280" @change="handleRadioGroupChange">
         <radio value="备选项1">备选项1</radio>
         <radio value="备选项2">备选项2</radio>
         <radio value="备选项3">备选项3</radio>
     </radio-group>
+    <checkbox x="10" y="310">custom-checkbox</checkbox>
+    <checkbox-group x="10" y="340" @change="handleCheckboxGroupChange">
+        <checkbox value="value1">复选框1</checkbox>
+        <checkbox value="value2">复选框2</checkbox>
+    </checkbox-group>
+    <link x="10" y="370" :underline="false" type="warning" href="https://www.baidu.com/" :text="text"></link>
+    <link x="130" y="370">默认链接</link>
+    <link x="200" y="370" type="primary">主要链接</link>
+    <link x="270" y="370" type="success">成功链接</link>
+    <link x="340" y="370" type="warning">警告链接</link>
+    <link x="410" y="370" type="danger">危险链接</link>
+    <link x="480" y="370" type="info">信息链接</link>
+    <radio x="10" y="400" :text="obj.innerObj.name"></radio>
+    <span x="10" y="430" :text="test.a"></span>
 </canvas>
 <script>
 import axios from 'axios'
@@ -36,7 +64,15 @@ import axios from 'axios'
 {
     data: {
         list1: [{ name: 'dropdown-item-1', value: 'dropdown-item-1' }],
-        text: 'content changed after 2s'
+        text: 'changed after 2s',
+        obj: {
+            innerObj: {
+                name: 'test'
+            }
+        },
+        test: {
+            a: 1
+        }
     },
     methods: {
         handleClick() {
@@ -47,7 +83,13 @@ import axios from 'axios'
             console.log(res.data.data.name)
         },
         handleCheckboxGroupChange: (val) => {
-            console.log(`checkbox-group changed:${val}`)
+            console.log(`checkbox-group changed: ${val}`)
+        },
+        handleRadioGroupChange(val) {
+            console.log(`radio-group changed: ${val}`)
+        },
+        handleChangeRadioText() {
+            this.obj.innerObj.name = 'Oops,amazing'
         }
     },
     created() {
@@ -56,6 +98,7 @@ import axios from 'axios'
     mounted() {
         setTimeout(() => {
             this.text.value = 'happy yirujet'
+            this.test.a = 2
         }, 2000)
     }
 }

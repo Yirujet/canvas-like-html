@@ -71,6 +71,28 @@ export default function CanvasLikeHtml(props) {
             }
         })
     }
+    const reactive = (target = {}, propName, callback) => {
+        if (typeof target === 'object') {
+            for (let item in target) {
+                if (typeof target[item] === 'object') {
+                    target[item] = reactive(target[item], propName + '.' + item, callback)
+                }
+            }
+        }
+        return new Proxy(target, {
+            get(target, prop, receiver) {
+                const result = Reflect.get(...arguments)
+                return result
+            },
+            set(target, prop, value, receiver) {
+                if (callback) {
+                    callback(target, prop, value, receiver, propName + '.' + prop)
+                }
+                const result = Reflect.set(...arguments)
+                return result
+            },
+        })
+    }
     const handleWatcher = (data) => {
         for (let propName in data) {
             let target
@@ -82,26 +104,19 @@ export default function CanvasLikeHtml(props) {
             } else {
                 target = data[propName]
             }
-            this[propName] = new Proxy(target, {
-                get(target, prop, receiver) {
-                    return Reflect.get(...arguments)
-                },
-                set(obj, prop, value) {
-                    obj[prop] = value
-                    if (propsLinkedWithComps[propName]) {
-                        const propWatcher = propsLinkedWithComps[propName]
-                        propWatcher.comps.forEach(({comp, prop}) => {
-                            if (primitiveProps[propName]) {
-                                comp[prop] = value
-                            } else {
-                                comp[prop] = obj
-                            }
-                            comp.render()
-                        })
-                    }
-                    return Reflect.set(...arguments)
-                },
-            })
+            this[propName] = reactive(target, propName, (function(target, prop, value, receiver, propName) {
+                if (propsLinkedWithComps[propName]) {
+                    const propWatcher = propsLinkedWithComps[propName]
+                    propWatcher.comps.forEach(({comp, prop}) => {
+                        if (primitiveProps[propName]) {
+                            comp[prop] = value
+                        } else {
+                            comp[prop] = target
+                        }
+                        comp.render()
+                    })
+                }
+            }).bind(this))
         }
     }
     this.mount = function(target) {
