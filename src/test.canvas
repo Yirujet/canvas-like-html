@@ -56,7 +56,7 @@
     <link x="410" y="370" type="danger">危险链接</link>
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
-    <span x="10" y="430" :text="test.a"></span>
+    <span x="10" y="430" :text="test.a.0.b"></span>
 </canvas>
 <script>
 import axios from 'axios'
@@ -71,7 +71,11 @@ import axios from 'axios'
             }
         },
         test: {
-            a: 1
+            a: [
+                {
+                    b: '123'
+                }
+            ]
         }
     },
     methods: {
@@ -98,7 +102,7 @@ import axios from 'axios'
     mounted() {
         setTimeout(() => {
             this.text.value = 'happy yirujet'
-            this.test.a = 2
+            this.test.a[0].b = 321
         }, 2000)
     }
 }

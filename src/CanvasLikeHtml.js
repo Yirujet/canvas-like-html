@@ -71,27 +71,37 @@ export default function CanvasLikeHtml(props) {
             }
         })
     }
-    const reactive = (target = {}, propName, callback) => {
-        if (typeof target === 'object') {
-            for (let item in target) {
-                if (typeof target[item] === 'object') {
-                    target[item] = reactive(target[item], propName + '.' + item, callback)
-                }
-            }
+
+    const proxyObj = new WeakMap()
+    const isObject = val => typeof val === 'object' && val !== null
+    
+    function reactive(target, propName, callback) {
+        const res = proxyObj.get(target)
+        if (res) {
+            return res
         }
-        return new Proxy(target, {
-            get(target, prop, receiver) {
+        const observed = new Proxy(target, {
+            get(target, prop) {
                 const result = Reflect.get(...arguments)
+                if (isObject(result)) {
+                    return reactive(result, propName + '.' + prop, callback)
+                }
                 return result
             },
             set(target, prop, value, receiver) {
-                if (callback) {
-                    callback(target, prop, value, receiver, propName + '.' + prop)
-                }
                 const result = Reflect.set(...arguments)
+                if (callback) {
+                    callback(target, prop, value, receiver, {
+                        parentProp: propName,
+                        bindingChain: propName + '.' + prop,
+                        parentType: Object.prototype.toString.call(target)
+                    })
+                }
                 return result
             },
         })
+        proxyObj.set(target, observed)
+        return observed
     }
     const handleWatcher = (data) => {
         for (let propName in data) {
@@ -104,17 +114,26 @@ export default function CanvasLikeHtml(props) {
             } else {
                 target = data[propName]
             }
-            this[propName] = reactive(target, propName, (function(target, prop, value, receiver, propName) {
-                if (propsLinkedWithComps[propName]) {
-                    const propWatcher = propsLinkedWithComps[propName]
+            this[propName] = reactive(target, propName, (function(target, prop, value, receiver, propInfo) {
+                const { parentProp, bindingChain, parentType } = propInfo
+                if (propsLinkedWithComps[bindingChain]) {
+                    const propWatcher = propsLinkedWithComps[bindingChain]
                     propWatcher.comps.forEach(({comp, prop}) => {
-                        if (primitiveProps[propName]) {
-                            comp[prop] = value
-                        } else {
-                            comp[prop] = target
-                        }
+                        comp[prop] = value
                         comp.render()
                     })
+                } else {
+                    if (primitiveProps[parentProp] || propsLinkedWithComps[parentProp]) {
+                        const propWatcher = propsLinkedWithComps[parentProp]
+                        propWatcher.comps.forEach(({comp, prop}) => {
+                            if (Array.isArray(target)) {
+                                comp[prop] = target
+                            } else {
+                                comp[prop] = value
+                            }
+                            comp.render()
+                        })
+                    }
                 }
             }).bind(this))
         }

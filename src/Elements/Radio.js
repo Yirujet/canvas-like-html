@@ -141,6 +141,9 @@ export default function Radio(props) {
             this.checked = config.checked || false
             this.registerListenerFromOnProp(config?.on)
         }
+        const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
+        this.width = Radio.RADIO_BOX_WIDTH + (this.text ? wordWidth + Radio.RADIO_LABEL_MARGIN : 0)
+        this.height = wordHeight
         initDefaultAttrs()
         this.ctx.save()
         if (this.fontSize) {
@@ -154,7 +157,7 @@ export default function Radio(props) {
             : this.boxMouseEntered 
             ? 'hover' 
             : 'default'
-        this.ctx.clearRect(this.x - 1, this.y - 1, this.width, this.height)
+        this.ctx.clearRect(this.x - 1, this.y - 1, this.width + 1, this.height + 1)
         this.ctx.beginPath()
         this.ctx.strokeStyle = colorObj[type].radio.border
         this.ctx.lineWidth = 0.5
