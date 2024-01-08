@@ -73,7 +73,7 @@ export default function Dropdown(props) {
                     this.mouseEntered = true
                     e.target.style.cursor = this.disabled ? 'not-allowed' : 'pointer'
                     if (this.trigger === 'hover') {
-                        openDropdownTimer = setTimeout(this.openDropdown.bind(this), 300)
+                        openDropdownTimer = setTimeout(this.openDropdown.bind(this, e), 300)
                         openDropdownTs = new Date().getTime()
                     }
                 }
@@ -97,9 +97,9 @@ export default function Dropdown(props) {
                     }
                 }
             },
-            click: () => {
+            click: e => {
                 if (this.trigger === 'click' && this.mouseEntered) {
-                    this.openDropdown()
+                    this.openDropdown(e)
                 }
             },
             clickoutside: e => {
@@ -111,7 +111,7 @@ export default function Dropdown(props) {
         }
         this.registerListenerFromOnProp(defaultEventListeners)
     }
-    this.openDropdown = function() {
+    this.openDropdown = function(e) {
         if (!document.head.querySelector('#dropdown-overlay')) {
             const styleEl = document.createElement('style')
             styleEl.id = 'dropdown-overlay'
@@ -163,10 +163,11 @@ export default function Dropdown(props) {
         }
         const emptyEl = document.createElement('div')
         emptyEl.innerHTML = '暂无数据'
+        const { x, y } = e.target.getBoundingClientRect()
         if (document.body.contains(this.dropdownOverlay)) {
             this.dropdownOverlay.style.display = 'block'
-            this.dropdownOverlay.style.left = `${ this.area.leftBottom.x }px`
-            this.dropdownOverlay.style.top = `${ this.area.leftBottom.y + Dropdown.DROPDOWN_OVERLAY_MARGIN_TOP }px`
+            this.dropdownOverlay.style.left = `${ this.x + x }px`
+            this.dropdownOverlay.style.top = `${ this.y + this.height + y + Dropdown.DROPDOWN_OVERLAY_MARGIN_TOP }px`
             this.dropdownOverlay.innerHTML = ''
             if (this.list.length === 0) {
                 this.dropdownOverlay.appendChild(emptyEl)
@@ -181,8 +182,8 @@ export default function Dropdown(props) {
                 this.dropdownOverlay.appendChild(createListEl())
             }
             this.dropdownOverlay.className = 'dropdown-overlay'
-            this.dropdownOverlay.style.left = `${ this.area.leftBottom.x }px`
-            this.dropdownOverlay.style.top = `${ this.area.leftBottom.y + Dropdown.DROPDOWN_OVERLAY_MARGIN_TOP }px`
+            this.dropdownOverlay.style.left = `${ this.x + x }px`
+            this.dropdownOverlay.style.top = `${ this.y + this.height + y + Dropdown.DROPDOWN_OVERLAY_MARGIN_TOP }px`
             document.body.appendChild(this.dropdownOverlay)
             if (this.trigger === 'hover') {
                 this.dropdownOverlay.addEventListener('mouseenter', () => {

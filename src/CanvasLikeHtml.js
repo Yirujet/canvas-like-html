@@ -141,12 +141,15 @@ export default function CanvasLikeHtml(props) {
     this.mount = function(target) {
         this.target = target
         this.ctx = this.target.getContext('2d')
+        const { width, height } = target.getBoundingClientRect()
         this.ctx.translate(0.5, 0.5)
         if (this.width === null) {
-            this.width = this.target.width
+            this.width = width
+            this.target.width = width
         }
         if (this.height === null) {
-            this.height = this.target.height
+            this.height = height
+            this.target.height = height
         }
         if (propsObj?.render) {
             const renderObj = propsObj.render.call(this, this._c)
