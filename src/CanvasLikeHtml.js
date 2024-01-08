@@ -9,6 +9,7 @@ import Dropdown from './Elements/Dropdown.js'
 import Link from './Elements/Link.js'
 import Span from './Elements/Span.js'
 import Table from './Elements/Table.js'
+import Input from './Elements/Input.js'
 import Watcher from './Watcher.js'
 
 CanvasLikeHtml.elements = new Map()
@@ -30,6 +31,7 @@ CanvasLikeHtml.element(toLowerCase(Dropdown.elName), Dropdown)
 CanvasLikeHtml.element(toLowerCase(Link.elName), Link)
 CanvasLikeHtml.element(toLowerCase(Span.elName), Span)
 CanvasLikeHtml.element(toLowerCase(Table.elName), Table)
+CanvasLikeHtml.element(toLowerCase(Input.elName), Input)
 
 export default function CanvasLikeHtml(props) {
     this.target = null
