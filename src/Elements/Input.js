@@ -1,6 +1,7 @@
 import inheritProto from '../inherite.js'
 import Element from '../Element.js'
 import EventObserver from '../EventObserver.js'
+import { getTextMetricsOfPrecision } from '../utils.js'
 
 const colorObj = {
     default: {
@@ -43,6 +44,7 @@ export default function Input(props) {
     this.height = 40
     this.disabled = false
     this.clickDown = false
+    this.inputDiv = null
     const propsObj = props
     if (props) {
         for (let name in props) {
@@ -69,7 +71,7 @@ export default function Input(props) {
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
-                if (this.mouseEntered) return
+                if (this.mouseEntered || this.disabled) return
                 if (offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y) {
                     this.mouseEntered = true
                     e.target.style.cursor = this.disabled ? 'not-allowed' : 'pointer'
@@ -78,7 +80,7 @@ export default function Input(props) {
             },
             mouseleave: e => {
                 const { offsetX, offsetY } = e
-                if (!this.mouseEntered) return
+                if (!this.mouseEntered || this.disabled) return
                 if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
                     this.mouseEntered = false
                     e.target.style.cursor = 'default'
@@ -86,11 +88,12 @@ export default function Input(props) {
                 }
             },
             mousedown: () => {
-                if (!this.mouseEntered) return
+                if (!this.mouseEntered || this.disabled) return
                 this.clickDown = true
                 this.render()
             },
             clickoutside: e => {
+                if (this.disabled) return
                 const { offsetX, offsetY } = e
                 if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
                     this.clickDown = false
@@ -105,19 +108,73 @@ export default function Input(props) {
             this.x = config.x || 0
             this.y = config.y || 0
         }
-        this.ctx.clearRect(this.x, this.y, this.width, this.height)
         initDefaultAttrs()
         this.ctx.save()
         const type = this.disabled ? 'disabled' : this.clickDown ? 'clickdown' : this.mouseEntered ? 'hover' : 'default'
         this.ctx.beginPath()
-        this.ctx.translate(-0.5, -0.5)
+        this.ctx.translate(0.5, 0.5)
+        this.ctx.clearRect(this.x, this.y, this.width + 1, this.height + 1)
         this.ctx.lineWidth = 1
-        this.ctx.textBaseline = 'middle'
-        this.ctx.fillStyle = this.value ? colorObj[type].font : colorObj[type].placeholder
-        this.ctx.fillText(this.value || this.placeholder, this.x + Input.INPUT_TEXT_MARGIN, this.y + this.height / 2)
+        // this.ctx.textBaseline = 'middle'
+        // this.ctx.fillStyle = this.value ? colorObj[type].font : colorObj[type].placeholder
+        // this.ctx.fillText(this.value || this.placeholder, this.x + Input.INPUT_TEXT_MARGIN, this.y + this.height / 2)
         this.ctx.strokeStyle = colorObj[type].border
         this.ctx.roundRect(this.x, this.y, this.width, this.height, [4])
         this.ctx.stroke()
+        const drawInputDiv = () => {
+            const { x, y } = this.root.target.getBoundingClientRect()
+            if (!document.head.querySelector('#canvas-like-html-input-div')) {
+                const styleEl = document.createElement('style')
+                styleEl.id = 'canvas-like-html-input-div'
+                styleEl.innerHTML = `
+                    .canvas-like-html-input-div {
+                        position: fixed;
+                        padding: 2px;
+                        margin: 0;
+                        background-color: #fff;
+                        border: none;
+                        outline: none;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        z-index: 999;
+                    }
+                    .canvas-like-html-input-div:empty:before {
+                        content: attr(placeholder);
+                        color: ${colorObj[type].placeholder}
+                    }
+                    .canvas-like-html-input-div:focus:before {
+                        content: none;
+                    }
+                `
+                document.head.appendChild(styleEl)
+            }
+            if (!document.body.contains(this.inputDiv)) {
+                this.inputDiv = document.createElement('div')
+                this.inputDiv.setAttribute('contenteditable', 'true')
+                this.inputDiv.setAttribute('placeholder', this.placeholder)
+                this.inputDiv.className = 'canvas-like-html-input-div'
+                this.inputDiv.addEventListener('focus', () => {
+                    this.clickDown = true
+                    this.render()
+                })
+                this.inputDiv.addEventListener('input', e => {
+                    this.value = e.target.innerText
+                    this.triggerEvent('input', this.value)
+                })
+                document.body.append(this.inputDiv)
+            }
+            const { height: wordHeight } = getTextMetricsOfPrecision('1', this.ctx)
+            this.inputDiv.style.width = `${ this.width - 2 * Input.INPUT_TEXT_MARGIN }px`
+            this.inputDiv.style.height = `${ wordHeight }px`
+            this.inputDiv.style.left = `${ this.x + x + Input.INPUT_TEXT_MARGIN }px`
+            this.inputDiv.style.top = `${ this.y + (this.height - wordHeight) / 2 + y - 2 }px`
+            if (this.clickDown) {
+                setTimeout(() => {
+                    this.inputDiv.focus()
+                })
+            }
+        }
+        drawInputDiv()
         this.ctx.restore()
     }
     initEvents()

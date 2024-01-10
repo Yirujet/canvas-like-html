@@ -57,7 +57,7 @@
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
     <span x="10" y="430" :text="test.a.0.b"></span>
-    <input x="10" y="460"></input>
+    <input x="10" y="460" @input="handleInput"></input>
 </canvas>
 <script>
 import axios from 'axios'
@@ -95,6 +95,9 @@ import axios from 'axios'
         },
         handleChangeRadioText() {
             this.obj.innerObj.name = 'Oops,amazing'
+        },
+        handleInput(val) {
+            console.log(val)
         }
     },
     created() {
