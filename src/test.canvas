@@ -1,4 +1,4 @@
-<canvas width="1800" height="850">
+<canvas width="1000" height="500">
     <!--<button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
     <button x="250" y="10" type="success" @click="handleChangeRadioText">成功按钮</button>
@@ -58,7 +58,7 @@
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
     <span x="10" y="430" :text="test.a.0.b"></span>
     <input x="10" y="460" value="test" @input="handleInput"></input>-->
-    <table :width="1800" :height="850" :data="tblData" :columns="columns"></table>
+    <table :width="1000" :height="500" :data="tblData" :columns="columns"></table>
 </canvas>
 <script>
 import axios from 'axios'
@@ -110,8 +110,8 @@ import axios from 'axios'
             this.text.value = 'happy yirujet'
             this.test.a[0].b = 321
         }, 2000)*/
-        const colLen = 1000
-        const rowLen = 10000
+        const colLen = 100
+        const rowLen = 1000
         const fixedColIndex = []
 
         const head = Array.from({ length: colLen }).map((e, i) => ({

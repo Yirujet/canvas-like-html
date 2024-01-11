@@ -12,8 +12,9 @@ Table.elName = 'table'
 inheritProto(Table, Element)
 export default function Table(props) {
     Element.call(this)
-    this.columns = [],
-    this.data = [],
+    this.columns = []
+    this.clonedColumns = []
+    this.data = []
     this.fixedLeftWidth = 0
     this.fixedRightWidth = 0
     this.normalWidth = 0
@@ -70,8 +71,6 @@ export default function Table(props) {
         this.horizontalDataSize = 0
         this.flattenCols = []
         this.eventGarbageCollection = []
-        this.selection = []
-        this.checkAll = false
         this.width = propsObj.width
         this.height = propsObj.height
     }
@@ -87,7 +86,7 @@ export default function Table(props) {
         let fixedLeftWidth = 0
         let fixedRightWidth = 0
         let normalWidth = 0
-        let clonedColumns = _.cloneDeep(this.columns)
+        this.clonedColumns = _.cloneDeep(this.columns)
         const deepQuery = (col, colIndex, parentChildren, level = 0) => {
             if (!col.$$x) {
                 col.$$x = 0
@@ -115,10 +114,10 @@ export default function Table(props) {
             }
             return col.$$cellWidth
         }
-        clonedColumns.forEach((item, i, ary) => {
+        this.clonedColumns.forEach((item, i, ary) => {
             deepQuery(item, i, ary)
         })
-        clonedColumns.forEach(item => {
+        this.clonedColumns.forEach(item => {
             const { fixed, label, field } = item
             if (fixed === 'left') {
                 this.fixedLeftCols.push({
@@ -296,7 +295,7 @@ export default function Table(props) {
                             ctx: this.ctx,
                             eventObserver: this.eventObserver,
                             on: {
-                                change: (checked) => {
+                                change: ({ checked }) => {
                                     if (this.selection.length > 0 && this.selection.length < this.data.length) {
                                         this.checkAll = true
                                     } else {
@@ -393,7 +392,7 @@ export default function Table(props) {
                     ctx: this.ctx,
                     eventObserver: this.eventObserver,
                     on: {
-                        change: (checked) => {
+                        change: ({ checked }) => {
                             let curIndex = rowIndex + this.verticalScrollBar.start
                             if (checked) {
                                 this.selection.push(curIndex)
@@ -594,11 +593,14 @@ export default function Table(props) {
         }
     }
     const drawTable = () => {
+        this.ctx.save()
+        this.ctx.translate(0.5, 0.5)
         drawBody()
         drawHead()
         drawScrollbar()
         drawFixedShadow()
         drawScrollShadow()
+        this.ctx.restore()
     }
     this.render = function() {
         init()
