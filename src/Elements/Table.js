@@ -5,6 +5,7 @@ import EventObserver from '../EventObserver.js'
 import inheritProto from '../inherite.js'
 import Checkbox from './Checkbox.js'
 import Element from '../Element.js'
+import _ from 'lodash'
 
 Table.elName = 'table'
 
@@ -47,6 +48,33 @@ export default function Table(props) {
     }
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
+    const initProps = () => {
+        this.fixedLeftWidth = 0
+        this.fixedRightWidth = 0
+        this.normalWidth = 0
+        this.fixedLeftCols = []
+        this.normalCols = []
+        this.fixedRightCols = []
+        this.headerHeight = 0
+        this.bodyHeight = 0
+        this.bodyRealHeight = 0
+        this.defaultVirtualColWidth = 100
+        this.restHeight = 0
+        this.restWidth = 0
+        this.deviationCompareValue = 10e-6
+        this.verticalScrollBar = null
+        this.horizontalScrollBar = null
+        this.scrollOffsetUnitVal = 10
+        this.slotCompMargin = 10
+        this.maxLevel = 0
+        this.horizontalDataSize = 0
+        this.flattenCols = []
+        this.eventGarbageCollection = []
+        this.selection = []
+        this.checkAll = false
+        this.width = propsObj.width
+        this.height = propsObj.height
+    }
     const initEvents = () => {
         this.registerListenerFromOnProp(this?.on)
     }
@@ -59,6 +87,7 @@ export default function Table(props) {
         let fixedLeftWidth = 0
         let fixedRightWidth = 0
         let normalWidth = 0
+        let clonedColumns = _.cloneDeep(this.columns)
         const deepQuery = (col, colIndex, parentChildren, level = 0) => {
             if (!col.$$x) {
                 col.$$x = 0
@@ -86,10 +115,10 @@ export default function Table(props) {
             }
             return col.$$cellWidth
         }
-        this.columns.forEach((item, i, ary) => {
+        clonedColumns.forEach((item, i, ary) => {
             deepQuery(item, i, ary)
         })
-        this.columns.forEach(item => {
+        clonedColumns.forEach(item => {
             const { fixed, label, field } = item
             if (fixed === 'left') {
                 this.fixedLeftCols.push({
@@ -183,6 +212,7 @@ export default function Table(props) {
         )
     }
     const init = () => {
+        initProps()
         initEvents()
         initCanvas()
         initColumns()
@@ -572,6 +602,7 @@ export default function Table(props) {
     }
     this.render = function() {
         init()
+        this.clear()
         drawTable()
         console.log(`${this.data.length}行,${this.normalCols.length}列`)
     }

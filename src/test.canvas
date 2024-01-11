@@ -1,5 +1,5 @@
-<canvas width="800" height="500">
-    <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
+<canvas width="1800" height="850">
+    <!--<button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
     <button x="250" y="10" type="success" @click="handleChangeRadioText">成功按钮</button>
     <button x="370" y="10" type="info">信息按钮</button>
@@ -57,7 +57,8 @@
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
     <span x="10" y="430" :text="test.a.0.b"></span>
-    <input x="10" y="460" @input="handleInput"></input>
+    <input x="10" y="460" value="test" @input="handleInput"></input>-->
+    <table :width="1800" :height="850" :data="tblData" :columns="columns"></table>
 </canvas>
 <script>
 import axios from 'axios'
@@ -77,7 +78,9 @@ import axios from 'axios'
                     b: '123'
                 }
             ]
-        }
+        },
+        tblData: [],
+        columns: []
     },
     methods: {
         handleClick() {
@@ -101,13 +104,167 @@ import axios from 'axios'
         }
     },
     created() {
-        console.log(this)
     },
     mounted() {
-        setTimeout(() => {
+        /*setTimeout(() => {
             this.text.value = 'happy yirujet'
             this.test.a[0].b = 321
-        }, 2000)
+        }, 2000)*/
+        const colLen = 1000
+        const rowLen = 10000
+        const fixedColIndex = []
+
+        const head = Array.from({ length: colLen }).map((e, i) => ({
+            field: `col${i}`,
+            label: `col${i + 1}`,
+            fixed: ((i) => {
+                if (fixedColIndex.includes(i)) {
+                    return 'right'
+                }
+            })(i),
+        }))
+        head.unshift({ field: 'index', label: '序号', fixed: 'left', width: 65 })
+        head.unshift({
+            type: 'checkbox',
+            fixed: 'left',
+            width: 35
+        })
+        head.unshift({ 
+            label: 'col-parent', 
+            children: [
+                { 
+                    label: 'col-1', 
+                    children: [
+                        {
+                            label: 'col-1-1',
+                            field: 'col1',
+                            children: [
+                                {
+                                    label: 'col-1-1-1',
+                                    field: 'col3',
+                                    children: [
+                                        {
+                                            label: 'col-1-1-1-1',
+                                            field: 'col4'
+                                        },
+                                        {
+                                            label: 'col-1-1-1-2',
+                                            field: 'col3'
+                                        }
+                                    ]
+                                },
+                                {
+                                    label: 'col-1-1-2',
+                                    field: 'col4',
+                                    children: [
+                                        {
+                                            label: 'col-1-1-2-1',
+                                            field: 'col5',
+                                        },
+                                        {
+                                            label: 'col-1-1-2-2',
+                                            field: 'col6',
+                                        },
+                                        {
+                                            label: 'col-1-1-2-3',
+                                            field: 'col7',
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            label: 'col-1-2',
+                            field: 'col2',
+                            children: [
+                                {
+                                    label: 'col-1-2-1',
+                                    field: 'col11',
+                                },
+                                {
+                                    label: 'col-1-2-2',
+                                    field: 'col12',
+                                }
+                            ]
+                        }
+                    ]
+                },
+                { label: 'col-2', field: 'col9' }
+            ]
+        })
+        head.push({
+            field: 'operation',
+            label: '操作',
+            fixed: 'right',
+            width: 250,
+            slot: {
+                head: (h, col) => {
+                    return h('span', {
+                        text: `${col.label}`
+                    })
+                },
+                body: (h, scope) => {
+                    return [
+                        h('button', {
+                            // type: 'success',
+                            type: 'text',
+                            text: '查看',
+                            on: {
+                                click() {
+                                    alert(`查看第${scope.$index + 1}行`)
+                                }
+                            }
+                        }),
+                        h('link', {
+                            type: 'primary',
+                            text: '编辑',
+                            on: {
+                                click() {
+                                    alert(`编辑第${scope.$index + 1}行`)
+                                }
+                            }
+                        }),
+                        h('link', {
+                            type: 'danger',
+                            text: '删除',
+                            disabled: true,
+                            on: {
+                                click() {
+                                    alert(`删除第${scope.$index + 1}行`)
+                                }
+                            }
+                        }),
+                        h('dropdown', {
+                            text: '更多',
+                            trigger: 'click',
+                            list: [
+                                { name: `btn${scope.$index + 1}`, value: `btn${scope.$index + 1}` },
+                            ],
+                            on: {
+                                command: (val) => {
+                                    alert(`点击了第${scope.$index + 1}行-${val}`)
+                                }
+                            }
+                        })
+                    ]
+                }
+            }
+        })
+
+        let list = []
+
+        for (let i = 0, l = rowLen, row = {}; i < l; i++) {
+            row = {}
+            for(let j = 0, k = head.length; j < k; j++) {
+                row.index = i + 1
+                row[`col${j}`] = `row-${i + 1}-col${j + 1}`
+            }
+            list.push(row)
+        }
+
+        const data = list
+        this.columns.value = head;
+        this.tblData.value = list;
     }
 }
 </script>

@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
     mode: 'development',
     devServer: {
-        host: 'localhost',
+        host: '172.16.0.30',
         port: '3000',
         open: true,
         hot: true
@@ -17,12 +17,12 @@ module.exports = {
         }
     },
     entry: {
-        index: './src/demo.js'
+        index: process.env.mode === 'production' ? './src/CanvasLikeHtml.js' : './src/demo.js'
     },
     output: {
-        filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
-        clean: true
+        clean: true,
+        library: 'CanvasLikeHtml'
     },
     module: {
         rules: [

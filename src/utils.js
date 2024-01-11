@@ -17,12 +17,11 @@ export const getTextMetricsOfPrecision = (text, ctx) => {
     return { width, height }
 }
 
-export const getEllipsisText = (text, limitWidth, fontSize) => {
+export const getEllipsisText = (text, limitWidth, fontSize, ellipsis = '...') => {
     const { width: textWidth } = getTextMetrics(text, fontSize)
     if (textWidth <= limitWidth) {
         return text
     }
-    const ellipsis = '...'
     let strRtn = text
     let i = 0
     let width = 0

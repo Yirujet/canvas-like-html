@@ -113,6 +113,10 @@ export default function CanvasLikeHtml(props) {
                 target = {
                     value: data[propName]
                 }
+            } else if (Array.isArray(data[propName])) {
+                target = {
+                    value: data[propName]
+                }
             } else {
                 target = data[propName]
             }
