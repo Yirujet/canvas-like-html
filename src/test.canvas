@@ -1,5 +1,5 @@
 <canvas width="1000" height="500">
-    <!--<button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
+    <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
     <button x="250" y="10" type="success" @click="handleChangeRadioText">成功按钮</button>
     <button x="370" y="10" type="info">信息按钮</button>
@@ -57,8 +57,8 @@
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
     <span x="10" y="430" :text="test.a.0.b"></span>
-    <input x="10" y="460" value="test" @input="handleInput"></input>-->
-    <table :width="1000" :height="500" :data="tblData" :columns="columns"></table>
+    <input x="10" y="460" value="test" @input="handleInput"></input>
+    <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->
 </canvas>
 <script>
 import axios from 'axios'
@@ -84,7 +84,8 @@ import axios from 'axios'
     },
     methods: {
         handleClick() {
-            this.list1.push({ name: 'dropdown-item-3', value: 'dropdown-item-3' })
+            this.list1.value.push({ name: 'dropdown-item-3', value: 'dropdown-item-3' })
+            console.log(this)
         },
         async handleCommand(val) {
             const res = await axios.get('https://api.uomg.com/api/comments.163?format=json')
@@ -97,7 +98,7 @@ import axios from 'axios'
             console.log(`radio-group changed: ${val}`)
         },
         handleChangeRadioText() {
-            this.obj.innerObj.name = 'Oops,amazing'
+            this.obj.value.innerObj.name = 'Oops,amazing'
         },
         handleInput(val) {
             console.log(val)
@@ -106,11 +107,11 @@ import axios from 'axios'
     created() {
     },
     mounted() {
-        /*setTimeout(() => {
+        setTimeout(() => {
             this.text.value = 'happy yirujet'
-            this.test.a[0].b = 321
-        }, 2000)*/
-        const colLen = 100
+            this.test.value.a[0].b = 321
+        }, 2000)
+        /*const colLen = 100
         const rowLen = 1000
         const fixedColIndex = []
 
@@ -264,7 +265,7 @@ import axios from 'axios'
 
         const data = list
         this.columns.value = head;
-        this.tblData.value = list;
+        this.tblData.value = list;*/
     }
 }
 </script>

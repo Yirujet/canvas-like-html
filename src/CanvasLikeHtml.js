@@ -57,15 +57,23 @@ export default function CanvasLikeHtml(props) {
         }
     }
     this._c = render.bind(this)
-    const linkCompsWithData = () => {
+    const linkCompsWithData = (data) => {
         this.elements.forEach(comp => {
             if (comp.watchedProps && Array.isArray(comp.watchedProps)) {
                 comp.watchedProps.forEach(prop => {
                     const [[compProp, bindProp]] = Object.entries(prop)
-                    if (!propsLinkedWithComps[bindProp]) {
-                        propsLinkedWithComps[bindProp] = new Watcher()
+                    let bindDataProp = bindProp
+                    if (bindProp.includes('.')) {
+                        bindDataProp = bindProp.slice(0, bindProp.indexOf('.')) + '.value' + bindProp.slice(bindProp.indexOf('.'))
+                    } else {
+                        if (typeof data[bindProp] === 'object') {
+                            bindDataProp = bindProp + '.value'
+                        }
                     }
-                    propsLinkedWithComps[bindProp].add({
+                    if (!propsLinkedWithComps[bindDataProp]) {
+                        propsLinkedWithComps[bindDataProp] = new Watcher()
+                    }
+                    propsLinkedWithComps[bindDataProp].add({
                         comp,
                         prop: compProp,
                     })
@@ -107,20 +115,9 @@ export default function CanvasLikeHtml(props) {
     }
     const handleWatcher = (data) => {
         for (let propName in data) {
-            let target
-            if (['string', 'number', 'boolean'].includes(typeof data[propName])) {
-                primitiveProps[propName] = true
-                target = {
-                    value: data[propName]
-                }
-            } else if (Array.isArray(data[propName])) {
-                target = {
-                    value: data[propName]
-                }
-            } else {
-                target = data[propName]
-            }
-            this[propName] = reactive(target, propName, (function(target, prop, value, receiver, propInfo) {
+            this[propName] = reactive({
+                value: data[propName]
+            }, propName, (function(target, prop, value, receiver, propInfo) {
                 const { parentProp, bindingChain, parentType } = propInfo
                 if (propsLinkedWithComps[bindingChain]) {
                     const propWatcher = propsLinkedWithComps[bindingChain]
@@ -164,7 +161,7 @@ export default function CanvasLikeHtml(props) {
             }
             if (renderObj.comps) {
                 this.elements = renderObj.comps
-                linkCompsWithData()
+                linkCompsWithData(renderObj.data)
                 if (renderObj.created) {
                     renderObj.created.call(this)
                 }
