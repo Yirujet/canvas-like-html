@@ -31,7 +31,9 @@ const colorObj = {
 }
 
 const INPUT_TEXT_MARGIN = 15
+const INPUT_CLEAR_ICON_WIDTH = 14
 Input.INPUT_TEXT_MARGIN = INPUT_TEXT_MARGIN
+Input.INPUT_CLEAR_ICON_WIDTH = INPUT_CLEAR_ICON_WIDTH
 
 Input.elName = 'input'
 
@@ -46,6 +48,8 @@ export default function Input(props) {
     this.clickDown = false
     this.inputDiv = null
     this.focused = false
+    this.clearable = false
+    this.hoverClearIcon = false
     const propsObj = props
     if (props) {
         for (let name in props) {
@@ -61,7 +65,11 @@ export default function Input(props) {
             leftTop: { x: this.x, y: this.y },
             rightTop: { x: this.x + this.width, y: this.y },
             leftBottom: { x: this.x, y: this.y + this.height },
-            rightBottom: { x: this.x + this.width, y: this.y + this.height }
+            rightBottom: { x: this.x + this.width, y: this.y + this.height },
+            clearIcon: {
+                x: this.x + this.width - Input.INPUT_TEXT_MARGIN - Input.INPUT_CLEAR_ICON_WIDTH,
+                y: this.y + this.height / 2 - Input.INPUT_CLEAR_ICON_WIDTH / 2
+            }
         }
     }
     const initEvents = () => {
@@ -72,9 +80,13 @@ export default function Input(props) {
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
-                if (this.mouseEntered) return
                 if (offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y) {
                     this.mouseEntered = true
+                    if (offsetX >= this.area.clearIcon.x && offsetX <= this.area.clearIcon.x + Input.INPUT_CLEAR_ICON_WIDTH && offsetY >= this.area.clearIcon.y && offsetY <= this.area.clearIcon.y + Input.INPUT_CLEAR_ICON_WIDTH) {
+                        this.hoverClearIcon = true
+                    } else {
+                        this.hoverClearIcon = false
+                    }
                     e.target.style.cursor = this.disabled ? 'not-allowed' : 'pointer'
                     this.render()
                 }
@@ -84,6 +96,7 @@ export default function Input(props) {
                 if (!this.mouseEntered || this.focused) return
                 if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
                     this.mouseEntered = false
+                    this.hoverClearIcon = false
                     e.target.style.cursor = 'default'
                     this.render()
                 }
@@ -127,6 +140,26 @@ export default function Input(props) {
         this.ctx.strokeStyle = colorObj[type].border
         this.ctx.roundRect(this.x, this.y, this.width, this.height, [4])
         this.ctx.stroke()
+        this.ctx.restore()
+        if (this.clearable && this.mouseEntered) {
+            this.ctx.save()
+            this.ctx.lineWidth = 1
+            this.ctx.strokeStyle = this.hoverClearIcon ? colorObj.clickdown.border : colorObj.hover.border
+            this.ctx.beginPath()
+            this.ctx.arc(this.area.clearIcon.x + Input.INPUT_CLEAR_ICON_WIDTH / 2, this.area.clearIcon.y + Input.INPUT_CLEAR_ICON_WIDTH / 2, Input.INPUT_CLEAR_ICON_WIDTH / 2, 0, Math.PI * 2)
+            this.ctx.stroke()
+            this.ctx.translate(this.area.clearIcon.x + Input.INPUT_CLEAR_ICON_WIDTH / 2, this.area.clearIcon.y + Input.INPUT_CLEAR_ICON_WIDTH / 2)
+            this.ctx.rotate(Math.PI / 4)
+            this.ctx.beginPath()
+            this.ctx.moveTo(-Input.INPUT_CLEAR_ICON_WIDTH / 2 + 3, 0)
+            this.ctx.lineTo(Input.INPUT_CLEAR_ICON_WIDTH / 2 - 3, 0)
+            this.ctx.stroke()
+            this.ctx.beginPath()
+            this.ctx.moveTo(0, -Input.INPUT_CLEAR_ICON_WIDTH / 2 + 3)
+            this.ctx.lineTo(0, Input.INPUT_CLEAR_ICON_WIDTH / 2 - 3)
+            this.ctx.stroke()
+            this.ctx.restore()
+        }
         const drawInputDiv = () => {
             if (this.clickDown) {
                 const { x, y } = this.root.target.getBoundingClientRect()
@@ -193,7 +226,6 @@ export default function Input(props) {
             }
         }
         drawInputDiv()
-        this.ctx.restore()
     }
     initEvents()
 }

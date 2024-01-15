@@ -154,7 +154,7 @@ var inline = makeMap("abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code
 var closeSelf = makeMap("colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,img,rect");
 
 // Attributes that have their values filled in disabled="disabled"
-var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected,plain,round");
+var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected,plain,round,clearable");
 
 // Special Elements (can contain anything)
 var special = makeMap("style,script");

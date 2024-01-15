@@ -57,7 +57,7 @@
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
     <span x="10" y="430" :text="test.a.0.b"></span>
-    <input x="10" y="460" value="test" @input="handleInput"></input>
+    <input x="10" y="460" value="test" clearable @input="handleInput"></input>
     <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->
 </canvas>
 <script>
