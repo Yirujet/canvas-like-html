@@ -10,6 +10,7 @@ import Link from './Elements/Link.js'
 import Span from './Elements/Span.js'
 import Table from './Elements/Table.js'
 import Input from './Elements/Input.js'
+import Switch from './Elements/Switch.js'
 import Watcher from './Watcher.js'
 
 CanvasLikeHtml.elements = new Map()
@@ -32,6 +33,7 @@ CanvasLikeHtml.element(toLowerCase(Link.elName), Link)
 CanvasLikeHtml.element(toLowerCase(Span.elName), Span)
 CanvasLikeHtml.element(toLowerCase(Table.elName), Table)
 CanvasLikeHtml.element(toLowerCase(Input.elName), Input)
+CanvasLikeHtml.element(toLowerCase(Switch.elName), Switch)
 
 export default function CanvasLikeHtml(props) {
     this.target = null

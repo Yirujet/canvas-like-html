@@ -1,4 +1,5 @@
 <canvas width="1000" height="500">
+    <!--
     <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
     <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
     <button x="250" y="10" type="success" @click="handleChangeRadioText">成功按钮</button>
@@ -56,8 +57,9 @@
     <link x="410" y="370" type="danger">危险链接</link>
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
-    <span x="10" y="430" :text="test.a.0.b"></span>
-    <input x="10" y="460" value="test" clearable @input="handleInput"></input>
+    <span x="10" y="430" :text="test.a.0.b"></span>-->
+    <input x="10" y="460" value="test" clearable disabled @input="handleInput"></input>
+    <switch x="10" y="520" inactiveText="按年付费" activeText="按月付费"></switch>
     <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->
 </canvas>
 <script>
@@ -107,11 +109,11 @@ import axios from 'axios'
     created() {
     },
     mounted() {
-        setTimeout(() => {
+        /*setTimeout(() => {
             this.text.value = 'happy yirujet'
             this.test.value.a[0].b = 321
         }, 2000)
-        /*const colLen = 100
+        const colLen = 100
         const rowLen = 1000
         const fixedColIndex = []
 
