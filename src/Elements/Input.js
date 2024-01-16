@@ -104,6 +104,14 @@ export default function Input(props) {
             mousedown: () => {
                 if (!this.mouseEntered || this.disabled) return
                 this.clickDown = true
+                if (this.hoverClearIcon) {
+                    this.value = ''
+                    this.triggerEvent('input', this.value)
+                    this.triggerEvent('clear')
+                    if (this.inputDiv) {
+                        this.inputDiv.innerText = ''
+                    }
+                }
                 this.render()
             },
             clickoutside: e => {
@@ -132,6 +140,7 @@ export default function Input(props) {
         this.ctx.clearRect(this.x, this.y, this.width + 1, this.height + 1)
         this.ctx.lineWidth = 1
         this.ctx.textBaseline = 'middle'
+        this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
         if (type !== 'clickdown') {
             this.ctx.fillStyle = this.value ? colorObj[type].font : colorObj[type].placeholder
             const text = getEllipsisText(this.value || this.placeholder, this.width - 2 * Input.INPUT_TEXT_MARGIN, this.globalProps.fontSize, '')
@@ -141,7 +150,7 @@ export default function Input(props) {
         this.ctx.roundRect(this.x, this.y, this.width, this.height, [4])
         this.ctx.stroke()
         this.ctx.restore()
-        if (this.clearable && this.mouseEntered) {
+        const drawClearIcon = () => {
             this.ctx.save()
             this.ctx.lineWidth = 1
             this.ctx.strokeStyle = this.hoverClearIcon ? colorObj.clickdown.border : colorObj.hover.border
@@ -159,6 +168,9 @@ export default function Input(props) {
             this.ctx.lineTo(0, Input.INPUT_CLEAR_ICON_WIDTH / 2 - 3)
             this.ctx.stroke()
             this.ctx.restore()
+        }
+        if (this.clearable && this.mouseEntered && !this.disabled) {
+            drawClearIcon()
         }
         const drawInputDiv = () => {
             if (this.clickDown) {
@@ -206,13 +218,14 @@ export default function Input(props) {
                         this.triggerEvent('input', this.value)
                     })
                     document.body.append(this.inputDiv)
+                    const { height: wordHeight } = getTextMetricsOfPrecision('1', this.ctx)
+                    this.inputDiv.innerText = this.value
+                    this.inputDiv.style.width = `${ this.width - 2 * Input.INPUT_TEXT_MARGIN - (this.clearable && !this.disabled ? Input.INPUT_CLEAR_ICON_WIDTH + 2 * inputPadding + 2 : 0) }px`
+                    this.inputDiv.style.height = `${ wordHeight }px`
+                    this.inputDiv.style.lineHeight = `${ wordHeight }px`
+                    this.inputDiv.style.left = `${ this.x + x + Input.INPUT_TEXT_MARGIN }px`
+                    this.inputDiv.style.top = `${ this.y + (this.height - wordHeight) / 2 + y - inputPadding }px`
                 }
-                const { height: wordHeight } = getTextMetricsOfPrecision('1', this.ctx)
-                this.inputDiv.innerText = this.value
-                this.inputDiv.style.width = `${ this.width - 2 * Input.INPUT_TEXT_MARGIN }px`
-                this.inputDiv.style.height = `${ wordHeight }px`
-                this.inputDiv.style.left = `${ this.x + x + Input.INPUT_TEXT_MARGIN }px`
-                this.inputDiv.style.top = `${ this.y + (this.height - wordHeight) / 2 + y - inputPadding }px`
                 if (!this.focused) {
                     setTimeout(() => {
                         this.inputDiv.focus()
@@ -222,6 +235,7 @@ export default function Input(props) {
             } else {
                 if (document.body.contains(this.inputDiv)) {
                     document.body.removeChild(this.inputDiv)
+                    this.inputDiv = null
                 }
             }
         }
