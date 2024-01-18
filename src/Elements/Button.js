@@ -325,14 +325,7 @@ export default function Button(props) {
     this.round = false
     this.disabled = false
     this.clickDown = false
-    const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     this.ctx.save
@@ -355,7 +348,6 @@ export default function Button(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
@@ -481,10 +473,7 @@ export default function Button(props) {
         this.ctx.restore()
     }
     this.render = function(config) {
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-        }
+        this.initProps(config)
         initDefaultAttrs()
         if (this.ctx) {
             this.ctx.save()

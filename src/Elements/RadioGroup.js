@@ -12,13 +12,7 @@ export default function RadioGroup(props) {
     this.value = []
     this.children = []
     const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
 
@@ -39,17 +33,13 @@ export default function RadioGroup(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
     }
     this.render = function(config) {
         if (this.$$render_children) {
             this.children = this.$$render_children.call(this, this.root._c)
         }
         initDefaultAttrs()
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-        }
+        this.initProps(config)
         const draw = () => {
             this.ctx.clearRect(this.x, this.y, this.width, this.height)
             this.children.forEach((radio, i, ary) => {

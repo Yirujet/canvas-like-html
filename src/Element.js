@@ -15,4 +15,14 @@ export default function Element() {
     this.root = null
     this.watchedProps = []
     this.$$render_children = null
+    this.initProps = props => {
+        if (props) {
+            for (let name in props) {
+                if (name in this) {
+                    this[name] = props[name]
+                }
+            }
+            this.registerListenerFromOnProp(props?.on)
+        }
+    }
 }

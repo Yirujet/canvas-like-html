@@ -21,7 +21,6 @@ export default function Dropdown(props) {
     this.trigger = 'hover'
     this.dropdownOverlay = null
     this.list = []
-    const propsObj = props 
     this.overlayMouseEntered = false
     let closeDropdownTimer = null
     let openDropdownTimer = null
@@ -29,13 +28,7 @@ export default function Dropdown(props) {
     this.labelName = 'name'
     this.valueName = 'value'
     this.hideOnClick = true
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     this.ctx.save()
@@ -64,7 +57,6 @@ export default function Dropdown(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
@@ -215,10 +207,7 @@ export default function Dropdown(props) {
         closeDropdownTimer = null
     }
     this.render = function(config) {
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-        }
+        this.initProps(config)
         initDefaultAttrs()
         this.ctx.clearRect(this.x, this.y, this.width, this.height)
         this.ctx.beginPath()

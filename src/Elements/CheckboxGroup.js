@@ -12,13 +12,7 @@ export default function CheckboxGroup(props) {
     this.value = []
     this.children = []
     const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
 
@@ -39,7 +33,6 @@ export default function CheckboxGroup(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
     }
     this.render = function(config) {
         if (this.$$render_children) {
@@ -47,10 +40,7 @@ export default function CheckboxGroup(props) {
         }
         initDefaultAttrs()
         this.ctx.clearRect(this.x, this.y, this.width, this.height)
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-        }
+        this.initProps(config)
         this.children.forEach((checkbox, i, ary) => {
             let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width + CheckboxGroup.CHECKBOX_GROUP_ITEM_MARGIN, this.x)
             checkbox.render({ 

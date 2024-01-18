@@ -87,14 +87,7 @@ export default function Link(props) {
     this.fontSize = null
     this.disabled = false
     this.href = ''
-    const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     const { width: wordWidth, height: wordHeight } = getTextMetrics(this.text, this.fontSize)
@@ -112,7 +105,6 @@ export default function Link(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
@@ -142,10 +134,7 @@ export default function Link(props) {
         this.registerListenerFromOnProp(defaultEventListeners)
     }
     this.render = function(config) {
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-        }
+        this.initProps(config)
         this.ctx.clearRect(this.x, this.y, this.width + Link.LINK_UNDERLINE_MARGIN, this.height + Link.LINK_UNDERLINE_MARGIN)
         const { width: wordWidth, height: wordHeight } = getTextMetrics(this.text, this.fontSize)
         this.width = wordWidth

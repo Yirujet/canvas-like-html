@@ -40,13 +40,7 @@ export default function Table(props) {
     this.selection = []
     this.checkAll = false
     const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     const initProps = () => {
@@ -75,7 +69,6 @@ export default function Table(props) {
         this.height = propsObj.height
     }
     const initEvents = () => {
-        this.registerListenerFromOnProp(this?.on)
     }
     const initCanvas = () => {
         this.ctx.font = `${ this.globalProps.fontSize }px ${ this.globalProps.fontFamily }`

@@ -63,14 +63,7 @@ export default function Checkbox(props) {
     this.disabled = false
     this.indeterminate = false
     this.value = ''
-    const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     this.ctx.save()
@@ -105,7 +98,6 @@ export default function Checkbox(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
@@ -143,13 +135,7 @@ export default function Checkbox(props) {
         this.registerListenerFromOnProp(defaultEventListeners)
     }
     this.render = function(config) {
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-            this.checked = config.checked || false
-            this.indeterminate = config.indeterminate || false
-            this.registerListenerFromOnProp(config?.on)
-        }
+        this.initProps(config)
         initDefaultAttrs()
         this.ctx.save()
         if (this.fontSize) {

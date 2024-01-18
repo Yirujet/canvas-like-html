@@ -32,14 +32,8 @@ export default function Switch(props) {
     this.inactiveHeight = 0
     this.activeWidth = 0
     this.activeHeight = 0
-    const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    let openAnimation = false
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
@@ -85,7 +79,6 @@ export default function Switch(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
@@ -114,16 +107,14 @@ export default function Switch(props) {
                     this.value = this.inactiveValue
                 }
                 this.triggerEvent('change', this.value)
+                openAnimation = true
                 this.render()
             }
         }
         this.registerListenerFromOnProp(defaultEventListeners)
     }
     this.render = function(config) {
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-        }
+        this.initProps(config)
         initDefaultAttrs()
         this.ctx.clearRect(this.x, this.y, this.inactiveWidth + Switch.SWITCH_TEXT_MARGIN * 2 + Switch.SWITCH_WIDTH + this.activeWidth, Switch.SWITCH_HEIGHT)
         this.ctx.save()
@@ -158,8 +149,11 @@ export default function Switch(props) {
                 this.area.active.leftTop.y + Switch.SWITCH_HEIGHT / 2
             )
         }
+        let x = null
+        const step = 2
         const drawSwitch = () => {
             this.ctx.beginPath()
+            this.ctx.clearRect(this.area.leftTop.x + this.inactiveWidth + Switch.SWITCH_TEXT_MARGIN, this.area.leftTop.y, Switch.SWITCH_WIDTH, Switch.SWITCH_HEIGHT)
             if (this.value === this.activeValue) {
                 this.ctx.fillStyle = this.activeColor
             } else {
@@ -169,10 +163,30 @@ export default function Switch(props) {
             this.ctx.fill()
             this.ctx.beginPath()
             this.ctx.fillStyle = '#fff'
-            if (this.value === this.activeValue) {
-                this.ctx.arc(this.area.active.circle.x, this.area.active.circle.y, Switch.SWITCH_CIRCLE_R, 0, Math.PI * 2)
+            if (x === null) {
+                x = this.value === this.activeValue ? this.area.inactive.circle.x : this.area.active.circle.x
             } else {
-                this.ctx.arc(this.area.inactive.circle.x, this.area.inactive.circle.y, Switch.SWITCH_CIRCLE_R, 0, Math.PI * 2)
+                if (this.value === this.activeValue) {
+                    if (x >= this.area.active.circle.x) {
+                        openAnimation = false
+                    }
+                } else {
+                    if (x <= this.area.inactive.circle.x) {
+                        openAnimation = false
+                    }
+                }
+            }
+            if (openAnimation) {
+                this.ctx.arc(x, this.area.active.circle.y, Switch.SWITCH_CIRCLE_R, 0, Math.PI * 2)
+                x = x + step * (this.value === this.activeValue ? 1 : -1)
+                requestAnimationFrame(drawSwitch)
+            } else {
+                x = null
+                if (this.value === this.activeValue) {
+                    this.ctx.arc(this.area.active.circle.x, this.area.active.circle.y, Switch.SWITCH_CIRCLE_R, 0, Math.PI * 2)
+                } else {
+                    this.ctx.arc(this.area.inactive.circle.x, this.area.inactive.circle.y, Switch.SWITCH_CIRCLE_R, 0, Math.PI * 2)
+                }
             }
             this.ctx.fill()
         }
@@ -182,7 +196,7 @@ export default function Switch(props) {
         if (this.activeText) {
             drawActiveText()
         }
-        drawSwitch()
+        requestAnimationFrame(drawSwitch)
         this.ctx.restore()
     }
     initEvents()

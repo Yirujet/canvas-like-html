@@ -45,10 +45,7 @@
         <radio value="备选项3">备选项3</radio>
     </radio-group>
     <checkbox x="10" y="310">custom-checkbox</checkbox>
-    <checkbox-group x="10" y="340" @change="handleCheckboxGroupChange">
-        <checkbox value="value1">复选框1</checkbox>
-        <checkbox value="value2">复选框2</checkbox>
-    </checkbox-group>
+
     <link x="10" y="370" :underline="false" type="warning" href="https://www.baidu.com/" :text="text"></link>
     <link x="130" y="370">默认链接</link>
     <link x="200" y="370" type="primary">主要链接</link>
@@ -58,8 +55,22 @@
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
     <span x="10" y="430" :text="test.a.0.b"></span>-->
+    <checkbox-group x="10" y="340" @change="handleCheckboxGroupChange">
+        <checkbox value="value1">复选框1</checkbox>
+        <checkbox value="value2">复选框2</checkbox>
+    </checkbox-group>
     <input x="10" y="460" value="test" clearable disabled @input="handleInput"></input>
     <switch x="10" y="520" inactiveText="按年付费" activeText="按月付费"></switch>
+    <progress 
+        x="20" 
+        y="580"
+        type="dashboard"
+        :percentage="percentage" 
+        :textInside="false" 
+        :color="colors" 
+        :strokeWidth="strokeWidth"
+        strokeLinecap="round"
+    ></progress>
     <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->
 </canvas>
 <script>
@@ -82,7 +93,16 @@ import axios from 'axios'
             ]
         },
         tblData: [],
-        columns: []
+        columns: [],
+        colors: [
+          {color: '#f56c6c', percentage: 20},
+          {color: '#e6a23c', percentage: 40},
+          {color: '#5cb87a', percentage: 60},
+          {color: '#1989fa', percentage: 80},
+          {color: '#6f7ad3', percentage: 100}
+        ],
+        strokeWidth: 8,
+        percentage: 10
     },
     methods: {
         handleClick() {
@@ -268,6 +288,9 @@ import axios from 'axios'
         const data = list
         this.columns.value = head;
         this.tblData.value = list;*/
+        setInterval(() => {
+            this.percentage.value = Math.floor(100 * Math.random())
+        }, 2000)
     }
 }
 </script>

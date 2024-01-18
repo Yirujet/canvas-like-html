@@ -50,14 +50,7 @@ export default function Input(props) {
     this.focused = false
     this.clearable = false
     this.hoverClearIcon = false
-    const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     const initDefaultAttrs = () => {
@@ -76,7 +69,6 @@ export default function Input(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
@@ -127,10 +119,7 @@ export default function Input(props) {
         this.registerListenerFromOnProp(defaultEventListeners)
     }
     this.render = function(config) {
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-        }
+        this.initProps(config)
         initDefaultAttrs()
         this.ctx.save()
         const inputPadding = 2

@@ -54,14 +54,7 @@ export default function Radio(props) {
     this.fontSize = null
     this.checked = false
     this.disabled = false
-    const propsObj = props
-    if (props) {
-        for (let name in props) {
-            if (name in this) {
-                this[name] = props[name]
-            }
-        }
-    }
+    this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     this.ctx.save()
@@ -96,7 +89,6 @@ export default function Radio(props) {
         if (!this.eventObserver) {
             this.eventObserver = new EventObserver()
         }
-        this.registerListenerFromOnProp(propsObj?.on)
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
@@ -135,12 +127,7 @@ export default function Radio(props) {
         this.registerListenerFromOnProp(defaultEventListeners)
     }
     this.render = function(config) {
-        if (config) {
-            this.x = config.x || 0
-            this.y = config.y || 0
-            this.checked = config.checked || false
-            this.registerListenerFromOnProp(config?.on)
-        }
+        this.initProps(config)
         const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
         this.width = Radio.RADIO_BOX_WIDTH + (this.text ? wordWidth + Radio.RADIO_LABEL_MARGIN : 0)
         this.height = wordHeight

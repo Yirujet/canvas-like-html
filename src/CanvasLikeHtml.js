@@ -11,6 +11,8 @@ import Span from './Elements/Span.js'
 import Table from './Elements/Table.js'
 import Input from './Elements/Input.js'
 import Switch from './Elements/Switch.js'
+import Progress from './Elements/Progress.js'
+
 import Watcher from './Watcher.js'
 
 CanvasLikeHtml.elements = new Map()
@@ -34,6 +36,7 @@ CanvasLikeHtml.element(toLowerCase(Span.elName), Span)
 CanvasLikeHtml.element(toLowerCase(Table.elName), Table)
 CanvasLikeHtml.element(toLowerCase(Input.elName), Input)
 CanvasLikeHtml.element(toLowerCase(Switch.elName), Switch)
+CanvasLikeHtml.element(toLowerCase(Progress.elName), Progress)
 
 export default function CanvasLikeHtml(props) {
     this.target = null
@@ -124,19 +127,17 @@ export default function CanvasLikeHtml(props) {
                 if (propsLinkedWithComps[bindingChain]) {
                     const propWatcher = propsLinkedWithComps[bindingChain]
                     propWatcher.comps.forEach(({comp, prop}) => {
-                        comp[prop] = value
-                        comp.render()
+                        comp.render({ [prop]: value })
                     })
                 } else {
                     if (primitiveProps[parentProp] || propsLinkedWithComps[parentProp]) {
                         const propWatcher = propsLinkedWithComps[parentProp]
                         propWatcher.comps.forEach(({comp, prop}) => {
                             if (Array.isArray(target)) {
-                                comp[prop] = target
+                                comp.render({ [prop]: target })
                             } else {
-                                comp[prop] = value
+                                comp.render({ [prop]: value })
                             }
-                            comp.render()
                         })
                     }
                 }
