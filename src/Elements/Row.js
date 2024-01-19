@@ -23,7 +23,6 @@ export default function Row(props) {
         if (this.parentElement === this.root) {
             this.y = parseFloat(this.parentElement.y)
         } else {
-            console.log(this.parentElement.renderLines)
             const lineIndex = this.parentElement.renderLines.findIndex(l => l.some(c => c === this))
             this.y = this.parentElement.renderLines
             .slice(0, lineIndex)
@@ -45,6 +44,7 @@ export default function Row(props) {
             this.ctx.strokeStyle = 'red'
             this.ctx.lineWidth = 1
             this.ctx.translate(0.5, 0.5)
+            this.ctx.setLineDash([4, 2])
             this.ctx.strokeRect(this.x, this.y, this.width, this.height)
             this.ctx.restore()
         }

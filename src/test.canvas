@@ -73,7 +73,14 @@
             <link>bbb</link>
             <row>
                 <col span="6">
-                   <button type="primary" round>主要按钮</button>
+                    <button type="primary" round>主要按钮</button>
+                    <switch inactiveText="按年付费" activeText="按月付费"></switch>
+                </col>
+            </row>
+            <row>
+                <col span="12"></col>
+                <col span="8">
+                   <button type="primary" plain>按钮</button>
                 </col>
             </row>
         </col>
