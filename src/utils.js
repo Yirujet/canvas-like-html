@@ -50,6 +50,7 @@ export function render(compName, compProps) {
                 globalProps: this.globalProps,
                 ...(compProps || {}),
                 root: this,
+                parentElement: this,
                 ctx: this.ctx,
                 eventObserver: this.eventObserver
             })

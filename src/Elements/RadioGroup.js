@@ -11,7 +11,6 @@ export default function RadioGroup(props) {
     Element.call(this)
     this.value = []
     this.children = []
-    const propsObj = props
     this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)

@@ -11,7 +11,6 @@ export default function CheckboxGroup(props) {
     Element.call(this)
     this.value = []
     this.children = []
-    const propsObj = props
     this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
@@ -19,7 +18,7 @@ export default function CheckboxGroup(props) {
     const initDefaultAttrs = () => {
         if (this.children.length > 0) {
             this.width = this.children.reduce((p, c) => p + c.width, 0)
-            this.height = this.children[0].height
+            this.height = Math.max(...this.children.map(e => parseFloat(e.height)))
             this.width += (this.children.length - 1) * CheckboxGroup.CHECKBOX_GROUP_ITEM_MARGIN
         }
         this.area = {
@@ -45,7 +44,8 @@ export default function CheckboxGroup(props) {
             let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width + CheckboxGroup.CHECKBOX_GROUP_ITEM_MARGIN, this.x)
             checkbox.render({ 
                 x: preWidth, 
-                y: this.y, 
+                y: this.y,
+                parentElement: this,
                 on: {
                     change: e => {
                         const { value, checked } = e

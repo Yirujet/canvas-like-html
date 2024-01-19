@@ -75,6 +75,9 @@ export default function Checkbox(props) {
     this.width = Checkbox.CHECKBOX_BOX_WIDTH + (this.text ? wordWidth + Checkbox.CHECKBOX_LABEL_MARGIN : 0)
     this.height = wordHeight
     const initDefaultAttrs = () => {
+        const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
+        this.width = Checkbox.CHECKBOX_BOX_WIDTH + (this.text ? wordWidth + Checkbox.CHECKBOX_LABEL_MARGIN : 0)
+        this.height = wordHeight
         this.area = {
             leftTop: { x: this.x, y: this.y },
             rightTop: { x: this.x + this.width + Checkbox.CHECKBOX_LABEL_MARGIN, y: this.y },
@@ -138,6 +141,7 @@ export default function Checkbox(props) {
         this.initProps(config)
         initDefaultAttrs()
         this.ctx.save()
+        this.ctx.translate(0.5, 0.5)
         if (this.fontSize) {
             this.ctx.font = `400 ${this.fontSize}px Helvetica`
         }

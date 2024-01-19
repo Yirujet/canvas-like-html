@@ -15,6 +15,7 @@ export default function Element() {
     this.root = null
     this.watchedProps = []
     this.$$render_children = null
+    this.parentElement = null
     this.initProps = props => {
         if (props) {
             for (let name in props) {

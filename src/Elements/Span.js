@@ -11,7 +11,6 @@ export default function Span(props) {
     this.text = '文本'
     this.color = null
     this.fontSize = null
-    const propsObj = props
     this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
@@ -26,16 +25,19 @@ export default function Span(props) {
     this.render = function(config) {
         this.initProps(config)
         this.ctx.save()
+        this.ctx.translate(0.5, 0.5)
         this.ctx.textBaseline = 'middle'
         this.ctx.clearRect(this.x, this.y, this.width, this.height)
+        if (this.fontSize) {
+            this.ctx.font = `400 ${this.fontSize}px Helvetica`
+        } else {
+            this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
+        }
         const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
         this.width = wordWidth
         this.height = wordHeight
         if (this.color) {
             this.ctx.fillStyle = this.color
-        }
-        if (this.fontSize) {
-            this.ctx.font = `400 ${this.fontSize}px Helvetica`
         }
         this.ctx.beginPath()
         this.ctx.fillText(this.text, this.x, this.y + this.height / 2)

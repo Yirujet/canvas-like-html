@@ -197,8 +197,12 @@ module.exports = function(source) {
                         break
                     case 'checkbox-group':
                     case 'radio-group':
-                        if (node.children[elName].children) {
+                    case 'row':
+                    case 'col':
+                        if (node.children[elName].children && Reflect.ownKeys(node.children[elName].children).length > 0) {
                             elProps.$$render_children = collectCanvasElList(node.children[elName])
+                        } else {
+                            elProps.$$render_children = []
                         }
                         break
                     default:

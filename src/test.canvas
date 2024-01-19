@@ -54,23 +54,41 @@
     <link x="410" y="370" type="danger">危险链接</link>
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
-    <span x="10" y="430" :text="test.a.0.b"></span>-->
+    <span x="10" y="430" :text="test.a.0.b"></span>
+    <input x="10" y="460" value="test" clearable disabled @input="handleInput"></input>
+    <switch x="10" y="520" inactiveText="按年付费" activeText="按月付费"></switch>
     <checkbox-group x="10" y="340" @change="handleCheckboxGroupChange">
         <checkbox value="value1">复选框1</checkbox>
         <checkbox value="value2">复选框2</checkbox>
     </checkbox-group>
-    <input x="10" y="460" value="test" clearable disabled @input="handleInput"></input>
-    <switch x="10" y="520" inactiveText="按年付费" activeText="按月付费"></switch>
-    <progress 
-        x="20" 
-        y="580"
-        type="dashboard"
-        :percentage="percentage" 
-        :textInside="false" 
-        :color="colors" 
-        :strokeWidth="strokeWidth"
-        strokeLinecap="round"
-    ></progress>
+    -->
+    <row>
+        <col span="2">
+            <button>按钮1</button>
+            <button>按钮2</button>
+            <button>按钮3</button>
+        </col>
+        <col span="8">
+            <span>aaa</span>
+            <link>bbb</link>
+            <row>
+                <col span="6">
+                   <button type="primary" round>主要按钮</button>
+                </col>
+            </row>
+        </col>
+        <col span="8">
+            <progress
+                type="circle"
+                :percentage="percentage" 
+                :textInside="false" 
+                :color="colors" 
+                :width="80"
+                :strokeWidth="strokeWidth"
+                strokeLinecap="butt"
+            ></progress>
+        </col>
+    </row>
     <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->
 </canvas>
 <script>
@@ -101,8 +119,8 @@ import axios from 'axios'
           {color: '#1989fa', percentage: 80},
           {color: '#6f7ad3', percentage: 100}
         ],
-        strokeWidth: 8,
-        percentage: 10
+        strokeWidth: 12,
+        percentage: 66
     },
     methods: {
         handleClick() {

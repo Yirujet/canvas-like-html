@@ -1,4 +1,4 @@
-import { getTextMetrics } from '../utils.js'
+import { getTextMetricsOfPrecision } from '../utils.js'
 import inheritProto from '../inherite.js'
 import Element from '../Element.js'
 import EventObserver from '../EventObserver.js'
@@ -90,7 +90,7 @@ export default function Link(props) {
     this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
-    const { width: wordWidth, height: wordHeight } = getTextMetrics(this.text, this.fontSize)
+    const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
     this.width = wordWidth
     this.height = wordHeight
     const initDefaultAttrs = () => {
@@ -135,18 +135,21 @@ export default function Link(props) {
     }
     this.render = function(config) {
         this.initProps(config)
+        this.ctx.save()
+        this.ctx.translate(0.5, 0.5)
         this.ctx.clearRect(this.x, this.y, this.width + Link.LINK_UNDERLINE_MARGIN, this.height + Link.LINK_UNDERLINE_MARGIN)
-        const { width: wordWidth, height: wordHeight } = getTextMetrics(this.text, this.fontSize)
+        if (this.fontSize) {
+            this.ctx.font = `400 ${this.fontSize}px Helvetica`
+        } else {
+            this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
+        }
+        const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
         this.width = wordWidth
         this.height = wordHeight
         initDefaultAttrs()
-        this.ctx.save()
         const type = this.disabled ? 'disabled' : this.mouseEntered ? 'hover' : 'default'
         this.ctx.beginPath()
         this.ctx.textBaseline = 'middle'
-        if (this.fontSize) {
-            this.ctx.font = `400 ${this.fontSize}px Helvetica`
-        }
         this.ctx.fillStyle = colorObj[this.type][type].font
         this.ctx.fillText(this.text, this.x, this.y + this.height / 2)
         if (this.underline && this.mouseEntered && !this.disabled) {

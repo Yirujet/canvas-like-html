@@ -12,6 +12,8 @@ import Table from './Elements/Table.js'
 import Input from './Elements/Input.js'
 import Switch from './Elements/Switch.js'
 import Progress from './Elements/Progress.js'
+import Row from './Elements/Row.js'
+import Col from './Elements/Col.js'
 
 import Watcher from './Watcher.js'
 
@@ -37,17 +39,22 @@ CanvasLikeHtml.element(toLowerCase(Table.elName), Table)
 CanvasLikeHtml.element(toLowerCase(Input.elName), Input)
 CanvasLikeHtml.element(toLowerCase(Switch.elName), Switch)
 CanvasLikeHtml.element(toLowerCase(Progress.elName), Progress)
+CanvasLikeHtml.element(toLowerCase(Row.elName), Row)
+CanvasLikeHtml.element(toLowerCase(Col.elName), Col)
 
 export default function CanvasLikeHtml(props) {
     this.target = null
     this.ctx = null
+    this.x = 0
+    this.y = 0
     this.width = null
     this.height = null
     this.globalProps = {
         padding: 12,
         fontSize: 14,
         fontFamily: 'Helvetica',
-        lineHeight: 12
+        lineHeight: 12,
+        mode: 'development',
     }
     this.elements = []
     this.eventObserver = new EventObserver()
@@ -63,28 +70,36 @@ export default function CanvasLikeHtml(props) {
     }
     this._c = render.bind(this)
     const linkCompsWithData = (data) => {
-        this.elements.forEach(comp => {
-            if (comp.watchedProps && Array.isArray(comp.watchedProps)) {
-                comp.watchedProps.forEach(prop => {
-                    const [[compProp, bindProp]] = Object.entries(prop)
-                    let bindDataProp = bindProp
-                    if (bindProp.includes('.')) {
-                        bindDataProp = bindProp.slice(0, bindProp.indexOf('.')) + '.value' + bindProp.slice(bindProp.indexOf('.'))
-                    } else {
-                        if (typeof data[bindProp] === 'object') {
-                            bindDataProp = bindProp + '.value'
+        const deepQuery = list => {
+            list.forEach(comp => {
+                if (comp.watchedProps && Array.isArray(comp.watchedProps)) {
+                    comp.watchedProps.forEach(prop => {
+                        const [[compProp, bindProp]] = Object.entries(prop)
+                        let bindDataProp = bindProp
+                        if (bindProp.includes('.')) {
+                            bindDataProp = bindProp.slice(0, bindProp.indexOf('.')) + '.value' + bindProp.slice(bindProp.indexOf('.'))
+                        } else {
+                            if (typeof data[bindProp] === 'object') {
+                                bindDataProp = bindProp + '.value'
+                            }
                         }
-                    }
-                    if (!propsLinkedWithComps[bindDataProp]) {
-                        propsLinkedWithComps[bindDataProp] = new Watcher()
-                    }
-                    propsLinkedWithComps[bindDataProp].add({
-                        comp,
-                        prop: compProp,
+                        if (!propsLinkedWithComps[bindDataProp]) {
+                            propsLinkedWithComps[bindDataProp] = new Watcher()
+                        }
+                        propsLinkedWithComps[bindDataProp].add({
+                            comp,
+                            prop: compProp,
+                        })
                     })
-                })
-            }
-        })
+                }
+                if (['row', 'col'].includes(comp.constructor.elName)) {
+                    if (comp.children && Array.isArray(comp.children)) {
+                        deepQuery(comp.children)
+                    }
+                }
+            })
+        }
+        deepQuery(this.elements)
     }
 
     const proxyObj = new WeakMap()
@@ -164,7 +179,6 @@ export default function CanvasLikeHtml(props) {
             }
             if (renderObj.comps) {
                 this.elements = renderObj.comps
-                linkCompsWithData(renderObj.data)
                 if (renderObj.created) {
                     renderObj.created.call(this)
                 }
@@ -173,6 +187,7 @@ export default function CanvasLikeHtml(props) {
                 } else {
                     this.elements.render()
                 }
+                linkCompsWithData(renderObj.data)
             }
             if (renderObj.mounted) {
                 renderObj.mounted.call(this)
