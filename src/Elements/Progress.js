@@ -34,8 +34,12 @@ export default function Progress(props) {
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
     if (this.type === 'line') {
-        this.width = this.width + this.strokeWidth
-        this.height = this.strokeWidth
+        this.ctx.save()
+        this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
+        const { height: textHeight } = getTextMetricsOfPrecision('100%', this.ctx)
+        this.ctx.restore()
+        this.width = parseFloat(this.width) + parseFloat(this.strokeWidth)
+        this.height = Math.max(this.strokeWidth, textHeight)
     } else {
         this.height = this.width
     }
@@ -105,9 +109,9 @@ export default function Progress(props) {
         this.ctx.translate(0.5, 0.5)
         const ellipsisWidth = Math.ceil(this.strokeWidth / 2)
         if (this.showText && this.textInside) {
-            this.ctx.clearRect(this.x + ellipsisWidth, this.y - ellipsisWidth, this.width, this.height)
+            this.ctx.clearRect(this.x + ellipsisWidth, this.y, this.width + 2 * ellipsisWidth, this.height)
         } else {
-            this.ctx.clearRect(this.x + ellipsisWidth, this.y - ellipsisWidth, this.width + this.textWidth + Progress.PROGRESS_TEXT_MARGIN + ellipsisWidth * 2, this.height + ellipsisWidth)
+            this.ctx.clearRect(this.x + ellipsisWidth, this.y, this.width + this.textWidth + Progress.PROGRESS_TEXT_MARGIN + 2 * ellipsisWidth, this.height)
         }
         initDefaultAttrs()
         if (this.percentageOld !== this.percentage) {
@@ -116,11 +120,12 @@ export default function Progress(props) {
         let d = null
         const step = 5
         const drawShape = () => {
+            this.ctx.save()
             this.ctx.beginPath()
             if (this.showText && this.textInside) {
-                this.ctx.clearRect(this.x + ellipsisWidth, this.y - ellipsisWidth, this.width, this.height)
+                this.ctx.clearRect(this.x + ellipsisWidth, this.y, this.width + 2 * ellipsisWidth, this.height)
             } else {
-                this.ctx.clearRect(this.x + ellipsisWidth, this.y - ellipsisWidth, this.width + this.textWidth + Progress.PROGRESS_TEXT_MARGIN + ellipsisWidth * 2, this.height + ellipsisWidth)
+                this.ctx.clearRect(this.x + ellipsisWidth, this.y, this.width + this.textWidth + Progress.PROGRESS_TEXT_MARGIN + 2 * ellipsisWidth, this.height)
             }
             initDefaultAttrs()
             this.ctx.lineWidth = this.strokeWidth
@@ -160,7 +165,7 @@ export default function Progress(props) {
                         this.ctx.fillText(`${this.percentage}%`, this.x + ((this.percentageOld + d) / 100) * this.width - this.textWidth - Progress.PROGRESS_TEXT_MARGIN * 2, this.y + ellipsisWidth)
                     } else {
                         this.ctx.fillStyle = '#606266'
-                        this.ctx.fillText(`${this.percentage}%`, this.x + this.width + Progress.PROGRESS_TEXT_MARGIN + ellipsisWidth * 2, this.y + ellipsisWidth)
+                        this.ctx.fillText(`${this.percentage}%`, this.x + this.width + Progress.PROGRESS_TEXT_MARGIN + ellipsisWidth * 2, this.y + this.height / 2)
                     }
                 }
                 requestAnimationFrame(drawShape)
@@ -177,12 +182,13 @@ export default function Progress(props) {
                         this.ctx.fillText(`${this.percentage}%`, this.x + (this.percentage / 100) * this.width - this.textWidth - Progress.PROGRESS_TEXT_MARGIN * 2, this.y + ellipsisWidth)
                     } else {
                         this.ctx.fillStyle = '#606266'
-                        this.ctx.fillText(`${this.percentage}%`, this.x + this.width + Progress.PROGRESS_TEXT_MARGIN + ellipsisWidth * 2, this.y + ellipsisWidth)
+                        this.ctx.fillText(`${this.percentage}%`, this.x + this.width + Progress.PROGRESS_TEXT_MARGIN + ellipsisWidth * 2, this.y + this.height / 2)
                     }
                 }
             }
+            this.ctx.restore()
         }
-        requestAnimationFrame(drawShape)
+        drawShape()
         this.ctx.restore()
     }
     const drawAngleProgress = (startAngleBg, endAngleBg, startAngleAnimation, endAngleAnimation) => {
@@ -196,6 +202,7 @@ export default function Progress(props) {
         let d = null
         const step = 5
         const drawShape = () => {
+            this.ctx.save()
             this.ctx.beginPath()
             this.ctx.clearRect(this.x + ellipsisWidth, this.y + ellipsisWidth, this.width - 2 * ellipsisWidth, this.height - 2 * ellipsisWidth)
             initDefaultAttrs()
@@ -268,10 +275,11 @@ export default function Progress(props) {
                     this.ctx.fillText(`${this.percentage}%`, this.x + this.width / 2 - textWidth / 2, this.y + this.width / 2)
                 }
             }
+            this.ctx.restore()
         }
-        requestAnimationFrame(drawShape)
-        initDefaultAttrs()
+        drawShape()
         this.ctx.restore()
+        initDefaultAttrs()
     }
     const drawCircleProgress = () => {
         drawAngleProgress(0, Math.PI * 2, -Math.PI / 2, Math.PI * 2)

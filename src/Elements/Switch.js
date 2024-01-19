@@ -49,7 +49,7 @@ export default function Switch(props) {
             this.activeHeight = height
         }
         this.width = this.inactiveWidth + this.activeWidth + Switch.SWITCH_WIDTH + Switch.SWITCH_TEXT_MARGIN * 2
-        this.height = this.inactiveHeight
+        this.height = Switch.SWITCH_HEIGHT
         this.area = {
             leftTop: { x: this.x, y: this.y },
             rightTop: { x: this.x + this.inactiveWidth + this.activeWidth + Switch.SWITCH_WIDTH + Switch.SWITCH_TEXT_MARGIN * 2, y: this.y },

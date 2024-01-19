@@ -62,7 +62,7 @@
         <checkbox value="value2">复选框2</checkbox>
     </checkbox-group>
     -->
-    <row>
+    <row align="bottom">
         <col span="2">
             <button>按钮1</button>
             <button>按钮2</button>
@@ -73,7 +73,7 @@
             <link>bbb</link>
             <row>
                 <col span="6">
-                    <button type="primary" round>主要按钮</button>
+                    <button type="primary" round @click="handleClick">主要按钮</button>
                     <switch inactiveText="按年付费" activeText="按月付费"></switch>
                 </col>
             </row>
@@ -81,6 +81,19 @@
                 <col span="12"></col>
                 <col span="8">
                    <button type="primary" plain>按钮</button>
+                </col>
+            </row>
+            <row>
+                <col span="14"></col>
+                <col span="10">
+                    <progress
+                        :percentage="percentage" 
+                        :textInside="true" 
+                        status="exception"
+                        :width="100"
+                        strokeWidth="50"
+                        strokeLinecap="round"
+                    ></progress>
                 </col>
             </row>
         </col>
@@ -131,7 +144,7 @@ import axios from 'axios'
     },
     methods: {
         handleClick() {
-            this.list1.value.push({ name: 'dropdown-item-3', value: 'dropdown-item-3' })
+            //this.list1.value.push({ name: 'dropdown-item-3', value: 'dropdown-item-3' })
             console.log(this)
         },
         async handleCommand(val) {

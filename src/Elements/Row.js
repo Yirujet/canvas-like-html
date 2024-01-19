@@ -10,12 +10,12 @@ export default function Row(props) {
     this.gutter = 0
     this.justify = 'start' // start/end/center/space-around/space-between
     this.type = 'flex'
-    this.children = []
+    this.children = null
     const maxColSpan = 24
     this.initProps(props)
     this.render = function(config) {
         this.initProps(config)
-        if (this.$$render_children) {
+        if (this.children === null && this.$$render_children) {
             this.children = this.$$render_children.call(this, this.root._c)
         }
         this.x = parseFloat(this.parentElement.x)
@@ -39,6 +39,43 @@ export default function Row(props) {
             })
         })
         this.height = Math.max(...this.children.map(e => parseFloat(e.height)))
+        switch (this.align) {
+            case 'middle':
+                this.children.forEach((col, i, ary) => {
+                    let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width, this.x)
+                    this.ctx.clearRect(col.x, col.y, col.width, col.height)
+                    col.render({
+                        x: preWidth, 
+                        y: this.y + (this.height - col.height) / 2,
+                        parentElement: this,
+                        width: col.span / maxColSpan * this.width
+                    })
+                })
+                break
+            case 'bottom':
+                this.children.forEach((col, i, ary) => {
+                    let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width, this.x)
+                    this.ctx.clearRect(col.x, col.y, col.width, col.height)
+                    col.render({
+                        x: preWidth, 
+                        y: this.y + this.height - col.height,
+                        parentElement: this,
+                        width: col.span / maxColSpan * this.width
+                    })
+                })
+                break
+            default:
+                this.children.forEach((col, i, ary) => {
+                    let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width, this.x)
+                    col.render({
+                        x: preWidth, 
+                        y: this.y,
+                        parentElement: this,
+                        width: col.span / maxColSpan * this.width
+                    })
+                })
+                break
+        }
         if (this.globalProps.mode === 'development') {
             this.ctx.save()
             this.ctx.strokeStyle = 'red'
@@ -48,5 +85,6 @@ export default function Row(props) {
             this.ctx.strokeRect(this.x, this.y, this.width, this.height)
             this.ctx.restore()
         }
+        console.log(this.root)
     }
 }

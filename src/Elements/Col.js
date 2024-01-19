@@ -10,14 +10,16 @@ export default function Col(props) {
     this.push = 0
     this.pull = 0
     Element.call(this)
-    this.children = []
+    this.children = null
     this.renderLines = []
     this.initProps(props)
     this.render = function(config) {
         this.initProps(config)
-        if (this.$$render_children) {
+        if (this.children === null && this.$$render_children) {
             this.children = this.$$render_children.call(this, this.root._c)
         }
+        this.ctx.clearRect(this.x, this.y, this.width, this.height)
+        this.renderLines = []
         let newLine = []
         let x = this.x
         let y = this.y
@@ -59,7 +61,9 @@ export default function Col(props) {
             col.parentElement = this
         })
         this.renderLines.forEach(l => {
-            l.forEach(c => c.render())
+            l.forEach(c => {
+                c.render()
+            })
         })
         this.height = this.renderLines
             .filter(l => l.length > 0)
