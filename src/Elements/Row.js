@@ -65,10 +65,10 @@ export default function Row(props) {
             const offsetWidth = parseInt(colOffset || 0) / maxColSpan * rowW
             switch (justify) {
                 case 'end':
-                    x = rowX + preWidth + rowW - calcWidth + offsetWidth
+                    x = rowX + preWidth + rowW - calcWidth + offsetWidth - (cols.length - 1 - colI) * parseFloat(this.gutter)
                     break
                 case 'center':
-                    x = rowX + preWidth + (rowW - calcWidth) / 2 + offsetWidth
+                    x = rowX + preWidth + (rowW - calcWidth - (cols.length - 1) * parseFloat(this.gutter)) / 2 + offsetWidth + colI * parseFloat(this.gutter)
                     break
                 case 'space-between':
                     if (cols.length > 1) {
@@ -95,7 +95,7 @@ export default function Row(props) {
                     }
                     break
                 default:
-                    x = rowX + preWidth + offsetWidth
+                    x = rowX + preWidth + offsetWidth + colI * parseFloat(this.gutter)
                     break
             }
             return { x, y }
