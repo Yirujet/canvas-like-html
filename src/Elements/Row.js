@@ -8,7 +8,7 @@ export default function Row(props) {
     Element.call(this)
     this.align = 'top' //  top/middle/bottom
     this.gutter = 0
-    this.justify = 'start' // start/end/center/space-around/space-between
+    this.justify = 'start' // start/end/center/space-around/space-between/space-evenly
     this.type = 'flex'
     this.children = null
     const maxColSpan = 24
@@ -94,6 +94,14 @@ export default function Row(props) {
                     if (cols.length > 1) {
                         const margin = (rowW - calcWidth) / (cols.length * 2)
                         x = rowX + preWidth + offsetWidth + (2 * colI + 1) * margin
+                    } else {
+                        x = rowX + preWidth + (rowW - calcWidth) / 2 + offsetWidth
+                    }
+                    break
+                case 'space-evenly':
+                    if (cols.length > 1) {
+                        const margin = (rowW - calcWidth) / (cols.length + 1)
+                        x = rowX + preWidth + offsetWidth + (colI + 1) * margin
                     } else {
                         x = rowX + preWidth + (rowW - calcWidth) / 2 + offsetWidth
                     }

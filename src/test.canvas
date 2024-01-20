@@ -83,7 +83,7 @@
                    <button type="primary" plain>按钮</button>
                 </col>
             </row>
-            <row align="middle" justify="center" gutter="10">
+            <row align="middle" justify="space-evenly">
                 <col span="4"><span>span-14</span></col>
                 <col span="4"><span>span-14</span></col>
                 <col span="3"><span>span-14</span></col>
@@ -101,7 +101,7 @@
             </row>
         </col>
         <col span="8">
-            <row abc="test">
+            <row>
                 <col>
                     <progress
                         type="circle"
