@@ -48,6 +48,7 @@ export function render(compName, compProps) {
             comp = new compConstructor({
                 fontSize: this.globalProps.fontSize,
                 globalProps: this.globalProps,
+                $$props: compProps,
                 ...(compProps || {}),
                 root: this,
                 parentElement: this,

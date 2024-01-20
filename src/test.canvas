@@ -62,51 +62,63 @@
         <checkbox value="value2">复选框2</checkbox>
     </checkbox-group>
     -->
-    <row align="bottom">
+    <row align="middle" justify="start">
         <col span="2">
             <button>按钮1</button>
             <button>按钮2</button>
             <button>按钮3</button>
         </col>
-        <col span="8">
+        <col span="8" offset="2">
             <span>aaa</span>
             <link>bbb</link>
-            <row>
+            <row justify="center">
                 <col span="6">
                     <button type="primary" round @click="handleClick">主要按钮</button>
                     <switch inactiveText="按年付费" activeText="按月付费"></switch>
                 </col>
             </row>
-            <row>
+            <row justify="center">
                 <col span="12"></col>
                 <col span="8">
                    <button type="primary" plain>按钮</button>
                 </col>
             </row>
-            <row>
-                <col span="14"></col>
-                <col span="10">
+            <row align="bottom" justify="center">
+                <col span="4"><span>col-span-14</span></col>
+                <col span="10" offset="2">
                     <progress
+                        type="dashboard"
                         :percentage="percentage" 
                         :textInside="true" 
-                        status="exception"
-                        :width="100"
-                        strokeWidth="50"
+                        status="success"
+                        :width="200"
+                        strokeWidth="30"
                         strokeLinecap="round"
                     ></progress>
                 </col>
             </row>
         </col>
         <col span="8">
-            <progress
-                type="circle"
-                :percentage="percentage" 
-                :textInside="false" 
-                :color="colors" 
-                :width="80"
-                :strokeWidth="strokeWidth"
-                strokeLinecap="butt"
-            ></progress>
+            <row abc="test">
+                <col>
+                    <progress
+                        type="circle"
+                        :percentage="percentage" 
+                        :textInside="false" 
+                        :color="colors" 
+                        :width="80"
+                        :strokeWidth="strokeWidth"
+                        strokeLinecap="butt"
+                    ></progress>
+                    <progress
+                        :percentage="percentage" 
+                        :textInside="false" 
+                        :width="200"
+                        strokeWidth="20"
+                        strokeLinecap="square"
+                    ></progress>
+                </col>
+            </row>
         </col>
     </row>
     <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->

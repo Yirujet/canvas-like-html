@@ -18,12 +18,10 @@ export default function Col(props) {
         if (this.children === null && this.$$render_children) {
             this.children = this.$$render_children.call(this, this.root._c)
         }
-        this.ctx.clearRect(this.x, this.y, this.width, this.height)
         this.renderLines = []
         let newLine = []
         let x = this.x
         let y = this.y
-        let index = 0
         this.children.forEach((col, i, ary) => {
             const calcLineWidth = newLine.map(e => e.width).reduce((p, c) => p + c, 0)
             if (col.constructor.elName === 'row') {
@@ -33,7 +31,6 @@ export default function Col(props) {
                 this.renderLines.push(newLine)
                 newLine = [col]
                 x = this.x
-                index++
             } else {
                 x = newLine.reduce((p, c) => p + c.width, this.x)
                 newLine.push(col)
@@ -72,9 +69,9 @@ export default function Col(props) {
         if (this.globalProps.mode === 'development') {
             this.ctx.save()
             this.ctx.strokeStyle = 'blue'
-            this.ctx.lineWidth = 1
+            this.ctx.lineWidth = 0.5
             this.ctx.translate(0.5, 0.5)
-            this.ctx.setLineDash([4, 2])
+            this.ctx.setLineDash([3, 3])
             this.ctx.strokeRect(this.x, this.y, this.width, this.height)
             this.ctx.restore()
         }
