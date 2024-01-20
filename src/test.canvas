@@ -77,9 +77,9 @@
                     <switch inactiveText="按年付费" activeText="按月付费"></switch>
                 </col>
             </row>
-            <row align="bottom" justify="space-between">
-                <col span="12"><span>span-12</span></col>
-                <col span="8">
+            <row align="bottom">
+                <col span="6" push="18"><span>span-12</span></col>
+                <col span="18" pull="6">
                    <button type="primary" plain>按钮</button>
                 </col>
             </row>

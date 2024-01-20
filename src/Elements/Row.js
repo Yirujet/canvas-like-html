@@ -37,8 +37,10 @@ export default function Row(props) {
         }
         this.children.forEach((col, i, ary) => {
             let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width, this.x)
+            const pullWidth = parseInt(col.$$props.pull || 0) / maxColSpan * this.width
+            const pushWidth = parseInt(col.$$props.push || 0) / maxColSpan * this.width
             col.render({
-                x: preWidth, 
+                x: preWidth - pullWidth + pushWidth, 
                 y: this.y,
                 parentElement: this,
                 width: parseInt(col.$$props.span || maxColSpan) / maxColSpan * this.width,
@@ -46,7 +48,7 @@ export default function Row(props) {
             })
         })
         this.height = Math.max(...this.children.map(e => parseFloat(e.height)))
-        const calcPosition = (cols, colH, colOffset, colI, rowX, rowY, rowW, rowH, align, justify) => {
+        const calcPosition = (cols, colH, colOffset, colPull, colPush, colI, rowX, rowY, rowW, rowH, align, justify) => {
             let x, y
             switch (align) {
                 case 'middle':
@@ -63,6 +65,8 @@ export default function Row(props) {
             const calcWidth = cols.map(c => clacColWidth(c)).reduce((p, c) => p + c, 0)
             const preWidth = cols.slice(0, colI).map(c => clacColWidth(c)).reduce((p, c) => p + c, 0)
             const offsetWidth = parseInt(colOffset || 0) / maxColSpan * rowW
+            const pullWidth = parseInt(colPull || 0) / maxColSpan * rowW
+            const pushWidth = parseInt(colPush || 0) / maxColSpan * rowW
             switch (justify) {
                 case 'end':
                     x = rowX + preWidth + rowW - calcWidth + offsetWidth - (cols.length - 1 - colI) * parseFloat(this.gutter)
@@ -98,13 +102,26 @@ export default function Row(props) {
                     x = rowX + preWidth + offsetWidth + colI * parseFloat(this.gutter)
                     break
             }
-            return { x, y }
+            return { x: x - pullWidth + pushWidth, y }
         }
         this.ctx.save()
         this.ctx.clearRect(this.x, this.y, this.width, this.height)
         this.ctx.restore()
         this.children.forEach((col, i, ary) => {
-            const { x, y } = calcPosition(ary, col.height, col.$$props.offset, i, this.x, this.y, this.width, this.height, this.align, this.justify)
+            const { x, y } = calcPosition(
+                ary, 
+                col.height, 
+                col.$$props.offset, 
+                col.$$props.pull,
+                col.$$props.push,
+                i, 
+                this.x, 
+                this.y, 
+                this.width, 
+                this.height, 
+                this.align, 
+                this.justify
+            )
             col.render({
                 x, 
                 y,
