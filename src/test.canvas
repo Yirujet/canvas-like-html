@@ -62,7 +62,7 @@
         <checkbox value="value2">复选框2</checkbox>
     </checkbox-group>
     -->
-    <row align="middle" justify="start">
+    <row align="middle" justify="space-between">
         <col span="2">
             <button>按钮1</button>
             <button>按钮2</button>
@@ -77,21 +77,23 @@
                     <switch inactiveText="按年付费" activeText="按月付费"></switch>
                 </col>
             </row>
-            <row justify="center">
-                <col span="12"></col>
+            <row align="bottom" justify="space-between">
+                <col span="12"><span>span-12</span></col>
                 <col span="8">
                    <button type="primary" plain>按钮</button>
                 </col>
             </row>
-            <row align="bottom" justify="center">
-                <col span="4"><span>col-span-14</span></col>
-                <col span="10" offset="2">
+            <row align="middle" justify="space-around">
+                <col span="4"><span>span-14</span></col>
+                <col span="4"><span>span-14</span></col>
+                <col span="3"><span>span-14</span></col>
+                <col span="6">
                     <progress
                         type="dashboard"
                         :percentage="percentage" 
                         :textInside="true" 
                         status="success"
-                        :width="200"
+                        :width="100"
                         strokeWidth="30"
                         strokeLinecap="round"
                     ></progress>

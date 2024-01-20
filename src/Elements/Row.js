@@ -46,9 +46,6 @@ export default function Row(props) {
             })
         })
         this.height = Math.max(...this.children.map(e => parseFloat(e.height)))
-        this.children.forEach(col => {
-            col.maxHeight = this.height
-        })
         const calcPosition = (cols, colH, colOffset, colI, rowX, rowY, rowW, rowH, align, justify) => {
             let x, y
             switch (align) {
@@ -73,9 +70,29 @@ export default function Row(props) {
                 case 'center':
                     x = rowX + preWidth + (rowW - calcWidth) / 2 + offsetWidth
                     break
-                case 'space-around':
-                    break
                 case 'space-between':
+                    if (cols.length > 1) {
+                        if (colI === 0) {
+                            x = rowX
+                        } else if (colI === cols.length - 1) {
+                            x = rowX + rowW - clacColWidth(cols[cols.length - 1])
+                        } else {
+                            const bothEndsWidth = [cols[0], cols[cols.length - 1]].map(c => clacColWidth(c)).reduce((p, c) => p + c, 0)
+                            const centerWidth = cols.slice(1, -1).map(c => clacColWidth(c)).reduce((p, c) => p + c, 0)
+                            const margin = (rowW - bothEndsWidth - centerWidth) / (cols.length - 1)
+                            x = rowX + preWidth + offsetWidth + colI * margin
+                        }
+                    } else {
+                        x = rowX
+                    }
+                    break
+                case 'space-around':
+                    if (cols.length > 1) {
+                        const margin = (rowW - calcWidth) / (cols.length * 2)
+                        x = rowX + preWidth + offsetWidth + (2 * colI + 1) * margin
+                    } else {
+                        x = rowX + preWidth + (rowW - calcWidth) / 2 + offsetWidth
+                    }
                     break
                 default:
                     x = rowX + preWidth + offsetWidth
