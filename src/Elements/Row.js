@@ -139,7 +139,7 @@ export default function Row(props) {
             this.ctx.save()
             this.ctx.strokeStyle = 'red'
             this.ctx.lineWidth = 0.5
-            this.ctx.translate(0.5, 0.5)
+            // this.ctx.translate(0.5, 0.5)
             this.ctx.setLineDash([3, 3])
             this.ctx.strokeRect(this.x, this.y, this.width, this.height)
             this.ctx.restore()

@@ -180,6 +180,7 @@ import axios from 'axios'
             console.log(val)
         },
         handleTagClick() {
+            const context = this.ctx
             console.log('tag clicked')
         },
         handleTagClose() {

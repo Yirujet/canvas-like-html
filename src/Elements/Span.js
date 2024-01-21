@@ -25,7 +25,7 @@ export default function Span(props) {
     this.render = function(config) {
         this.initProps(config)
         this.ctx.save()
-        this.ctx.translate(0.5, 0.5)
+        // this.ctx.translate(0.5, 0.5)
         this.ctx.textBaseline = 'middle'
         this.ctx.clearRect(this.x, this.y, this.width, this.height)
         if (this.fontSize) {

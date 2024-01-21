@@ -106,7 +106,7 @@ export default function Progress(props) {
     }
     const drawLineProgress = () => {
         this.ctx.save()
-        // this.ctx.translate(0.5, 0.5)
+        // // this.ctx.translate(0.5, 0.5)
         const ellipsisWidth = Math.ceil(this.strokeWidth / 2)
         if (this.showText && this.textInside) {
             this.ctx.clearRect(this.x + ellipsisWidth, this.y, this.width + 2 * ellipsisWidth, this.height)
@@ -193,7 +193,7 @@ export default function Progress(props) {
     }
     const drawAngleProgress = (startAngleBg, endAngleBg, startAngleAnimation, endAngleAnimation) => {
         this.ctx.save()
-        // this.ctx.translate(0.5, 0.5)
+        // // this.ctx.translate(0.5, 0.5)
         const ellipsisWidth = Math.ceil(this.strokeWidth / 2)
         this.ctx.clearRect(this.x + ellipsisWidth, this.y + ellipsisWidth, this.width - 2 * ellipsisWidth, this.height - 2 * ellipsisWidth)
         if (this.percentageOld !== this.percentage) {
