@@ -328,14 +328,16 @@ export default function Button(props) {
     this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
-    this.ctx.save
+    this.ctx.save()
     if (this.fontSize) {
         this.ctx.font = `400 ${this.fontSize}px Helvetica`
+    } else {
+        this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
     }
-    this.ctx.restore
     const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
     this.width = wordWidth + (this.type !== 'text' ? Button.BUTTON_PADDING_HORIZONTAL * 2 : 0)
     this.height = wordHeight + (this.type !== 'text' ? Button.BUTTON_PADDING_VERTICAL * 2 : 0)
+    this.ctx.restore()
     const initDefaultAttrs = () => {
         this.area = {
             leftTop: { x: this.x, y: this.y },

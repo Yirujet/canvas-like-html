@@ -80,13 +80,15 @@
             <row align="bottom">
                 <col span="6" push="18"><span>span-12</span></col>
                 <col span="18" pull="6">
-                   <button type="primary" plain>按钮</button>
+                    <button type="primary" plain>按钮</button>
+                    <tag type="warning">tag 1</tag>
+                    <tag type="danger">tag 2</tag>
                 </col>
             </row>
             <row align="middle" justify="space-evenly">
-                <col span="4"><span>span-14</span></col>
-                <col span="4"><span>span-14</span></col>
-                <col span="3"><span>span-14</span></col>
+                <col span="4"><tag closable>span-4</tag></col>
+                <col span="4"><tag closable type="success" @change="handleTagClick" @close="handleTagClose">span-4</tag></col>
+                <col span="4"><tag closable type="info">span-4</tag></col>
                 <col span="6">
                     <progress
                         type="dashboard"
@@ -176,6 +178,12 @@ import axios from 'axios'
         },
         handleInput(val) {
             console.log(val)
+        },
+        handleTagClick() {
+            console.log('tag clicked')
+        },
+        handleTagClose() {
+            console.log('tag closed')
         }
     },
     created() {

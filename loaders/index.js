@@ -191,6 +191,7 @@ module.exports = function(source) {
                     case 'link':
                     case 'span':
                     case 'radio':
+                    case 'tag':
                         if (node.children[elName].content) {
                             elProps.text = node.children[elName].content
                         }

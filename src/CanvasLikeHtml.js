@@ -12,6 +12,7 @@ import Table from './Elements/Table.js'
 import Input from './Elements/Input.js'
 import Switch from './Elements/Switch.js'
 import Progress from './Elements/Progress.js'
+import Tag from './Elements/Tag.js'
 import Row from './Elements/Row.js'
 import Col from './Elements/Col.js'
 
@@ -39,6 +40,7 @@ CanvasLikeHtml.element(toLowerCase(Table.elName), Table)
 CanvasLikeHtml.element(toLowerCase(Input.elName), Input)
 CanvasLikeHtml.element(toLowerCase(Switch.elName), Switch)
 CanvasLikeHtml.element(toLowerCase(Progress.elName), Progress)
+CanvasLikeHtml.element(toLowerCase(Tag.elName), Tag)
 CanvasLikeHtml.element(toLowerCase(Row.elName), Row)
 CanvasLikeHtml.element(toLowerCase(Col.elName), Col)
 
@@ -51,7 +53,7 @@ export default function CanvasLikeHtml(props) {
     this.height = null
     this.globalProps = {
         padding: 12,
-        fontSize: 14,
+        fontSize: 12,
         fontFamily: 'Helvetica',
         lineHeight: 12,
         mode: 'development',
