@@ -101,7 +101,7 @@ export default function Radio(props) {
                         this.labelMouseEntered = true
                         this.boxMouseEntered = false
                     }
-                    e.target.style.cursor = this.disabled ? 'not-allowed' : 'pointer'
+                    this.cursor = this.disabled ? 'not-allowed' : 'pointer'
                     this.render()
                 }
             },
@@ -112,7 +112,7 @@ export default function Radio(props) {
                     this.mouseEntered = false
                     this.boxMouseEntered = false
                     this.labelMouseEntered = false
-                    e.target.style.cursor = 'default'
+                    this.cursor = 'default'
                     this.render()
                 }
             },

@@ -78,7 +78,8 @@ export default function Scrollbar(layout, dataSize, callback, eventObserver) {
             || offsetX > this.position.rightTop.x 
             || offsetY < this.position.leftTop.y 
             || offsetY > this.position.leftBottom.y)) {
-                e.target.style.cursor = 'default'
+                this.mouseEntered = true
+                this.cursor = 'default'
                 this.dragging = true
         }
     }

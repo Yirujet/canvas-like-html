@@ -16,7 +16,7 @@ const GlobalEvents = {
             },
             mouseleave: {
                 triggerName: 'triggerEvent'
-            }
+            },
         }
     },
     mousedown: {
@@ -69,6 +69,10 @@ export default function EventObserver() {
                         this[dispatchEvent].forEach(element => {
                             element[triggerName].call(element, dispatchEvent, e)
                         })
+                        const curActiveElement = this[dispatchEvent].find(element => element.mouseEntered)
+                        if (curActiveElement) {
+                            target.style.cursor = curActiveElement.cursor
+                        }
                     })
                 }
                 target.addEventListener(targetEvent, listener)

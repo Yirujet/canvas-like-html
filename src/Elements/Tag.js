@@ -124,20 +124,20 @@ export default function Tag(props) {
                     this.mouseEntered = true
                     if (offsetX >= this.area.closeIcon.leftTop.x && offsetX <= this.area.closeIcon.rightTop.x && offsetY >= this.area.closeIcon.leftTop.y && offsetY <= this.area.closeIcon.leftBottom.y) {
                         this.closeIconEntered = true
-                        e.target.style.cursor = 'pointer'
+                        this.cursor = 'pointer'
                     } else {
                         this.closeIconEntered = false
-                        e.target.style.cursor = 'default'
+                        this.cursor = 'default'
                     }
                     this.render()
                 }
             },
             mouseleave: e => {
                 const { offsetX, offsetY } = e
-                if (!this.closeIconEntered || !this.closable) return
+                if (!this.closable) return
                 if (!(offsetX >= this.area.closeIcon.leftTop.x && offsetX <= this.area.closeIcon.rightTop.x && offsetY >= this.area.closeIcon.leftTop.y && offsetY <= this.area.closeIcon.leftBottom.y)) {
                     this.closeIconEntered = false
-                    e.target.style.cursor = 'default'
+                    this.cursor = 'default'
                     this.render()
                     if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
                         this.mouseEntered = false

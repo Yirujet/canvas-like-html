@@ -63,7 +63,7 @@ export default function Dropdown(props) {
                 if (this.mouseEntered) return
                 if (offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y) {
                     this.mouseEntered = true
-                    e.target.style.cursor = this.disabled ? 'not-allowed' : 'pointer'
+                    this.cursor = this.disabled ? 'not-allowed' : 'pointer'
                     if (this.trigger === 'hover') {
                         openDropdownTimer = setTimeout(this.openDropdown.bind(this, e), 300)
                         openDropdownTs = new Date().getTime()
@@ -79,7 +79,7 @@ export default function Dropdown(props) {
                 }
                 if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
                     this.mouseEntered = false
-                    e.target.style.cursor = 'default'
+                    this.cursor = 'default'
                     if (this.trigger === 'hover') {
                         if ((new Date().getTime() - openDropdownTs) <= 300) {
                             clearTimeout(openDropdownTimer)

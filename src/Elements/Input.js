@@ -79,7 +79,7 @@ export default function Input(props) {
                     } else {
                         this.hoverClearIcon = false
                     }
-                    e.target.style.cursor = this.disabled ? 'not-allowed' : 'pointer'
+                    this.cursor = this.disabled ? 'not-allowed' : 'pointer'
                     this.render()
                 }
             },
@@ -89,7 +89,7 @@ export default function Input(props) {
                 if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
                     this.mouseEntered = false
                     this.hoverClearIcon = false
-                    e.target.style.cursor = 'default'
+                    this.cursor = 'default'
                     this.render()
                 }
             },

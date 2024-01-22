@@ -17,6 +17,7 @@ export default function Element() {
     this.$$props = {}
     this.$$render_children = null
     this.parentElement = null
+    this.cursor = 'default'
     this.initProps = props => {
         if (props) {
             for (let name in props) {

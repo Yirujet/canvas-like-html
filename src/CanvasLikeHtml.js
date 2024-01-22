@@ -53,8 +53,8 @@ export default function CanvasLikeHtml(props) {
     this.height = null
     this.globalProps = {
         padding: 12,
-        fontSize: 14,
-        fontFamily: 'Helvetica',
+        fontSize: 12,
+        fontFamily: 'Helvetica Neue',
         lineHeight: 12,
         mode: 'development',
     }
@@ -175,6 +175,7 @@ export default function CanvasLikeHtml(props) {
             this.height = height
             this.target.height = height * window.devicePixelRatio
         }
+        this.ctx.translate(0.5, 0.5)
         this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
         if (propsObj?.render) {
             const renderObj = propsObj.render.call(this, this._c)

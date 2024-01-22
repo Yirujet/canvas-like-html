@@ -65,7 +65,7 @@
     <row align="middle" justify="space-between">
         <col span="2">
             <button>按钮1</button>
-            <button>按钮2</button>
+            <button disabled>按钮2</button>
             <button>按钮3</button>
         </col>
         <col span="8" offset="2">
@@ -96,7 +96,7 @@
                         :textInside="true" 
                         status="success"
                         :width="100"
-                        strokeWidth="30"
+                        strokeWidth="5"
                         strokeLinecap="round"
                     ></progress>
                 </col>

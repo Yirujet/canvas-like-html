@@ -356,7 +356,7 @@ export default function Button(props) {
                 if (this.mouseEntered) return
                 if (offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y) {
                     this.mouseEntered = true
-                    e.target.style.cursor = this.disabled ? 'not-allowed' : 'pointer'
+                    this.cursor = this.disabled ? 'not-allowed' : 'pointer'
                     if (this.circle) {
                         createCircleButton()
                     } else if (this.round) {
@@ -371,7 +371,7 @@ export default function Button(props) {
                 if (!this.mouseEntered) return
                 if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
                     this.mouseEntered = false
-                    e.target.style.cursor = 'default'
+                    this.cursor = 'default'
                     if (this.circle) {
                         createCircleButton()
                     } else if (this.round) {
