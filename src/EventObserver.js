@@ -72,6 +72,8 @@ export default function EventObserver() {
                         const curActiveElement = this[dispatchEvent].find(element => element.mouseEntered)
                         if (curActiveElement) {
                             target.style.cursor = curActiveElement.cursor
+                        } else {
+                            target.style.cursor = 'default'
                         }
                     })
                 }

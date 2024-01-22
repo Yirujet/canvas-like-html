@@ -136,7 +136,6 @@ export default function Link(props) {
     this.render = function(config) {
         this.initProps(config)
         this.ctx.save()
-        // this.ctx.translate(0.5, 0.5)
         this.ctx.clearRect(this.x, this.y, this.width + Link.LINK_UNDERLINE_MARGIN, this.height + Link.LINK_UNDERLINE_MARGIN)
         if (this.fontSize) {
             this.ctx.font = `400 ${this.fontSize}px Helvetica`

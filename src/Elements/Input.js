@@ -125,7 +125,6 @@ export default function Input(props) {
         const inputPadding = 2
         const type = this.disabled ? 'disabled' : this.clickDown ? 'clickdown' : this.mouseEntered ? 'hover' : 'default'
         this.ctx.beginPath()
-        // this.ctx.translate(0.5, 0.5)
         this.ctx.clearRect(this.x, this.y, this.width + 1, this.height + 1)
         this.ctx.lineWidth = 1
         this.ctx.textBaseline = 'middle'

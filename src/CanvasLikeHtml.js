@@ -1,5 +1,5 @@
 import EventObserver from './EventObserver.js'
-import { render } from './utils.js'
+import { render, toLowerCase } from './utils.js'
 import Button from './Elements/Button.js'
 import Checkbox from './Elements/Checkbox.js'
 import CheckboxGroup from './Elements/CheckboxGroup.js'
@@ -13,6 +13,7 @@ import Input from './Elements/Input.js'
 import Switch from './Elements/Switch.js'
 import Progress from './Elements/Progress.js'
 import Tag from './Elements/Tag.js'
+import Rate from './Elements/Rate.js'
 import Row from './Elements/Row.js'
 import Col from './Elements/Col.js'
 
@@ -25,8 +26,6 @@ CanvasLikeHtml.element = function(elName, elConstructor) {
         CanvasLikeHtml.elements.set(elName || elConstructor.elName, elConstructor)
     }
 }
-
-const toLowerCase = target => String(target).toLocaleLowerCase()
 
 CanvasLikeHtml.element(toLowerCase(Button.elName), Button)
 CanvasLikeHtml.element(toLowerCase(Checkbox.elName), Checkbox)
@@ -41,6 +40,7 @@ CanvasLikeHtml.element(toLowerCase(Input.elName), Input)
 CanvasLikeHtml.element(toLowerCase(Switch.elName), Switch)
 CanvasLikeHtml.element(toLowerCase(Progress.elName), Progress)
 CanvasLikeHtml.element(toLowerCase(Tag.elName), Tag)
+CanvasLikeHtml.element(toLowerCase(Rate.elName), Rate)
 CanvasLikeHtml.element(toLowerCase(Row.elName), Row)
 CanvasLikeHtml.element(toLowerCase(Col.elName), Col)
 

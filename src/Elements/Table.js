@@ -587,7 +587,6 @@ export default function Table(props) {
     }
     const drawTable = () => {
         this.ctx.save()
-        // this.ctx.translate(0.5, 0.5)
         drawBody()
         drawHead()
         drawScrollbar()

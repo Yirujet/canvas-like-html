@@ -141,7 +141,6 @@ export default function Checkbox(props) {
         this.initProps(config)
         initDefaultAttrs()
         this.ctx.save()
-        // this.ctx.translate(0.5, 0.5)
         if (this.fontSize) {
             this.ctx.font = `400 ${this.fontSize}px Helvetica`
         }

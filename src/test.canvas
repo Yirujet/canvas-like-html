@@ -68,6 +68,14 @@
             <button disabled>按钮2</button>
             <button>按钮3</button>
         </col>
+        <col span="4">
+            <rate 
+                value="3.5" 
+                allowHalf 
+                allowClear
+                :tooltips="[1, 2, 3, 4, 5]"
+            ></rate>
+        </col>
         <col span="8" offset="2">
             <span>aaa</span>
             <link>bbb</link>

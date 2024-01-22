@@ -144,7 +144,7 @@ var startTag = /^<([-A-Za-z0-9_]+)((?:\s+@?[a-zA-Z_:][-a-zA-Z0-9_:.]*(?:\s*=\s*(
 var empty = makeMap("area,base,basefont,br,frame,hr,img,meta,param,embed,command,keygen,source,track,wbr");
 
 // Block Elements - HTML 5
-var block = makeMap("a,address,article,applet,aside,audio,blockquote,button,switch,progress,row,col,tag,input,link,canvas,center,dd,del,dir,div,dl,dt,fieldset,figcaption,figure,footer,form,frameset,h1,h2,h3,h4,h5,h6,header,hgroup,hr,iframe,ins,isindex,li,map,menu,noframes,noscript,object,ol,output,p,pre,section,script,table,tbody,td,tfoot,th,thead,tr,ul,video,line");
+var block = makeMap("a,address,article,applet,aside,audio,blockquote,button,switch,progress,row,col,tag,rate,input,link,canvas,center,dd,del,dir,div,dl,dt,fieldset,figcaption,figure,footer,form,frameset,h1,h2,h3,h4,h5,h6,header,hgroup,hr,iframe,ins,isindex,li,map,menu,noframes,noscript,object,ol,output,p,pre,section,script,table,tbody,td,tfoot,th,thead,tr,ul,video,line");
 
 // Inline Elements - HTML 5
 var inline = makeMap("abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,iframe,img,input,ins,kbd,label,map,object,q,s,samp,script,select,small,span,strike,strong,sub,sup,textarea,tt,u,var,path");
@@ -154,7 +154,7 @@ var inline = makeMap("abbr,acronym,applet,b,basefont,bdo,big,br,button,cite,code
 var closeSelf = makeMap("colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,img,rect");
 
 // Attributes that have their values filled in disabled="disabled"
-var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected,plain,round,clearable,closable");
+var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected,plain,round,clearable,closable,allowClear,allowHalf");
 
 // Special Elements (can contain anything)
 var special = makeMap("style,script");

@@ -161,7 +161,6 @@ export default function Tag(props) {
         initDefaultAttrs()
         if (this.ctx) {
             this.ctx.save()
-            // // this.ctx.translate(0.5, 0.5)
             if (this.color) {
                 colorObj[this.type].default.font = this.color
             }

@@ -70,7 +70,6 @@ export default function Col(props) {
             this.ctx.save()
             this.ctx.strokeStyle = 'blue'
             this.ctx.lineWidth = 0.5
-            // this.ctx.translate(0.5, 0.5)
             this.ctx.setLineDash([3, 3])
             this.ctx.strokeRect(this.x, this.y, this.width, this.height)
             this.ctx.restore()

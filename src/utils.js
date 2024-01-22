@@ -33,6 +33,8 @@ export const getEllipsisText = (text, limitWidth, fontSize, ellipsis = '...') =>
     return strRtn
 }
 
+export const toLowerCase = target => String(target).toLocaleLowerCase()
+
 export function render(compName, compProps) {
     let comp = null
     if (typeof compName === 'object' && compName.render && typeof compName.render === 'function') {
