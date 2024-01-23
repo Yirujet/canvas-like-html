@@ -20,11 +20,43 @@ const getVars = exp => {
     return exp.match(varRegExp).filter(e => !/^\d+$/.test(e))
 }
 
-const getVarValues = (vars, scopeList) => {
-    const varObj = vars
+const getVarValues = (vars, scopeList, data) => {
+    const varObj = {}
     for (let i = scopeList.length - 1; i >= 0; i--) {
-        
+        const { $$loopItemName, $$loopIndexName, $$loopItem, $$loopIndex } = scopeList[i]
+        vars.forEach(varName => {
+            if (typeof varObj[varName] === 'undefined') {
+                if (varName.includes('.')) {
+                    const propChain = varName.split('.')
+                    if (propChain[0] === $$loopItemName) {
+                        varObj[varName] = propChain.reduce((p, c) => p[c], $$loopItem[$$loopItemName])
+                    }
+                } else {
+                    if (varName === $$loopItemName) {
+                        varObj[varName] = $$loopItem[$$loopItemName]
+                    }
+                    if (varName === $$loopIndexName) {
+                        varObj[varName] = $$loopIndex[$$loopIndexName]
+                    }
+                }
+            }
+        })
     }
+    vars.forEach(varName => {
+        if (typeof varObj[varName] === 'undefined') {
+            if (varName.includes('.')) {
+                const propChain = varName.split('.')
+                if (Object.keys(data).includes(propChain[0])) {
+                    varObj[varName] = propChain.reduce((p, c) => p[c], data)
+                }
+            } else {
+                if (Object.keys(data).includes(varName)) {
+                    varObj[varName] = data[varName]
+                }
+            }
+        }
+    })
+    return varObj
 }
 
 module.exports = function(source) {
@@ -336,8 +368,21 @@ module.exports = function(source) {
                                 if (dynamicContent.test(content)) {
                                     const name = node.children[elName].content.slice(2, -2).trim()
                                     const vars = getVars(name)
+                                    const varsVal = getVarValues(vars, node.children[elName].$$loopChain, scriptObj.data)
                                     try {
-                                        elProps.text = name.replace(node.children[elName].$$loopItemName, node.children[elName].$$loopItem[node.children[elName].$$loopItemName])
+                                        let result = name
+                                        for (let varName in varsVal) {
+                                            let val = varsVal[varName]
+                                            if (typeof val === 'string') {
+                                                val = `"${val}"`
+                                            } else if (typeof val === 'number') {
+                                                val = parseFloat(val)
+                                            } else {
+                                                val = `"${JSON.stringify(val)}"`
+                                            }
+                                            result = result.replace(new RegExp(varName, 'g'), val)
+                                        }
+                                        elProps.text = (evalFn(result))()
                                     } catch (e) {
                                         elProps.text = name.replace(name, scriptObj.data[name])
                                     }
