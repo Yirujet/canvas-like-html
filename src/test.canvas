@@ -63,7 +63,7 @@
     </checkbox-group>
     -->
     <row align="middle" justify="space-between">
-        <col span="2">
+        <!--<col span="2">
             <button>按钮1</button>
             <button disabled>按钮2</button>
             <button>按钮3</button>
@@ -75,9 +75,9 @@
                 allowClear
                 :tooltips="[1, 2, 3, 4, 5]"
             ></rate>
-        </col>
-        <col span="8" offset="2">
-            <span>aaa</span>
+        </col>-->
+        <col span="20" offset="2">
+            <!--<span>aaa</span>
             <link>bbb</link>
             <row justify="center">
                 <col span="6">
@@ -92,11 +92,17 @@
                     <tag type="warning">tag 1</tag>
                     <tag type="danger">tag 2</tag>
                 </col>
-            </row>
+            </row>-->
             <row align="middle" justify="space-evenly">
-                <col span="4"><tag closable>span-4</tag></col>
+                <!--<col span="4"><tag closable>span-4</tag></col>
                 <col span="4"><tag closable type="success" @change="handleTagClick" @close="handleTagClose">span-4</tag></col>
                 <col span="4"><tag closable type="info">span-4</tag></col>
+                <col span="12">
+                    <tag *for="(item, index) in tagList">{{item}}</tag>
+                </col>-->
+                <col :span="colItem.span" *for="(colItem, index) in colList">
+                    <tag *for="tagItem in colItem.tagList">{{ tagItem }}</tag>
+                </col>
                 <col span="6">
                     <progress
                         type="dashboard"
@@ -110,7 +116,7 @@
                 </col>
             </row>
         </col>
-        <col span="8">
+        <!--<col span="8">
             <row>
                 <col>
                     <progress
@@ -131,14 +137,15 @@
                     ></progress>
                 </col>
             </row>
-        </col>
+        </col>-->
     </row>
     <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->
 </canvas>
 <script>
 import axios from 'axios'
+import { data as tblData, head as tblHead } from './mock.js'
 
-{
+export default {
     data: {
         list1: [{ name: 'dropdown-item-1', value: 'dropdown-item-1' }],
         text: 'changed after 2s',
@@ -164,12 +171,23 @@ import axios from 'axios'
           {color: '#6f7ad3', percentage: 100}
         ],
         strokeWidth: 12,
-        percentage: 66
+        percentage: 66,
+        tagList: ['tag-1', 'tag-2', 'tag-3'],
+        colList: [
+            {
+                span: 3,
+                tagList: ['tag1-1', 'tag1-2', 'tag1-3']
+            },
+            {
+                span: 4,
+                tagList: ['tag2-1', 'tag2-2']
+            },
+        ]
     },
     methods: {
         handleClick() {
             //this.list1.value.push({ name: 'dropdown-item-3', value: 'dropdown-item-3' })
-            console.log(this)
+            console.log(this, tblData)
         },
         async handleCommand(val) {
             const res = await axios.get('https://api.uomg.com/api/comments.163?format=json')
@@ -202,161 +220,8 @@ import axios from 'axios'
             this.text.value = 'happy yirujet'
             this.test.value.a[0].b = 321
         }, 2000)
-        const colLen = 100
-        const rowLen = 1000
-        const fixedColIndex = []
-
-        const head = Array.from({ length: colLen }).map((e, i) => ({
-            field: `col${i}`,
-            label: `col${i + 1}`,
-            fixed: ((i) => {
-                if (fixedColIndex.includes(i)) {
-                    return 'right'
-                }
-            })(i),
-        }))
-        head.unshift({ field: 'index', label: '序号', fixed: 'left', width: 65 })
-        head.unshift({
-            type: 'checkbox',
-            fixed: 'left',
-            width: 35
-        })
-        head.unshift({ 
-            label: 'col-parent', 
-            children: [
-                { 
-                    label: 'col-1', 
-                    children: [
-                        {
-                            label: 'col-1-1',
-                            field: 'col1',
-                            children: [
-                                {
-                                    label: 'col-1-1-1',
-                                    field: 'col3',
-                                    children: [
-                                        {
-                                            label: 'col-1-1-1-1',
-                                            field: 'col4'
-                                        },
-                                        {
-                                            label: 'col-1-1-1-2',
-                                            field: 'col3'
-                                        }
-                                    ]
-                                },
-                                {
-                                    label: 'col-1-1-2',
-                                    field: 'col4',
-                                    children: [
-                                        {
-                                            label: 'col-1-1-2-1',
-                                            field: 'col5',
-                                        },
-                                        {
-                                            label: 'col-1-1-2-2',
-                                            field: 'col6',
-                                        },
-                                        {
-                                            label: 'col-1-1-2-3',
-                                            field: 'col7',
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            label: 'col-1-2',
-                            field: 'col2',
-                            children: [
-                                {
-                                    label: 'col-1-2-1',
-                                    field: 'col11',
-                                },
-                                {
-                                    label: 'col-1-2-2',
-                                    field: 'col12',
-                                }
-                            ]
-                        }
-                    ]
-                },
-                { label: 'col-2', field: 'col9' }
-            ]
-        })
-        head.push({
-            field: 'operation',
-            label: '操作',
-            fixed: 'right',
-            width: 250,
-            slot: {
-                head: (h, col) => {
-                    return h('span', {
-                        text: `${col.label}`
-                    })
-                },
-                body: (h, scope) => {
-                    return [
-                        h('button', {
-                            // type: 'success',
-                            type: 'text',
-                            text: '查看',
-                            on: {
-                                click() {
-                                    alert(`查看第${scope.$index + 1}行`)
-                                }
-                            }
-                        }),
-                        h('link', {
-                            type: 'primary',
-                            text: '编辑',
-                            on: {
-                                click() {
-                                    alert(`编辑第${scope.$index + 1}行`)
-                                }
-                            }
-                        }),
-                        h('link', {
-                            type: 'danger',
-                            text: '删除',
-                            disabled: true,
-                            on: {
-                                click() {
-                                    alert(`删除第${scope.$index + 1}行`)
-                                }
-                            }
-                        }),
-                        h('dropdown', {
-                            text: '更多',
-                            trigger: 'click',
-                            list: [
-                                { name: `btn${scope.$index + 1}`, value: `btn${scope.$index + 1}` },
-                            ],
-                            on: {
-                                command: (val) => {
-                                    alert(`点击了第${scope.$index + 1}行-${val}`)
-                                }
-                            }
-                        })
-                    ]
-                }
-            }
-        })
-
-        let list = []
-
-        for (let i = 0, l = rowLen, row = {}; i < l; i++) {
-            row = {}
-            for(let j = 0, k = head.length; j < k; j++) {
-                row.index = i + 1
-                row[`col${j}`] = `row-${i + 1}-col${j + 1}`
-            }
-            list.push(row)
-        }
-
-        const data = list
-        this.columns.value = head;
-        this.tblData.value = list;*/
+        this.columns.value = tblHead;
+        this.tblData.value = tblData;*/
         setInterval(() => {
             this.percentage.value = Math.floor(100 * Math.random())
         }, 2000)

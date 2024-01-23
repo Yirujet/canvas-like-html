@@ -218,7 +218,7 @@ export default function Rate(props) {
             this.ctx.textBaseline = 'middle'
             this.ctx.fillStyle = 'rgb(31, 45, 61)'
             this.ctx.beginPath()
-            this.ctx.fillText(this.value, this.x + this.width - wordWidth, this.y + this.height / 2)
+            this.ctx.fillText(this.value, this.x + this.width - wordWidth, this.y + Rate.RATE_R)
             this.ctx.restore()
         }
     }
