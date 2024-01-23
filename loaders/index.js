@@ -11,6 +11,22 @@ const isArrowFunction = fn => {
     }
 }
 
+const varRegExp = /[0-9a-zA-Z_$]+(\.[0-9a-zA-Z_$]+)*/g
+const dynamicContent = /^{{\s*.+\s*}}$/
+const forDirectiveRegExp = /^(?<exp>\(\S+(?:,\s*\S+)?\)|\S+)\s+in(?<source>\s+\S+)$/
+const forExpIncludesIndexRegExp = /^\((?<loopItemName>\S+),\s*(?<loopIndexName>\S+)\)$/
+
+const getVars = exp => {
+    return exp.match(varRegExp).filter(e => !/^\d+$/.test(e))
+}
+
+const getVarValues = (vars, scopeList) => {
+    const varObj = vars
+    for (let i = scopeList.length - 1; i >= 0; i--) {
+        
+    }
+}
+
 module.exports = function(source) {
     const nodeList = []
     HTMLParser(source, (function() {
@@ -194,10 +210,8 @@ module.exports = function(source) {
             const directiveName = elAttrName.slice(1)
             switch (directiveName) {
                 case 'for':
-                    const forDirectiveRegExp = /^(?<exp>\(\S+(?:,\s*\S+)?\)|\S+)\s+in(?<source>\s+\S+)$/
                     const forDirectiveMatch = elAttrValue.match(forDirectiveRegExp)
                     const forExp = forDirectiveMatch.groups.exp.trim()
-                    const forExpIncludesIndexRegExp = /^\((?<loopItemName>\S+),\s*(?<loopIndexName>\S+)\)$/
                     let loopItemName, loopItemIndex
                     if (forExpIncludesIndexRegExp.test(forExp)) {
                         const forExpIncludesIndexMatch = forExp.match(forExpIncludesIndexRegExp)
@@ -241,6 +255,17 @@ module.exports = function(source) {
                     const nodeRoot = {}
                     nodeList.forEach(node => createTree(nodeRoot, node))
                     Reflect.ownKeys(nodeRoot.children).forEach((elName, i) => {
+                        if (node.$$loopItem) {
+                            if (!nodeRoot.children[elName].$$loopChain) {
+                                nodeRoot.children[elName].$$loopChain = []
+                                nodeRoot.children[elName].$$loopChain.push({
+                                    $$loopItem: node.$$loopItem,
+                                    $$loopIndex: node.$$loopIndex,
+                                    $$loopItemName: node.$$loopItemName,
+                                    $$loopIndexName: node.$$loopIndexName
+                                })
+                            }
+                        }
                         nodeRoot.children[elName].$$loopItemName = loopItemName
                         nodeRoot.children[elName].$$loopIndexName = loopItemIndex
                         nodeRoot.children[elName].$$loopItem = {
@@ -249,6 +274,15 @@ module.exports = function(source) {
                         nodeRoot.children[elName].$$loopIndex = {
                             [loopItemIndex]: i
                         }
+                        if (!nodeRoot.children[elName].$$loopChain) {
+                            nodeRoot.children[elName].$$loopChain = []
+                        }
+                        nodeRoot.children[elName].$$loopChain.push({
+                            $$loopItem: nodeRoot.children[elName].$$loopItem,
+                            $$loopIndex: nodeRoot.children[elName].$$loopIndex,
+                            $$loopItemName: nodeRoot.children[elName].$$loopItemName,
+                            $$loopIndexName: nodeRoot.children[elName].$$loopIndexName
+                        })
                         if (elChildren) {
                             nodeRoot.children[elName].children = elChildren
                         }
@@ -299,9 +333,9 @@ module.exports = function(source) {
                         case 'tag':
                             if (node.children[elName].content) {
                                 const content = node.children[elName].content.trim()
-                                const dynamicContent = /^{{\s*.+\s*}}$/
                                 if (dynamicContent.test(content)) {
-                                    const name = node.children[elName].content.slice(2, -2)
+                                    const name = node.children[elName].content.slice(2, -2).trim()
+                                    const vars = getVars(name)
                                     try {
                                         elProps.text = name.replace(node.children[elName].$$loopItemName, node.children[elName].$$loopItem[node.children[elName].$$loopItemName])
                                     } catch (e) {

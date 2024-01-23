@@ -101,7 +101,7 @@
                     <tag *for="(item, index) in tagList">{{item}}</tag>
                 </col>-->
                 <col :span="colItem.span" *for="(colItem, index) in colList">
-                    <tag *for="tagItem in colItem.tagList">{{ tagItem }}</tag>
+                    <tag *for="tagItem in colItem.tagList">{{ tagItem + index }}</tag>
                 </col>
                 <col span="6">
                     <progress
