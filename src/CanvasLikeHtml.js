@@ -1,5 +1,5 @@
 import EventObserver from './EventObserver.js'
-import { render, toLowerCase } from './utils.js'
+import { render, toLowerCase, toReactiveKey, calcDynamicPropValue } from './utils.js'
 import Button from './Elements/Button.js'
 import Checkbox from './Elements/Checkbox.js'
 import CheckboxGroup from './Elements/CheckboxGroup.js'
@@ -62,7 +62,6 @@ export default function CanvasLikeHtml(props) {
     this.eventObserver = new EventObserver()
     const propsLinkedWithComps = {}
     const propsObj = props
-    const primitiveProps = {}
     if (props) {
         for (let name in props) {
             if (name in this) {
@@ -74,24 +73,21 @@ export default function CanvasLikeHtml(props) {
     const linkCompsWithData = (data) => {
         const deepQuery = list => {
             list.forEach(comp => {
-                if (comp.watchedProps && Array.isArray(comp.watchedProps)) {
-                    comp.watchedProps.forEach(prop => {
-                        const [[compProp, bindProp]] = Object.entries(prop)
-                        let bindDataProp = bindProp
-                        if (bindProp.includes('.')) {
-                            bindDataProp = bindProp.slice(0, bindProp.indexOf('.')) + '.value' + bindProp.slice(bindProp.indexOf('.'))
-                        } else {
-                            if (typeof data[bindProp] === 'object') {
-                                bindDataProp = bindProp + '.value'
-                            }
+                if (comp.watchedProps && Object.keys(comp.watchedProps).length > 0) {
+                    Object.entries(comp.watchedProps).forEach(([compProp, bindingProps]) => {
+                        if (Array.isArray(bindingProps)) {
+                            bindingProps.forEach(({ prop: bindingProp, exp }) => {
+                                let bindDataProp = toReactiveKey(bindingProp, data)
+                                if (!propsLinkedWithComps[bindDataProp]) {
+                                    propsLinkedWithComps[bindDataProp] = new Watcher()
+                                }
+                                propsLinkedWithComps[bindDataProp].add({
+                                    comp,
+                                    prop: compProp,
+                                    exp
+                                })
+                            })
                         }
-                        if (!propsLinkedWithComps[bindDataProp]) {
-                            propsLinkedWithComps[bindDataProp] = new Watcher()
-                        }
-                        propsLinkedWithComps[bindDataProp].add({
-                            comp,
-                            prop: compProp,
-                        })
                     })
                 }
                 if (['row', 'col'].includes(comp.constructor.elName)) {
@@ -143,17 +139,17 @@ export default function CanvasLikeHtml(props) {
                 const { parentProp, bindingChain, parentType } = propInfo
                 if (propsLinkedWithComps[bindingChain]) {
                     const propWatcher = propsLinkedWithComps[bindingChain]
-                    propWatcher.comps.forEach(({comp, prop}) => {
-                        comp.render({ [prop]: value })
+                    propWatcher.comps.forEach(({comp, prop, exp}) => {
+                        comp.render({ [prop]: calcDynamicPropValue(exp, this) })
                     })
                 } else {
-                    if (primitiveProps[parentProp] || propsLinkedWithComps[parentProp]) {
+                    if (propsLinkedWithComps[parentProp]) {
                         const propWatcher = propsLinkedWithComps[parentProp]
-                        propWatcher.comps.forEach(({comp, prop}) => {
+                        propWatcher.comps.forEach(({comp, prop, exp}) => {
                             if (Array.isArray(target)) {
                                 comp.render({ [prop]: target })
                             } else {
-                                comp.render({ [prop]: value })
+                                comp.render({ [prop]: calcDynamicPropValue(exp, this) })
                             }
                         })
                     }

@@ -13,7 +13,7 @@ export default function Element() {
     this.mouseEntered = false
     this.globalProps = null
     this.root = null
-    this.watchedProps = []
+    this.watchedProps = {}
     this.$$props = {}
     this.$$render_children = null
     this.parentElement = null

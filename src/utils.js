@@ -1,5 +1,7 @@
 import CanvasLikeHtml from './CanvasLikeHtml.js'
 
+export const evalFn = exp => new Function(`return (${exp})`)
+
 export const getTextMetrics = (text, fontSize) => {
     // const fontSize = this.options.canvas.fontSize
     const width = [].slice.call(text || '')
@@ -34,6 +36,91 @@ export const getEllipsisText = (text, limitWidth, fontSize, ellipsis = '...') =>
 }
 
 export const toLowerCase = target => String(target).toLocaleLowerCase()
+
+export const toReactiveKey = (bindingProp, data) => {
+    let bindDataProp = bindingProp
+    if (bindingProp.includes('.')) {
+        bindDataProp = bindingProp.slice(0, bindingProp.indexOf('.')) + '.value' + bindingProp.slice(bindingProp.indexOf('.'))
+    } else {
+        if (typeof data[bindingProp] === 'object') {
+            bindDataProp = bindingProp + '.value'
+        }
+    }
+    return bindDataProp
+}
+
+export const getVars = (exp, data) => {
+    const varRegExp = /[0-9a-zA-Z_$]+(\.[0-9a-zA-Z_$]+)*/g
+    const jsBuiltInObj = [
+        'Array',
+        'String',
+        'Date',
+        'Math',
+        'Boolean',
+        'Number',
+        'RegExp',
+        'Function',
+        'Error',
+        'window',
+        'global'
+    ]
+    return exp.match(varRegExp).filter(e => {
+        if (/^\d+$/.test(e)) {
+            return false
+        }
+        if (e.includes('.') && (jsBuiltInObj.map(o => `${o}(`).some(o => e.startsWith(o))
+            || jsBuiltInObj.map(o => `${o}.`).some(o => e.startsWith(o)))
+        ) {
+            return false
+        }
+        return true
+    }).map(e => ({
+        prop: e,
+        reactiveProp: toReactiveKey(e, data)
+    }))
+}
+
+export const getVarValues = (vars, data) => {
+    const varObj = {}
+    vars.map(e => e.reactiveProp).filter(varName => typeof varObj[varName] === 'undefined').forEach(varName => {
+        if (varName.includes('.')) {
+            const propChain = varName.split('.')
+            if (Object.keys(data).includes(propChain[0])) {
+                varObj[varName] = propChain.reduce((p, c) => p[c], data)
+            }
+        } else {
+            if (Object.keys(data).includes(varName)) {
+                varObj[varName] = data[varName]
+            }
+        }
+    })
+    return varObj
+}
+
+export const calcDynamicPropValue = (exp, data) => {
+    const name = exp.trim()
+    const vars = getVars(name, data)
+    const varsVal = getVarValues(vars, data)
+    let result = name
+    try {
+        for (let varName in varsVal) {
+            let val = varsVal[varName]
+            if (typeof val === 'string') {
+                val = `"${val}"`
+            } else if (typeof val === 'number') {
+                val = parseFloat(val)
+            } else {
+                val = `"${JSON.stringify(val)}"`
+            }
+            const varItem = vars.find(item => item.reactiveProp === varName)
+            result = result.replace(new RegExp(varItem.prop, 'g'), val)
+        }
+        result = (evalFn(result))()
+    } catch (e) {
+        result = data[name]
+    }
+    return result
+}
 
 export function render(compName, compProps) {
     let comp = null

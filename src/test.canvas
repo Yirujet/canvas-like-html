@@ -54,7 +54,6 @@
     <link x="410" y="370" type="danger">危险链接</link>
     <link x="480" y="370" type="info">信息链接</link>
     <radio x="10" y="400" :text="obj.innerObj.name"></radio>
-    <span x="10" y="430" :text="test.a.0.b"></span>
     <input x="10" y="460" value="test" clearable disabled @input="handleInput"></input>
     <switch x="10" y="520" inactiveText="按年付费" activeText="按月付费"></switch>
     <checkbox-group x="10" y="340" @change="handleCheckboxGroupChange">
@@ -104,6 +103,7 @@
                     <tag *for="tagItem in colItem.tagList">{{ tagItem + index }}</tag>
                 </col>
                 <col span="6">
+                    <span x="10" y="430" :text="test.a.0.b + obj.innerObj.name"></span>
                     <progress
                         type="dashboard"
                         :percentage="percentage" 
@@ -223,7 +223,9 @@ export default {
         this.columns.value = tblHead;
         this.tblData.value = tblData;*/
         setInterval(() => {
-            this.percentage.value = Math.floor(100 * Math.random())
+            let percentVal = Math.floor(100 * Math.random())
+            this.percentage.value = percentVal
+            this.obj.value.innerObj.name = percentVal
         }, 2000)
     }
 }

@@ -160,7 +160,7 @@ var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,n
 // Special Elements (can contain anything)
 var special = makeMap("style,script");
 
-var HTMLParser = this.HTMLParser = function (html, handler) {
+var HTMLParser = function (html, handler) {
     var index, chars, match, stack = [], last = html;
     stack.last = function () {
         return this[this.length - 1];
@@ -304,4 +304,4 @@ function makeMap(str) {
     return obj;
 }
 
-module.exports = HTMLParser
+export default HTMLParser

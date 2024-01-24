@@ -13,7 +13,7 @@ module.exports = {
         modules: ['node_modules', './loaders'],
         extensions: ['.canvas'],
         alias: {
-            'canvas-loader': './loaders/index.js'
+            'canvas-loader': './loaders/index.mjs'
         }
     },
     entry: {
