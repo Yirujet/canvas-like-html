@@ -1,12 +1,10 @@
 export const evalFn = exp => new Function(`return (${exp})`)
 
+export const arrowFnRegExp = /^(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)\s*=>\s*(?<body>(?:.|\r\n)+)$/
+
 export const isArrowFunction = fn => {
-    const str = fn.toString()
-    if (str.match(/{[\s\S]*}/)) {
-        return str.replace(/{[\s\S]*}/, '').includes('=>')
-    } else {
-        return true
-    }
+    const str = fn.toString().trim()
+    return arrowFnRegExp.test(str)
 }
 
 export const getVars = exp => {

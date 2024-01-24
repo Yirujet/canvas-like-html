@@ -40,12 +40,14 @@ const handleDynamicProp = (elAttrName, elAttrValue, elProps, data, scriptObj, no
                     if (!elProps.watchedProps[attrName]) {
                         elProps.watchedProps[attrName] = [{
                             prop: bindingPropName,
-                            exp: elAttrValue
+                            exp: elAttrValue,
+                            loopChain: node.children[elName].$$loopChain
                         }]
                     } else {
                         elProps.watchedProps[attrName].push({
                             prop: bindingPropName,
-                            exp: elAttrValue
+                            exp: elAttrValue,
+                            loopChain: node.children[elName].$$loopChain
                         })
                     }
                 }

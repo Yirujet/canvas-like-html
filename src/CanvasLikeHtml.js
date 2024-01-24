@@ -76,7 +76,7 @@ export default function CanvasLikeHtml(props) {
                 if (comp.watchedProps && Object.keys(comp.watchedProps).length > 0) {
                     Object.entries(comp.watchedProps).forEach(([compProp, bindingProps]) => {
                         if (Array.isArray(bindingProps)) {
-                            bindingProps.forEach(({ prop: bindingProp, exp }) => {
+                            bindingProps.forEach(({ prop: bindingProp, exp, loopChain }) => {
                                 let bindDataProp = toReactiveKey(bindingProp, data)
                                 if (!propsLinkedWithComps[bindDataProp]) {
                                     propsLinkedWithComps[bindDataProp] = new Watcher()
@@ -84,7 +84,8 @@ export default function CanvasLikeHtml(props) {
                                 propsLinkedWithComps[bindDataProp].add({
                                     comp,
                                     prop: compProp,
-                                    exp
+                                    exp,
+                                    loopChain
                                 })
                             })
                         }
@@ -139,17 +140,17 @@ export default function CanvasLikeHtml(props) {
                 const { parentProp, bindingChain, parentType } = propInfo
                 if (propsLinkedWithComps[bindingChain]) {
                     const propWatcher = propsLinkedWithComps[bindingChain]
-                    propWatcher.comps.forEach(({comp, prop, exp}) => {
-                        comp.render({ [prop]: calcDynamicPropValue(exp, this) })
+                    propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
+                        comp.render({ [prop]: calcDynamicPropValue(exp, loopChain, this) })
                     })
                 } else {
                     if (propsLinkedWithComps[parentProp]) {
                         const propWatcher = propsLinkedWithComps[parentProp]
-                        propWatcher.comps.forEach(({comp, prop, exp}) => {
+                        propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
                             if (Array.isArray(target)) {
                                 comp.render({ [prop]: target })
                             } else {
-                                comp.render({ [prop]: calcDynamicPropValue(exp, this) })
+                                comp.render({ [prop]: calcDynamicPropValue(exp, loopChain, this) })
                             }
                         })
                     }

@@ -157,6 +157,7 @@ export default function Tag(props) {
         this.registerListenerFromOnProp(defaultEventListeners)
     }
     this.render = function(config) {
+        this.ctx.clearRect(this.x, this.y, this.width, this.height)
         this.initProps(config)
         initDefaultAttrs()
         if (this.ctx) {
@@ -165,7 +166,6 @@ export default function Tag(props) {
                 colorObj[this.type].default.font = this.color
             }
             this.ctx.textBaseline = 'middle'
-            this.ctx.clearRect(this.x, this.y, this.width, this.height)
             this.ctx.beginPath()
             this.ctx.lineWidth = 1
             this.ctx.lineJoin = 'round'

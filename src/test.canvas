@@ -100,10 +100,10 @@
                     <tag *for="(item, index) in tagList">{{item}}</tag>
                 </col>-->
                 <col :span="colItem.span" *for="(colItem, index) in colList">
-                    <tag *for="tagItem in colItem.tagList">{{ tagItem + index }}</tag>
+                    <span x="10" y="430" :text="index + obj.innerObj.name"></span>
+                    <tag *for="tagItem in colItem.tagList" @click="handleTagClick(colItem, tagItem)">{{ tagItem + index }}</tag>
                 </col>
                 <col span="6">
-                    <span x="10" y="430" :text="test.a.0.b + obj.innerObj.name"></span>
                     <progress
                         type="dashboard"
                         :percentage="percentage" 
@@ -205,9 +205,8 @@ export default {
         handleInput(val) {
             console.log(val)
         },
-        handleTagClick() {
-            const context = this.ctx
-            console.log('tag clicked')
+        handleTagClick(colItem, tagItem) {
+            console.log(colItem, tagItem)
         },
         handleTagClose() {
             console.log('tag closed')

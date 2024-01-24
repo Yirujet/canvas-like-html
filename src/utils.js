@@ -80,8 +80,30 @@ export const getVars = (exp, data) => {
     }))
 }
 
-export const getVarValues = (vars, data) => {
+export const getVarValues = (vars, scopeList, data) => {
     const varObj = {}
+    //  query in loopChain
+    if (scopeList && Array.isArray(scopeList)) {
+        for (let i = scopeList.length - 1; i >= 0; i--) {
+            const { $$loopItemName, $$loopIndexName, $$loopItem, $$loopIndex } = scopeList[i]
+            vars.map(e => e.reactiveProp).filter(varName => typeof varObj[varName] === 'undefined').forEach(varName => {
+                if (varName.includes('.')) {
+                    const propChain = varName.split('.')
+                    if (propChain[0] === $$loopItemName) {
+                        varObj[varName] = propChain.reduce((p, c) => p[c], $$loopItem)
+                    }
+                } else {
+                    if (varName === $$loopItemName) {
+                        varObj[varName] = $$loopItem[$$loopItemName]
+                    }
+                    if (varName === $$loopIndexName) {
+                        varObj[varName] = $$loopIndex[$$loopIndexName]
+                    }
+                }
+            })
+        }
+    }
+    //  query in script data
     vars.map(e => e.reactiveProp).filter(varName => typeof varObj[varName] === 'undefined').forEach(varName => {
         if (varName.includes('.')) {
             const propChain = varName.split('.')
@@ -97,10 +119,10 @@ export const getVarValues = (vars, data) => {
     return varObj
 }
 
-export const calcDynamicPropValue = (exp, data) => {
+export const calcDynamicPropValue = (exp, scopeList, data) => {
     const name = exp.trim()
     const vars = getVars(name, data)
-    const varsVal = getVarValues(vars, data)
+    const varsVal = getVarValues(vars, scopeList, data)
     let result = name
     try {
         for (let varName in varsVal) {

@@ -24,9 +24,15 @@ const translate = (node, data, scriptObj) => {
                     break
                 }
             } else if (elAttrName.startsWith(':')) {
+                if (!node.children[elName].$$loopChain) {
+                    node.children[elName].$$loopChain = node.$$loopChain
+                }
                 handleDynamicProp(elAttrName, elAttrValue, elProps, data, scriptObj, node, elName)
             } else if (elAttrName.startsWith('@')) {
-                handleDynamicEvent(elAttrName, elAttrValue, elProps, scriptObj)
+                if (!node.children[elName].$$loopChain) {
+                    node.children[elName].$$loopChain = node.$$loopChain
+                }
+                handleDynamicEvent(elAttrName, elAttrValue, elProps, scriptObj, node, elName)
             } else {
                 elProps[elAttrName] = elAttrValue
             }

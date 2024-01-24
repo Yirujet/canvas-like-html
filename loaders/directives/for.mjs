@@ -1,6 +1,7 @@
 import parse from '../parse.mjs'
 import { createAST } from '../utils.mjs'
 import translate from '../translate.mjs'
+import _ from 'lodash'
 
 const handleForDirective = (elAttrValue, node, elName, data, scriptObj, elList) => {
     const forDirectiveRegExp = /^(?<exp>\(\S+(?:,\s*\S+)?\)|\S+)\s+in(?<source>\s+\S+)$/
@@ -66,7 +67,7 @@ const handleForDirective = (elAttrValue, node, elName, data, scriptObj, elList) 
             $$loopIndexName: nodeRoot.children[elName].$$loopIndexName
         })
         if (elChildren) {
-            nodeRoot.children[elName].children = elChildren
+            nodeRoot.children[elName].children = _.cloneDeep(elChildren)
         }
     })
     elList.push(...translate(nodeRoot, data, scriptObj))
