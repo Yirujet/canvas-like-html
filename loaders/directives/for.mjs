@@ -26,19 +26,10 @@ const handleForDirective = (elAttrValue, elProps, node, elName, data, methods, s
     let forSourceList
     try {
         forSourceList = forListSource.split('.').reduce((p, c) => p[c], node.$$loopItem)
-        forSource = forSourceList.map(() => `
-            <${elName.description} ${elAttrs}>${node.children[elName].content}</${elName.description}>
-        `).join('\n')
     } catch (e) {
         forSourceList = forListSource.split('.').reduce((p, c) => p[c], scriptObj.data)
-        forSource = forSourceList.map(() => `
-            <${elName.description} 
-                ${elAttrs} 
-                :$$for="${forListSource}" 
-                $$for_exp="${elAttrValue}"
-            >${node.children[elName].content}</${elName.description}>
-        `).join('\n')
     }
+    forSource = forSourceList.map(() => `<${elName.description} ${elAttrs} :$$for="${forListSource}" $$for_exp="${elAttrValue}">${node.children[elName].content}</${elName.description}>`).join('\n')
     const nodeList = parse(forSource)
     const nodeRoot = createAST(nodeList)
     Reflect.ownKeys(nodeRoot.children).forEach((elName, i) => {

@@ -14,7 +14,7 @@ const handleDynamicProp = (elAttrName, elAttrValue, elProps, data, scriptObj, no
             const varVals = getVarValues(vars, node.children[elName].$$loopChain, scriptObj.data)
             elProps[attrName] = calcDynamicTemplate(elAttrValue, node.children[elName].$$loopChain, scriptObj.data)
             Object.entries(varVals)
-                .filter(([, { fromScriptData }]) => fromScriptData)
+                // .filter(([, { fromScriptData }]) => fromScriptData)
                 .forEach(([bindingPropName, { value }]) => {
                     if (bindingPropName.includes('.')) {
                         const bindingChain = bindingPropName.split('.')

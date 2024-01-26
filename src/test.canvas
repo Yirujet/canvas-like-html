@@ -208,7 +208,7 @@ export default {
         handleInput(val) {
             console.log(val)
         },
-        handleTagClick(a, colItem, tagItem) {
+        handleTagClick(d, a, b, c, colItem, tagItem) {
             console.log(tagItem, colItem, a)
         },
         handleTagClose() {
@@ -230,10 +230,11 @@ export default {
             this.obj.value.innerObj.name = percentVal
         }, 2000)*/
         setTimeout(() => {
-            this.colList.value.push({
+            /*this.colList.value.push({
                 span: 2,
                 tagList: ['tag3-1']
-            })
+            })*/
+            this.colList.value[1].tagList.push('tag2-3')
         }, 2000)
     }
 }

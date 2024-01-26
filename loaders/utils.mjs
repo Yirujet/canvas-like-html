@@ -105,6 +105,8 @@ export const calcDynamicTemplate = (exp, scopeList, data) => {
                 val = `"${val}"`
             } else if (typeof val === 'number') {
                 val = parseFloat(val)
+            } else if (Array.isArray(val)) {
+                val = `${JSON.stringify(val)}`
             } else {
                 val = `"${JSON.stringify(val)}"`
             }
