@@ -57,7 +57,7 @@ export default function Event() {
                     }
                     fnBody = fnBody.replace(/^{((?:.|\r\n)*)}$/, '$1').trim()
                     const injectedCallback = new Function(
-                        "return function() {" + injectVarsContent + fnBody + "}"
+                        `return function() { ${injectVarsContent} ${fnBody} }`
                     )()
                     this.addEvent(eventname, injectedCallback.bind(this))
                 } else {

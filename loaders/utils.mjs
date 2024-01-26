@@ -117,7 +117,7 @@ export const calcDynamicTemplate = (exp, scopeList, data) => {
     return result
 }
 
-export const obj2Str = (target, watchedEvents) => {
+export const obj2Str = target => {
     let str = ''
     let isAsync = false
     Reflect.ownKeys(target).forEach(item => {
@@ -128,7 +128,7 @@ export const obj2Str = (target, watchedEvents) => {
         let targetItem = target[item]
         if (isObject(targetItem)) {
             if (itemName === 'on') {
-                str += `"${itemName}":{${obj2Str(targetItem, target.watchedEvents)}},`
+                str += `"${itemName}":{${obj2Str(targetItem)}},`
             } else {
                 str += `"${itemName}":{${obj2Str(targetItem)}},`
             }
@@ -152,26 +152,6 @@ export const obj2Str = (target, watchedEvents) => {
                 isAsync = fnArgs.startsWith('async')
                 fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
             }
-            const injectVars = {}
-            if (watchedEvents) {
-                Object.entries(watchedEvents)
-                    .filter(([eventName]) => eventName === itemName)
-                    .forEach(([eventName, { loopChain }]) => {
-                        if (loopChain && Array.isArray(loopChain)) {
-                            loopChain.forEach(({$$loopIndex, $$loopIndexName, $$loopItem, $$loopItemName}) => {
-                                injectVars[$$loopIndexName] = $$loopIndex[$$loopIndexName]
-                                injectVars[$$loopItemName] = $$loopItem[$$loopItemName]
-                            })
-                        }
-                    })
-            }
-            // const injectVarsContent = Object.entries(injectVars)
-            // .map(([varName, varVal]) => `var ${varName}=${isObject(varVal) ? '{' + obj2Str(varVal) + '}' : typeof varVal === 'number' ? varVal : '\'' + varVal + '\''};`)
-            // .join('\n')
-            // str += `"${itemName}":${isAsync ? 'async ' : ''}function(${fnArgs}) {
-            //     ${injectVarsContent}
-            //     ${fnBody}
-            // },`
             str += `"${itemName}":${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
         } else if (['boolean', 'number'].includes(typeof targetItem)) {
             str += `"${itemName}":${targetItem},`
