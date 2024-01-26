@@ -93,7 +93,7 @@
                     <span x="10" y="430" :text="index + obj.innerObj.name"></span>
                     <tag 
                         *for="(tagItem, tagIndex) in colItem.tagList" 
-                        @change="handleTagClick(colItem, tagItem)"
+                        @change="handleTagClick(tagItem, colItem, 'aaa')"
                     >{{ tagItem + index + tagIndex }}</tag>
                 </col>
                 <col span="6">
@@ -208,8 +208,8 @@ export default {
         handleInput(val) {
             console.log(val)
         },
-        handleTagClick(colItem, tagItem) {
-            console.log(this, colItem, tagItem)
+        handleTagClick(a, colItem, tagItem) {
+            console.log(tagItem, colItem, a)
         },
         handleTagClose() {
             console.log('tag closed')

@@ -35,7 +35,7 @@ const handleForDirective = (elAttrValue, elProps, node, elName, data, methods, s
             <${elName.description} 
                 ${elAttrs} 
                 :$$for="${forListSource}" 
-                $$forExp="${elAttrValue}"
+                $$for_exp="${elAttrValue}"
             >${node.children[elName].content}</${elName.description}>
         `).join('\n')
     }

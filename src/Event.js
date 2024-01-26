@@ -1,4 +1,4 @@
-import { isObject, arrowFnRegExp, declareFnRegExp } from './utils'
+import { isObject, arrowFnRegExp, declareFnRegExp, evalFn } from './utils'
 
 export default function Event() {
     this.events = {}
@@ -37,28 +37,72 @@ export default function Event() {
         if (onObj) {
             Object.entries(onObj).forEach(([eventname, callback]) => {
                 if (this.watchedEvents && this.watchedEvents[eventname]) {
+                    const getFnMatch = fnExp => {
+                        let fnArgs = ''
+                        let fnBody = ''
+                        if (arrowFnRegExp.test(fnExp)) {
+                            const fnMatch = fnExp.match(arrowFnRegExp)
+                            if (fnMatch) {
+                                if (fnMatch.groups.args) {
+                                    fnArgs = fnMatch.groups.args.trim()
+                                }
+                                if (fnMatch.groups.body) {
+                                    fnBody = fnMatch.groups.body.trim()
+                                }
+                            }
+                        } else if (declareFnRegExp.test(fnExp)) {
+                            const fnMatch = fnExp.match(declareFnRegExp)
+                            if (fnMatch) {
+                                if (fnMatch.groups.args) {
+                                    fnArgs = fnMatch.groups.args.trim()
+                                }
+                                if (fnMatch.groups.body) {
+                                    fnBody = fnMatch.groups.body.trim()
+                                }
+                            }
+                        }
+                        return { fnArgs, fnBody }
+                    }
+                    const getFnArgList = fnArgs => {
+                        if (/^\(.*\)$/.test(fnArgs)) {
+                            return fnArgs.slice(1, -1).split(',').map(e => e.trim())
+                        } else {
+                            return [fnArgs]
+                        }
+                    }
+                    const bindingFnExp = this.watchedEvents[eventname].fnExp.toString().trim()
+                    const definationFnExp = callback.toString().trim()
+                    let { fnArgs: definationFnArgs, fnBody } = getFnMatch(definationFnExp)
+                    let { fnArgs: bindingFnArgs } = getFnMatch(bindingFnExp)
+                    let definationFnArgList = getFnArgList(definationFnArgs)
+                    let bindingFnArgList = getFnArgList(bindingFnArgs)
+                    const callbackScope = {}
+                    definationFnArgList.forEach((definationFnArgName, index) => {
+                        if (definationFnArgName) {
+                            callbackScope[definationFnArgName] = bindingFnArgList[index]
+                        }
+                    })
                     const injectVars = {}
-                    const {loopChain} = this.watchedEvents[eventname]
-                    if (loopChain && Array.isArray(loopChain)) {
-                        loopChain.forEach(({$$loopIndex, $$loopIndexName, $$loopItem, $$loopItemName}) => {
-                            injectVars[$$loopIndexName] = $$loopIndex[$$loopIndexName]
-                            injectVars[$$loopItemName] = $$loopItem[$$loopItemName]
-                        })
-                    }
+                    Object.entries(callbackScope).forEach(([definationFnArgName, scopeVarName]) => {
+                        let scopeVarObj = this.$$scope_chain.findLast(({$$loopIndexName, $$loopItemName}) => [$$loopIndexName, $$loopItemName].includes(scopeVarName))
+                        if (scopeVarObj) {
+                            if (scopeVarName === scopeVarObj.$$loopItemName) {
+                                injectVars[definationFnArgName] = scopeVarObj.$$loopItem[scopeVarName]
+                            } else {
+                                injectVars[definationFnArgName] = scopeVarObj.$$loopIndex[scopeVarName]
+                            }
+                        } else {
+                            try {
+                                injectVars[definationFnArgName] = evalFn(scopeVarName)()
+                            } catch (e) {
+                                injectVars[definationFnArgName] = undefined
+                            }
+                        }
+                    })
                     const injectVarsContent = Object.entries(injectVars)
-                    .map(([varName, varVal]) => `var ${varName}=${isObject(varVal) ? JSON.stringify(varVal) : typeof varVal === 'number' ? varVal : '\'' + varVal + '\''};`)
-                    .join(' ')
-                    const callbackBody = callback.toString().trim()
-                    let fnBody = ''
-                    if (arrowFnRegExp.test(callbackBody)) {
-                        fnBody = callbackBody.match(arrowFnRegExp).groups.body.trim()
-                    } else if (declareFnRegExp.test(callbackBody)) {
-                        fnBody = callbackBody.match(declareFnRegExp).groups.body.trim()
-                    }
-                    fnBody = fnBody.replace(/^{((?:.|\r\n)*)}$/, '$1').trim()
-                    const injectedCallback = new Function(
-                        `return function() { ${injectVarsContent} ${fnBody} }`
-                    )()
+                        .map(([varName, varVal]) => `var ${varName}=${isObject(varVal) ? JSON.stringify(varVal) : ['number', 'undefined'].includes(typeof varVal) ? varVal : '\'' + varVal + '\''};`)
+                        .join(' ')
+                    const injectedCallback = new Function(`return function() { ${injectVarsContent} ${fnBody} }`)()
                     this.addEvent(eventname, injectedCallback.bind(this))
                 } else {
                     this.addEvent(eventname, callback)

@@ -2,9 +2,9 @@ import CanvasLikeHtml from './CanvasLikeHtml.js'
 
 export const evalFn = exp => new Function(`return (${exp})`)
 
-export const arrowFnRegExp = /^(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)\s*=>\s*(?<body>(?:.|\r\n)+)$/
+export const arrowFnRegExp = /^(?<args>\(?(?:(?:\w|\$|\s|[.'"])+,?)*\)?)\s*=>\s*(?<body>(?:.|\r\n)+)$/
 
-export const declareFnRegExp = /^(?<name>(?:\w|\$)+)(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)(?:\s|\r|\n)*{(?<body>(?:.|\r|\n)+)}$/
+export const declareFnRegExp = /^(?<name>(?:\w|\$)+)(?<args>\(?(?:(?:\w|\$|\s|[.'"])+,?)*\)?)(?:\s|\r|\n)*(?:{(?<body>(?:.|\r|\n)+)})?$/
 
 export const isObject = val => typeof val === 'object' && val !== null
 

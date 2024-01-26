@@ -166,13 +166,6 @@ export default function CanvasLikeHtml(props) {
             }).bind(this))
         }
     }
-    // const reactiveMethods = (methods) => {
-    //     for (let methodName in methods) {
-    //         this[methodName] = reactive(methods[methodName], methodName, (function(target, prop, value, receiver, propInfo) {
-    //             const { parentProp, bindingChain, parentType } = propInfo
-    //         }).bind(this))
-    //     }
-    // }
     this.mount = function(target) {
         this.target = target
         this.ctx = this.target.getContext('2d')
@@ -194,9 +187,6 @@ export default function CanvasLikeHtml(props) {
             if ($$canvasInstance.data) {
                 reactiveData($$canvasInstance.data)
             }
-            // if ($$canvasInstance.methods) {
-            //     reactiveMethods($$canvasInstance.methods)
-            // }
             if ($$canvasInstance.comps) {
                 this.elements = $$canvasInstance.comps
                 if ($$canvasInstance.created) {

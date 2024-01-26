@@ -10,6 +10,7 @@ const handleDynamicEvent = (elAttrName, elAttrValue, elProps, data, methods, scr
     }
     let fn
     let fnName
+    let fnExp = elAttrValue
     try {
         fn = evalFn(elAttrValue)()
         elProps.on[eventName] = fn
@@ -34,6 +35,7 @@ const handleDynamicEvent = (elAttrName, elAttrValue, elProps, data, methods, scr
             elProps.on[eventName] = fn
             elProps.watchedEvents[eventName] = {
                 fnName,
+                fnExp,
                 loopChain: node.children[elName].$$loopChain
             }
         } catch (e) {

@@ -1,8 +1,8 @@
 export const evalFn = exp => new Function(`return (${exp})`)
 
-export const arrowFnRegExp = /^(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)\s*=>\s*(?<body>(?:.|\r\n)+)$/
+export const arrowFnRegExp = /^(?<args>\(?(?:(?:\w|\$|\s|[.'"])+,?)*\)?)\s*=>\s*(?<body>(?:.|\r\n)+)$/
 
-export const declareFnRegExp = /^(?<name>(?:\w|\$)+)(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)$/
+export const declareFnRegExp = /^(?<name>(?:\w|\$)+)(?<args>\(?(?:(?:\w|\$|\s|[.'"])+,?)*\)?)$/
 
 export const isObject = val => typeof val === 'object' && !Array.isArray(val) && val !== null
 

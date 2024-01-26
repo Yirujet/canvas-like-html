@@ -8,7 +8,8 @@ const translate = (node, data, methods, scriptObj) => {
     let elList = []
     Reflect.ownKeys(node.children).forEach(elName => {
         const elProps = {
-            $$key: uuidV4()
+            $$key: uuidV4(),
+            $$scope_chain: []
         }
         const attrsList = Object.keys(node.children[elName].attrs)
         attrsList.sort((e1, e2) => {
@@ -37,8 +38,14 @@ const translate = (node, data, methods, scriptObj) => {
                 }
                 handleDynamicEvent(elAttrName, elAttrValue, elProps, data, methods, scriptObj, node, elName)
             } else {
+                if (!node.children[elName].$$loopChain) {
+                    node.children[elName].$$loopChain = node.$$loopChain
+                }
                 elProps[elAttrName] = elAttrValue
             }
+        }
+        if (node.children[elName].$$loopChain) {
+            elProps.$$scope_chain = node.children[elName].$$loopChain
         }
         //  If the node attribute contains *for, the collection of this node will be skipped because all nodes will be created in the built-in for directive.
         if (!attrsList.includes('*for')) {
