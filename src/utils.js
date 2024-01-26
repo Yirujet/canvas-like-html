@@ -2,6 +2,17 @@ import CanvasLikeHtml from './CanvasLikeHtml.js'
 
 export const evalFn = exp => new Function(`return (${exp})`)
 
+export const arrowFnRegExp = /^(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)\s*=>\s*(?<body>(?:.|\r\n)+)$/
+
+export const declareFnRegExp = /^(?<name>(?:\w|\$)+)(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)(?:\s|\r|\n)*{(?<body>(?:.|\r|\n)+)}$/
+
+export const isObject = val => typeof val === 'object' && val !== null
+
+export const isArrowFunction = fn => {
+    const str = fn.toString().trim()
+    return arrowFnRegExp.test(str)
+}
+
 export const getTextMetrics = (text, fontSize) => {
     // const fontSize = this.options.canvas.fontSize
     const width = [].slice.call(text || '')
@@ -149,6 +160,7 @@ export function render(compName, compProps) {
     if (typeof compName === 'object' && compName.render && typeof compName.render === 'function') {
         comp = {
             data: compName.data,
+            methods: compName.methods,
             created: compName.created,
             mounted: compName.mounted,
             comps: compName.render.call(this, render.bind(this))

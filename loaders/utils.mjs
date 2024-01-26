@@ -2,6 +2,10 @@ export const evalFn = exp => new Function(`return (${exp})`)
 
 export const arrowFnRegExp = /^(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)\s*=>\s*(?<body>(?:.|\r\n)+)$/
 
+export const declareFnRegExp = /^(?<name>(?:\w|\$)+)(?<args>\(?(?:(?:\w|\$|\s|\.)+,?)*\)?)$/
+
+export const isObject = val => typeof val === 'object' && !Array.isArray(val) && val !== null
+
 export const isArrowFunction = fn => {
     const str = fn.toString().trim()
     return arrowFnRegExp.test(str)
@@ -113,39 +117,68 @@ export const calcDynamicTemplate = (exp, scopeList, data) => {
     return result
 }
 
-export const obj2Str = target => {
+export const obj2Str = (target, watchedEvents) => {
     let str = ''
     let isAsync = false
-    for (let item in target) {
-        if (Object.prototype.toString.call(target[item]) === '[object Object]') {
-            str += `${item}:{${obj2Str(target[item])}},`
-        } else if (Array.isArray(target[item])) {
-            if (item === '$$render_children') {
-                str += `${item}: h => [${target[item]}],`
+    Reflect.ownKeys(target).forEach(item => {
+        let itemName = item
+        if (typeof item === 'symbol') {
+            itemName = item.description
+        }
+        let targetItem = target[item]
+        if (isObject(targetItem)) {
+            if (itemName === 'on') {
+                str += `"${itemName}":{${obj2Str(targetItem, target.watchedEvents)}},`
             } else {
-                str += `${item}:${JSON.stringify(target[item])},`
+                str += `"${itemName}":{${obj2Str(targetItem)}},`
             }
-        } else if (typeof target[item] === 'function') {
+        } else if (Array.isArray(targetItem)) {
+            if (itemName === '$$render_children') {
+                str += `"${itemName}": h => [${targetItem}],`
+            } else {
+                str += `"${itemName}":${JSON.stringify(targetItem)},`
+            }
+        } else if (typeof targetItem === 'function') {
             let fnBody, fnArgs
-            if (isArrowFunction(target[item])) {
-                fnBody = target[item].toString().slice(target[item].toString().indexOf('>') + 1)
-                fnArgs = target[item].toString().replace(fnBody, '').replace('=>', '').trim()
+            if (isArrowFunction(targetItem)) {
+                fnBody = targetItem.toString().slice(targetItem.toString().indexOf('>') + 1)
+                fnArgs = targetItem.toString().replace(fnBody, '').replace('=>', '').trim()
                 if (fnArgs.startsWith('(') && fnArgs.endsWith(')')) {
                     fnArgs = fnArgs.slice(1,  -1)
                 }
             } else {
-                fnBody = target[item].toString().slice(target[item].toString().indexOf('{') + 1, target[item].toString().lastIndexOf('}'))
-                fnArgs = target[item].toString().replace(fnBody, '').trim()
+                fnBody = targetItem.toString().slice(targetItem.toString().indexOf('{') + 1, targetItem.toString().lastIndexOf('}'))
+                fnArgs = targetItem.toString().replace(fnBody, '').trim()
                 isAsync = fnArgs.startsWith('async')
                 fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
             }
-            str += `${item}:${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
-        } else if (['boolean', 'number'].includes(typeof target[item])) {
-            str += `${item}:${target[item]},`
+            const injectVars = {}
+            if (watchedEvents) {
+                Object.entries(watchedEvents)
+                    .filter(([eventName]) => eventName === itemName)
+                    .forEach(([eventName, { loopChain }]) => {
+                        if (loopChain && Array.isArray(loopChain)) {
+                            loopChain.forEach(({$$loopIndex, $$loopIndexName, $$loopItem, $$loopItemName}) => {
+                                injectVars[$$loopIndexName] = $$loopIndex[$$loopIndexName]
+                                injectVars[$$loopItemName] = $$loopItem[$$loopItemName]
+                            })
+                        }
+                    })
+            }
+            // const injectVarsContent = Object.entries(injectVars)
+            // .map(([varName, varVal]) => `var ${varName}=${isObject(varVal) ? '{' + obj2Str(varVal) + '}' : typeof varVal === 'number' ? varVal : '\'' + varVal + '\''};`)
+            // .join('\n')
+            // str += `"${itemName}":${isAsync ? 'async ' : ''}function(${fnArgs}) {
+            //     ${injectVarsContent}
+            //     ${fnBody}
+            // },`
+            str += `"${itemName}":${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
+        } else if (['boolean', 'number'].includes(typeof targetItem)) {
+            str += `"${itemName}":${targetItem},`
         } else {
-            str += `${item}:"${target[item]}",`
+            str += `"${itemName}":"${targetItem}",`
         }
-    }
+    })
     return str
 }
 

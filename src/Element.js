@@ -14,6 +14,10 @@ export default function Element() {
     this.globalProps = null
     this.root = null
     this.watchedProps = {}
+    this.watchedEvents = {}
+    this.$$key = null
+    this.$$for = null
+    this.$$forExp = null
     this.$$props = {}
     this.$$render_children = null
     this.parentElement = null

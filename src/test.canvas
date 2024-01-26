@@ -29,16 +29,6 @@
         y="220" 
         :list="list1"
     >下拉菜单</dropdown>
-    <dropdown 
-        x="10" 
-        y="250" 
-        :list="[
-            { name: 'dropdown-item-1', value: 'dropdown-item-1' },
-            { name: 'dropdown-item-2', value: 'dropdown-item-2' }
-        ]"
-        trigger="click"
-        @command="handleCommand"
-    >下拉菜单-点击触发</dropdown>
     <radio-group x="10" y="280" @change="handleRadioGroupChange">
         <radio value="备选项1">备选项1</radio>
         <radio value="备选项2">备选项2</radio>
@@ -101,9 +91,22 @@
                 </col>-->
                 <col :span="colItem.span" *for="(colItem, index) in colList">
                     <span x="10" y="430" :text="index + obj.innerObj.name"></span>
-                    <tag *for="tagItem in colItem.tagList" @click="handleTagClick(colItem, tagItem)">{{ tagItem + index }}</tag>
+                    <tag 
+                        *for="(tagItem, tagIndex) in colItem.tagList" 
+                        @change="handleTagClick(colItem, tagItem)"
+                    >{{ tagItem + index + tagIndex }}</tag>
                 </col>
                 <col span="6">
+                    <dropdown 
+                        x="10" 
+                        y="250" 
+                        :list="[
+                            { name: 'dropdown-item-1', value: 'dropdown-item-1' },
+                            { name: 'dropdown-item-2', value: 'dropdown-item-2' }
+                        ]"
+                        trigger="click"
+                        @command="handleCommand"
+                    >下拉菜单-点击触发</dropdown>
                     <progress
                         type="dashboard"
                         :percentage="percentage" 
@@ -182,7 +185,7 @@ export default {
                 span: 4,
                 tagList: ['tag2-1', 'tag2-2']
             },
-        ]
+        ],
     },
     methods: {
         handleClick() {
@@ -206,7 +209,7 @@ export default {
             console.log(val)
         },
         handleTagClick(colItem, tagItem) {
-            console.log(colItem, tagItem)
+            console.log(this, colItem, tagItem)
         },
         handleTagClose() {
             console.log('tag closed')
@@ -220,11 +223,17 @@ export default {
             this.test.value.a[0].b = 321
         }, 2000)
         this.columns.value = tblHead;
-        this.tblData.value = tblData;*/
+        this.tblData.value = tblData;
         setInterval(() => {
             let percentVal = Math.floor(100 * Math.random())
             this.percentage.value = percentVal
             this.obj.value.innerObj.name = percentVal
+        }, 2000)*/
+        setTimeout(() => {
+            this.colList.value.push({
+                span: 2,
+                tagList: ['tag3-1']
+            })
         }, 2000)
     }
 }

@@ -1,9 +1,9 @@
 import parse from '../parse.mjs'
-import { createAST } from '../utils.mjs'
+import { createAST, obj2Str } from '../utils.mjs'
 import translate from '../translate.mjs'
 import _ from 'lodash'
 
-const handleForDirective = (elAttrValue, node, elName, data, scriptObj, elList) => {
+const handleForDirective = (elAttrValue, elProps, node, elName, data, methods, scriptObj, elList) => {
     const forDirectiveRegExp = /^(?<exp>\(\S+(?:,\s*\S+)?\)|\S+)\s+in(?<source>\s+\S+)$/
     const forExpIncludesIndexRegExp = /^\((?<loopItemName>\S+),\s*(?<loopIndexName>\S+)\)$/
     const forDirectiveMatch = elAttrValue.match(forDirectiveRegExp)
@@ -32,7 +32,11 @@ const handleForDirective = (elAttrValue, node, elName, data, scriptObj, elList) 
     } catch (e) {
         forSourceList = forListSource.split('.').reduce((p, c) => p[c], scriptObj.data)
         forSource = forSourceList.map(() => `
-            <${elName.description} ${elAttrs}>${node.children[elName].content}</${elName.description}>
+            <${elName.description} 
+                ${elAttrs} 
+                :$$for="${forListSource}" 
+                $$forExp="${elAttrValue}"
+            >${node.children[elName].content}</${elName.description}>
         `).join('\n')
     }
     const nodeList = parse(forSource)
@@ -70,7 +74,7 @@ const handleForDirective = (elAttrValue, node, elName, data, scriptObj, elList) 
             nodeRoot.children[elName].children = _.cloneDeep(elChildren)
         }
     })
-    elList.push(...translate(nodeRoot, data, scriptObj))
+    elList.push(...translate(nodeRoot, data, methods, scriptObj))
 }
 
 export default handleForDirective

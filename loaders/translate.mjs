@@ -2,11 +2,14 @@ import handleDynamicProp from './handleDynamicProp.mjs'
 import handleDynamicEvent from './handleDynamicEvent.mjs'
 import handleBuiltInDirective from './directives/handleBuiltInDirective.mjs'
 import { obj2Str, calcDynamicTemplate } from './utils.mjs'
+import { v4 as uuidV4 } from 'uuid'
 
-const translate = (node, data, scriptObj) => {
+const translate = (node, data, methods, scriptObj) => {
     let elList = []
     Reflect.ownKeys(node.children).forEach(elName => {
-        const elProps = {}
+        const elProps = {
+            $$key: uuidV4()
+        }
         const attrsList = Object.keys(node.children[elName].attrs)
         attrsList.sort((e1, e2) => {
             if (e1.startsWith('*')) {
@@ -19,7 +22,7 @@ const translate = (node, data, scriptObj) => {
             let elAttrName = attrsList[i]
             let elAttrValue = node.children[elName].attrs[elAttrName]
             if (elAttrName.startsWith('*')) {
-                handleBuiltInDirective(elAttrName, elAttrValue, node, elName, data, scriptObj, elList)
+                handleBuiltInDirective(elAttrName, elAttrValue, elProps, node, elName, data, methods, scriptObj, elList)
                 if (elAttrName === '*for') {
                     break
                 }
@@ -32,7 +35,7 @@ const translate = (node, data, scriptObj) => {
                 if (!node.children[elName].$$loopChain) {
                     node.children[elName].$$loopChain = node.$$loopChain
                 }
-                handleDynamicEvent(elAttrName, elAttrValue, elProps, scriptObj, node, elName)
+                handleDynamicEvent(elAttrName, elAttrValue, elProps, data, methods, scriptObj, node, elName)
             } else {
                 elProps[elAttrName] = elAttrValue
             }
@@ -63,7 +66,7 @@ const translate = (node, data, scriptObj) => {
                 case 'row':
                 case 'col':
                     if (node.children[elName].children && Reflect.ownKeys(node.children[elName].children).length > 0) {
-                        elProps.$$render_children = translate(node.children[elName], data, scriptObj)
+                        elProps.$$render_children = translate(node.children[elName], data, methods, scriptObj)
                     } else {
                         elProps.$$render_children = []
                     }

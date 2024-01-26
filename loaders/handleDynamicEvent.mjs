@@ -1,11 +1,15 @@
-import { evalFn, isArrowFunction, arrowFnRegExp } from './utils.mjs'
+import { evalFn, isArrowFunction, arrowFnRegExp, declareFnRegExp } from './utils.mjs'
 
-const handleDynamicEvent = (elAttrName, elAttrValue, elProps, scriptObj, node, elName) => {
+const handleDynamicEvent = (elAttrName, elAttrValue, elProps, data, methods, scriptObj, node, elName) => {
     const eventName = elAttrName.slice(1)
     if (!elProps.on) {
         elProps.on = {}
     }
+    if (!elProps.watchedEvents) {
+        elProps.watchedEvents = {}
+    }
     let fn
+    let fnName
     try {
         fn = evalFn(elAttrValue)()
         elProps.on[eventName] = fn
@@ -15,21 +19,23 @@ const handleDynamicEvent = (elAttrName, elAttrValue, elProps, scriptObj, node, e
                 const fnContent = elAttrValue.trim()
                 const arrowFnMatch = fnContent.match(arrowFnRegExp)
                 if (arrowFnMatch) {
-                    const fnArgsContent = arrowFnMatch.groups.args.trim()
-                    const fnBodyContent = arrowFnMatch.groups.body.trim()
-                    let fnArgNames
-                    if (fnArgsContent.startsWith('(')) {
-                        fnArgNames = fnArgsContent.slice(1, -1).split(',').map(e => e.trim())
-                    } else {
-                        fnArgNames = [fnArgsContent.trim()]
-                    }
-                    
+                    fnName = `anonymous-${elProps.$$key}`
+                    fn = evalFn(elAttrValue)
                 }
             } else {
-
+                const fnContent = elAttrValue.trim()
+                const declareFnMatch = fnContent.match(declareFnRegExp)
+                if (declareFnMatch) {
+                    fnName = declareFnMatch.groups.name.trim()
+                    fn = scriptObj.methods[fnName]
+                }
             }
-            fn = scriptObj.methods[elAttrValue]
+            methods[fnName] = fn
             elProps.on[eventName] = fn
+            elProps.watchedEvents[eventName] = {
+                fnName,
+                loopChain: node.children[elName].$$loopChain
+            }
         } catch (e) {
             console.error(e)
         }

@@ -1,5 +1,11 @@
 import EventObserver from './EventObserver.js'
-import { render, toLowerCase, toReactiveKey, calcDynamicPropValue } from './utils.js'
+import { 
+    render, 
+    toLowerCase, 
+    toReactiveKey, 
+    calcDynamicPropValue, 
+    isObject, 
+} from './utils.js'
 import Button from './Elements/Button.js'
 import Checkbox from './Elements/Checkbox.js'
 import CheckboxGroup from './Elements/CheckboxGroup.js'
@@ -102,7 +108,6 @@ export default function CanvasLikeHtml(props) {
     }
 
     const proxyObj = new WeakMap()
-    const isObject = val => typeof val === 'object' && val !== null
     
     function reactive(target, propName, callback) {
         const res = proxyObj.get(target)
@@ -128,11 +133,14 @@ export default function CanvasLikeHtml(props) {
                 }
                 return result
             },
+            apply(target, thisArg, argumentsList) {
+                console.log(target, thisArg, argumentsList)
+            }
         })
         proxyObj.set(target, observed)
         return observed
     }
-    const handleWatcher = (data) => {
+    const reactiveData = (data) => {
         for (let propName in data) {
             this[propName] = reactive({
                 value: data[propName]
@@ -158,6 +166,13 @@ export default function CanvasLikeHtml(props) {
             }).bind(this))
         }
     }
+    // const reactiveMethods = (methods) => {
+    //     for (let methodName in methods) {
+    //         this[methodName] = reactive(methods[methodName], methodName, (function(target, prop, value, receiver, propInfo) {
+    //             const { parentProp, bindingChain, parentType } = propInfo
+    //         }).bind(this))
+    //     }
+    // }
     this.mount = function(target) {
         this.target = target
         this.ctx = this.target.getContext('2d')
@@ -175,24 +190,27 @@ export default function CanvasLikeHtml(props) {
         this.ctx.translate(0.5, 0.5)
         this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
         if (propsObj?.render) {
-            const renderObj = propsObj.render.call(this, this._c)
-            if (renderObj.data) {
-                handleWatcher(renderObj.data)
+            const $$canvasInstance = propsObj.render.call(this, this._c)
+            if ($$canvasInstance.data) {
+                reactiveData($$canvasInstance.data)
             }
-            if (renderObj.comps) {
-                this.elements = renderObj.comps
-                if (renderObj.created) {
-                    renderObj.created.call(this)
+            // if ($$canvasInstance.methods) {
+            //     reactiveMethods($$canvasInstance.methods)
+            // }
+            if ($$canvasInstance.comps) {
+                this.elements = $$canvasInstance.comps
+                if ($$canvasInstance.created) {
+                    $$canvasInstance.created.call(this)
                 }
                 if (Array.isArray(this.elements)) {
                     this.elements.forEach(comp => comp.render())
                 } else {
                     this.elements.render()
                 }
-                linkCompsWithData(renderObj.data)
+                linkCompsWithData($$canvasInstance.data)
             }
-            if (renderObj.mounted) {
-                renderObj.mounted.call(this)
+            if ($$canvasInstance.mounted) {
+                $$canvasInstance.mounted.call(this)
             }
         }
         this.eventObserver.observe(this.target)

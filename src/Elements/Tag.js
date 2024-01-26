@@ -119,29 +119,37 @@ export default function Tag(props) {
         const defaultEventListeners = {
             mouseenter: e => {
                 const { offsetX, offsetY } = e
-                if (this.closeIconEntered || !this.closable) return
-                if (offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y) {
-                    this.mouseEntered = true
+                if (this.closable) {
+                    if (this.closeIconEntered) return
                     if (offsetX >= this.area.closeIcon.leftTop.x && offsetX <= this.area.closeIcon.rightTop.x && offsetY >= this.area.closeIcon.leftTop.y && offsetY <= this.area.closeIcon.leftBottom.y) {
                         this.closeIconEntered = true
+                        this.mouseEntered = true
                         this.cursor = 'pointer'
                     } else {
                         this.closeIconEntered = false
                         this.cursor = 'default'
                     }
                     this.render()
+                } else {
+                    if (this.mouseEntered) return
+                    if (offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y) {
+                        this.mouseEntered = true
+                        this.cursor = 'default'
+                    }
                 }
             },
             mouseleave: e => {
                 const { offsetX, offsetY } = e
-                if (!this.closable) return
-                if (!(offsetX >= this.area.closeIcon.leftTop.x && offsetX <= this.area.closeIcon.rightTop.x && offsetY >= this.area.closeIcon.leftTop.y && offsetY <= this.area.closeIcon.leftBottom.y)) {
-                    this.closeIconEntered = false
-                    this.cursor = 'default'
-                    this.render()
-                    if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
-                        this.mouseEntered = false
+                if (!this.mouseEntered) return
+                if (this.closable) {
+                    if (!(offsetX >= this.area.closeIcon.leftTop.x && offsetX <= this.area.closeIcon.rightTop.x && offsetY >= this.area.closeIcon.leftTop.y && offsetY <= this.area.closeIcon.leftBottom.y)) {
+                        this.closeIconEntered = false
+                        this.cursor = 'default'
+                        this.render()
                     }
+                }
+                if (!(offsetX >= this.area.leftTop.x && offsetX <= this.area.rightTop.x && offsetY >= this.area.leftTop.y && offsetY <= this.area.leftBottom.y)) {
+                    this.mouseEntered = false
                 }
             },
             click: () => {

@@ -10,6 +10,7 @@ export default function(source) {
     let mountedFn = null
     let createdFn = null
     let data = {}
+    let methods = {}
     if (root.children) {
         const rootNodeKeys = Reflect.ownKeys(root.children)
         const canvasNodeIndex = rootNodeKeys.findIndex(item => item.description === 'canvas')
@@ -34,12 +35,13 @@ export default function(source) {
         if (scriptObj.mounted) {
             mountedFn = scriptObj.mounted
         }
-        elList = translate(canvasNode, data, scriptObj)
+        elList = translate(canvasNode, data, methods, scriptObj)
     }
     const result = `
         ${ scriptImport }
         export default {
             ${obj2Str({data})}
+            ${obj2Str({methods})}
             ${createdFn ? obj2Str({created: createdFn}) : ''}
             ${mountedFn ? obj2Str({mounted: mountedFn}) : ''}
             render: h => [${elList}]
