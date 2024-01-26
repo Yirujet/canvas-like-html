@@ -12,7 +12,7 @@ export const isArrowFunction = fn => {
 }
 
 export const getVars = exp => {
-    const varRegExp = /[0-9a-zA-Z_$]+(\.[0-9a-zA-Z_$]+)*/g
+    const varRegExp = /['"(0-9a-zA-Z_$]+(\.['")0-9a-zA-Z_$]+)*/g
     const jsBuiltInObj = [
         'Array',
         'String',

@@ -66,6 +66,9 @@ export default function Col(props) {
             .filter(l => l.length > 0)
             .map(l => Math.max(...l.map(c => c.height || 0)))
             .reduce((p, c) => p + c, 0)
+        if ((this.y + this.height) > (this.parentElement.y + this.parentElement.height)) {
+            this.ctx.clearRect(this.x, this.y + this.height, this.width, this.y + this.height - (this.parentElement.y + this.parentElement.height))
+        }
         if (this.globalProps.mode === 'development') {
             this.ctx.save()
             this.ctx.strokeStyle = 'blue'

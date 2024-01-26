@@ -37,6 +37,8 @@ const handleForDirective = (elAttrValue, elProps, node, elName, data, methods, s
             if (!nodeRoot.children[elName].$$loopChain) {
                 nodeRoot.children[elName].$$loopChain = []
                 nodeRoot.children[elName].$$loopChain.push({
+                    $$loopSource: node.$$loopSource,
+                    $$loopExp: node.$$loopExp,
                     $$loopItem: node.$$loopItem,
                     $$loopIndex: node.$$loopIndex,
                     $$loopItemName: node.$$loopItemName,
@@ -52,10 +54,14 @@ const handleForDirective = (elAttrValue, elProps, node, elName, data, methods, s
         nodeRoot.children[elName].$$loopIndex = {
             [loopItemIndex]: i
         }
+        nodeRoot.children[elName].$$loopExp = elAttrValue
+        nodeRoot.children[elName].$$loopSource = forListSource
         if (!nodeRoot.children[elName].$$loopChain) {
             nodeRoot.children[elName].$$loopChain = []
         }
         nodeRoot.children[elName].$$loopChain.push({
+            $$loopExp: nodeRoot.children[elName].$$loopExp,
+            $$loopSource: nodeRoot.children[elName].$$loopSource,
             $$loopItem: nodeRoot.children[elName].$$loopItem,
             $$loopIndex: nodeRoot.children[elName].$$loopIndex,
             $$loopItemName: nodeRoot.children[elName].$$loopItemName,

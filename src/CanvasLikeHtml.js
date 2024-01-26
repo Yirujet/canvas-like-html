@@ -76,6 +76,20 @@ export default function CanvasLikeHtml(props) {
         }
     }
     this._c = render.bind(this)
+
+    const addPropsLinkdWithComp = (propChain, data, comp, compProp, exp, loopChain) => {
+        let bindDataProp = toReactiveKey(propChain, data)
+        if (!propsLinkedWithComps[bindDataProp]) {
+            propsLinkedWithComps[bindDataProp] = new Watcher()
+        }
+        propsLinkedWithComps[bindDataProp].add({
+            comp,
+            prop: compProp,
+            exp,
+            loopChain
+        })
+    }
+
     const linkCompsWithData = (data) => {
         const deepQuery = list => {
             list.forEach(comp => {
@@ -83,16 +97,42 @@ export default function CanvasLikeHtml(props) {
                     Object.entries(comp.watchedProps).forEach(([compProp, bindingProps]) => {
                         if (Array.isArray(bindingProps)) {
                             bindingProps.forEach(({ prop: bindingProp, exp, loopChain }) => {
-                                let bindDataProp = toReactiveKey(bindingProp, data)
-                                if (!propsLinkedWithComps[bindDataProp]) {
-                                    propsLinkedWithComps[bindDataProp] = new Watcher()
+                                let propList = []
+                                if (loopChain) {
+                                    bindingProp.split('.').forEach(propName => {
+                                        const curScope = loopChain.find(({$$loopItemName, $$loopSource}) => [$$loopItemName, $$loopSource.split('.').at(-1)].includes(propName))
+                                        if (curScope) {
+                                            const {$$loopExp, $$loopIndexName, $$loopIndex, $$loopSource} = curScope
+                                            const forDirectiveRegExp = /^(?<exp>\(\S+(?:,\s*\S+)?\)|\S+)\s+in(?<source>\s+\S+)$/
+                                            const forDirectiveMatch = $$loopExp.match(forDirectiveRegExp)
+                                            const forSource = forDirectiveMatch.groups.source.trim()
+                                            const sourceName = forSource.split('.').at(-1)
+                                            if ($$loopSource.split('.').at(-1) === propName) {
+                                                let sourceProp = ''
+                                                if (propList.length > 0) {
+                                                    sourceProp = propList.join('') + '.' + sourceName
+                                                } else {
+                                                    sourceProp = sourceName
+                                                }
+                                                addPropsLinkdWithComp(sourceProp, data, comp, compProp, exp, loopChain)
+                                            }
+                                            if (propList.length > 0) {
+                                                propList.push(`.${sourceName}.${$$loopIndex[$$loopIndexName]}`)
+                                            } else {
+                                                propList.push(`${sourceName}.${$$loopIndex[$$loopIndexName]}`)
+                                            }
+                                        } else {
+                                            if (propList.length > 0) {
+                                                propList.push(`.${propName}`)
+                                            }
+                                        }
+                                    })
                                 }
-                                propsLinkedWithComps[bindDataProp].add({
-                                    comp,
-                                    prop: compProp,
-                                    exp,
-                                    loopChain
-                                })
+                                let realBindingProp = bindingProp
+                                if (propList.length > 0) {
+                                    realBindingProp = propList.join('')
+                                }
+                                addPropsLinkdWithComp(realBindingProp, data, comp, compProp, exp, loopChain)
                             })
                         }
                     })

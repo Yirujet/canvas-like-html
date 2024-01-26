@@ -91,6 +91,9 @@
                 </col>-->
                 <col :span="colItem.span" *for="(colItem, index) in colList">
                     <span x="10" y="430" :text="index + obj.innerObj.name"></span>
+                    <span 
+                        *for="(tagItem, tagIndex) in colItem.tagList" 
+                    >{{ "test " + index + tagIndex }}</span>
                     <tag 
                         *for="(tagItem, tagIndex) in colItem.tagList" 
                         @change="handleTagClick(tagItem, colItem, 'aaa')"
