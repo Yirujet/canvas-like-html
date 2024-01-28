@@ -122,6 +122,7 @@ export const calcDynamicTemplate = (exp, scopeList, data) => {
 export const obj2Str = target => {
     let str = ''
     let isAsync = false
+    if (typeof target === 'string') return target
     Reflect.ownKeys(target).forEach(item => {
         let itemName = item
         if (typeof item === 'symbol') {

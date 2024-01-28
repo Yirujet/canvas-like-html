@@ -1,7 +1,7 @@
-import parse from '../parse.mjs'
-import { createAST, obj2Str } from '../utils.mjs'
 import translate from '../translate.mjs'
+import generateForRoot from '../generateForRoot.mjs'
 import _ from 'lodash'
+import { v4 as uuidV4 } from 'uuid'
 
 const handleForDirective = (elAttrValue, elProps, node, elName, data, methods, scriptObj, elList) => {
     const forDirectiveRegExp = /^(?<exp>\(\S+(?:,\s*\S+)?\)|\S+)\s+in(?<source>\s+\S+)$/
@@ -29,48 +29,8 @@ const handleForDirective = (elAttrValue, elProps, node, elName, data, methods, s
     } catch (e) {
         forSourceList = forListSource.split('.').reduce((p, c) => p[c], scriptObj.data)
     }
-    forSource = forSourceList.map(() => `<${elName.description} ${elAttrs} :$$for="${forListSource}" $$for_exp="${elAttrValue}">${node.children[elName].content}</${elName.description}>`).join('\n')
-    const nodeList = parse(forSource)
-    const nodeRoot = createAST(nodeList)
-    Reflect.ownKeys(nodeRoot.children).forEach((elName, i) => {
-        if (node.$$loopItem) {
-            if (!nodeRoot.children[elName].$$loopChain) {
-                nodeRoot.children[elName].$$loopChain = []
-                nodeRoot.children[elName].$$loopChain.push({
-                    $$loopSource: node.$$loopSource,
-                    $$loopExp: node.$$loopExp,
-                    $$loopItem: node.$$loopItem,
-                    $$loopIndex: node.$$loopIndex,
-                    $$loopItemName: node.$$loopItemName,
-                    $$loopIndexName: node.$$loopIndexName
-                })
-            }
-        }
-        nodeRoot.children[elName].$$loopItemName = loopItemName
-        nodeRoot.children[elName].$$loopIndexName = loopItemIndex
-        nodeRoot.children[elName].$$loopItem = {
-            [loopItemName]: forSourceList[i]
-        }
-        nodeRoot.children[elName].$$loopIndex = {
-            [loopItemIndex]: i
-        }
-        nodeRoot.children[elName].$$loopExp = elAttrValue
-        nodeRoot.children[elName].$$loopSource = forListSource
-        if (!nodeRoot.children[elName].$$loopChain) {
-            nodeRoot.children[elName].$$loopChain = []
-        }
-        nodeRoot.children[elName].$$loopChain.push({
-            $$loopExp: nodeRoot.children[elName].$$loopExp,
-            $$loopSource: nodeRoot.children[elName].$$loopSource,
-            $$loopItem: nodeRoot.children[elName].$$loopItem,
-            $$loopIndex: nodeRoot.children[elName].$$loopIndex,
-            $$loopItemName: nodeRoot.children[elName].$$loopItemName,
-            $$loopIndexName: nodeRoot.children[elName].$$loopIndexName
-        })
-        if (elChildren) {
-            nodeRoot.children[elName].children = _.cloneDeep(elChildren)
-        }
-    })
+    const forKey = uuidV4()
+    const nodeRoot = generateForRoot(forSourceList, node, loopItemName, loopItemIndex, elChildren, elName.description, elAttrs, forListSource, forKey, elAttrValue, node.children[elName].content)
     elList.push(...translate(nodeRoot, data, methods, scriptObj))
 }
 

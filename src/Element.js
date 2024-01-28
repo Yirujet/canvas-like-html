@@ -17,6 +17,7 @@ export default function Element() {
     this.watchedEvents = {}
     this.$$key = null
     this.$$for = null
+    this.$$for_key = null
     this.$$for_exp = null
     this.$$props = {}
     this.$$render_children = null
