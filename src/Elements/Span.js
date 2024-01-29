@@ -42,5 +42,6 @@ export default function Span(props) {
         this.ctx.fillText(this.text, this.x, this.y + this.height / 2)
         this.ctx.restore()
     }
+    initDefaultAttrs()
     initEvents()
 }

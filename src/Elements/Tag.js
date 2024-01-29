@@ -214,5 +214,6 @@ export default function Tag(props) {
             }
         }
     }
+    initDefaultAttrs()
     initEvents()
 }

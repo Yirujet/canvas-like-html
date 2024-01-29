@@ -160,5 +160,6 @@ export default function Link(props) {
         }
         this.ctx.restore()
     }
+    initDefaultAttrs()
     initEvents()
 }

@@ -61,5 +61,6 @@ export default function CheckboxGroup(props) {
             })
         })
     }
+    initDefaultAttrs()
     initEvents()
 }

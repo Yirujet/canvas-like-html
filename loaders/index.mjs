@@ -1,8 +1,6 @@
 import parse from './parse.mjs'
 import { evalFn, obj2Str, createAST } from './utils.mjs'
 import translate from './translate.mjs'
-// import generateForRoot from './generateForRoot.mjs'
-import HTMLParser from './htmlparser.mjs'
 
 export default function(source) {
     const nodeList = parse(source)
@@ -12,13 +10,7 @@ export default function(source) {
     let mountedFn = null
     let createdFn = null
     let data = {}
-    let methods = {
-        HTMLParser,
-        // generateForRoot,
-        obj2Str,
-        // parse,
-        createAST
-    }
+    let methods = {}
     if (root.children) {
         const rootNodeKeys = Reflect.ownKeys(root.children)
         const canvasNodeIndex = rootNodeKeys.findIndex(item => item.description === 'canvas')

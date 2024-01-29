@@ -13,11 +13,7 @@ export default function Row(props) {
     this.children = null
     const maxColSpan = 24
     this.initProps(props)
-    this.render = function(config) {
-        this.initProps(config)
-        if (this.children === null && this.$$render_children) {
-            this.children = this.$$render_children.call(this, this.root._c)
-        }
+    const initDefaultAttrs = () => {
         if (this.width === null) {
             this.width = parseFloat(this.parentElement.width)
         }
@@ -35,19 +31,31 @@ export default function Row(props) {
                 .reduce((p, c) => p + c, 0)
             }
         }
-        this.children.forEach((col, i, ary) => {
-            let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width, this.x)
-            const pullWidth = parseInt(col.$$props.pull || 0) / maxColSpan * this.width
-            const pushWidth = parseInt(col.$$props.push || 0) / maxColSpan * this.width
-            col.render({
-                x: preWidth - pullWidth + pushWidth, 
-                y: this.y,
-                parentElement: this,
-                width: parseInt(col.$$props.span || maxColSpan) / maxColSpan * this.width,
-                offset: parseInt(col.$$props.offset || 0) / maxColSpan * this.width,
+        if (this.children === null && this.$$render_children) {
+            this.children = this.$$render_children.call(this, this.root._c)
+        }
+        if (this.children) {
+            this.children.forEach((col, i, ary) => {
+                let preWidth = ary.slice(0, i).reduce((p, c) => p + c.width, this.x)
+                const pullWidth = parseInt(col.$$props.pull || 0) / maxColSpan * this.width
+                const pushWidth = parseInt(col.$$props.push || 0) / maxColSpan * this.width
+                col.render({
+                    x: preWidth - pullWidth + pushWidth, 
+                    y: this.y,
+                    parentElement: this,
+                    width: parseInt(col.$$props.span || maxColSpan) / maxColSpan * this.width,
+                    offset: parseInt(col.$$props.offset || 0) / maxColSpan * this.width,
+                })
             })
-        })
-        this.height = Math.max(...this.children.map(e => parseFloat(e.height)))
+            this.height = Math.max(...this.children.map(e => parseFloat(e.height)))
+        }
+    }
+    this.render = function(config) {
+        this.initProps(config)
+        if (this.children === null && this.$$render_children) {
+            this.children = this.$$render_children.call(this, this.root._c)
+        }
+        initDefaultAttrs()
         const calcPosition = (cols, colH, colOffset, colPull, colPush, colI, rowX, rowY, rowW, rowH, align, justify) => {
             let x, y
             switch (align) {
@@ -112,9 +120,7 @@ export default function Row(props) {
             }
             return { x: x - pullWidth + pushWidth, y }
         }
-        this.ctx.save()
         this.ctx.clearRect(this.x, this.y, this.width, this.height)
-        this.ctx.restore()
         this.children.forEach((col, i, ary) => {
             const { x, y } = calcPosition(
                 ary, 
@@ -144,4 +150,5 @@ export default function Row(props) {
             this.ctx.restore()
         }
     }
+    initDefaultAttrs()
 }

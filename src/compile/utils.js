@@ -1,5 +1,3 @@
-import { v4 as uuidV4} from 'uuid'
-
 export const evalFn = exp => new Function(`return (${exp})`)
 
 export const arrowFnRegExp = /^(?<args>\(?(?:(?:\w|\$|\s|[.'"])+,?)*\)?)\s*=>\s*(?<body>(?:.|\r\n)+)$/
@@ -121,25 +119,21 @@ export const calcDynamicTemplate = (exp, scopeList, data) => {
     return result
 }
 
-export const obj2Str = (target, reserveSymbol) => {
+export const obj2Str = target => {
     let str = ''
     let isAsync = false
     if (typeof target === 'string') return target
     Reflect.ownKeys(target).forEach(item => {
         let itemName = item
         if (typeof item === 'symbol') {
-            if (reserveSymbol) {
-                itemName = `${item.description}__${uuidV4()}`
-            } else {
-                itemName = item.description
-            }
+            itemName = item.description
         }
         let targetItem = target[item]
         if (isObject(targetItem)) {
             if (itemName === 'on') {
-                str += `"${itemName}":{${obj2Str(targetItem, reserveSymbol)}},`
+                str += `"${itemName}":{${obj2Str(targetItem)}},`
             } else {
-                str += `"${itemName}":{${obj2Str(targetItem, reserveSymbol)}},`
+                str += `"${itemName}":{${obj2Str(targetItem)}},`
             }
         } else if (Array.isArray(targetItem)) {
             if (itemName === '$$render_children') {
@@ -200,7 +194,7 @@ export const createAST = nodes => {
         } else if (tagType === 'chars') {
             const { attrs } = node
             const [ content ] = attrs
-            curNode.content = content.replace(/"(.+?)"/g, `'${'$1'}'`).replace(/""/g, `''`)
+            curNode.content = content
         }
     }
     nodes.forEach(node => createTree(root, node))

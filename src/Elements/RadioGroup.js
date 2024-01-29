@@ -62,5 +62,6 @@ export default function RadioGroup(props) {
         }
         draw()
     }
+    initDefaultAttrs()
     initEvents()
 }

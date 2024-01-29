@@ -57,6 +57,7 @@ export default function Col(props) {
             col.y = y
             col.parentElement = this
         })
+        this.ctx.clearRect(this.x, this.y, this.width, this.height)
         this.renderLines.forEach(l => {
             l.forEach(c => {
                 c.render()

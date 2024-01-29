@@ -90,7 +90,12 @@
                     <tag *for="(item, index) in tagList">{{item}}</tag>
                 </col>-->
                 <col :span="colItem.span" *for="(colItem, index) in colList">
-                    <span x="10" y="430" :text="index + obj.innerObj.name"></span>
+                    <!--<row justify="end">
+                        <col span="12">
+                            <span :text="index + obj.innerObj.name"></span>
+                        </col>
+                    </row>-->
+                    <span :text="index + obj.innerObj.name"></span>
                     <span 
                         *for="(tagItem, tagIndex) in colItem.tagList" 
                     >{{ "test " + index + tagIndex }}</span>
@@ -211,7 +216,7 @@ export default {
         handleInput(val) {
             console.log(val)
         },
-        handleTagClick(d, a, b, c, colItem, tagItem) {
+        handleTagClick(colItem, tagItem, a) {
             console.log(tagItem, colItem, a)
         },
         handleTagClose() {

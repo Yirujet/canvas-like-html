@@ -189,5 +189,6 @@ export default function Checkbox(props) {
         }
         this.ctx.restore()
     }
+    initDefaultAttrs()
     initEvents()
 }

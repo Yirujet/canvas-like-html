@@ -155,6 +155,28 @@ export const calcDynamicPropValue = (exp, scopeList, data) => {
     return result
 }
 
+export const randomName2RealName = name => {
+    return name.replace(/^(.+)__.+$/, '$1')
+}
+
+export const obj2Temp = (target, tagName, attrs) => {
+    let temp = ''
+    let subTagList = []
+    for (let subTagName in target) {
+        let sub = target[subTagName]
+        const attrs = Object.entries(sub.attrs).map(([name, value]) => `${name}="${value}"`).join(' ')
+        if (sub.children) {
+            subTagList.push(obj2Temp(sub.children, subTagName, attrs))
+        } else {
+            if (!['content'].includes(subTagName)) {
+                subTagList.push(`<${randomName2RealName(subTagName)} ${attrs}>${sub.content || ''}</${randomName2RealName(subTagName)}>`)
+            }
+        }
+    }
+    temp = `<${randomName2RealName(tagName)} ${attrs}>${subTagList.join('')}</${randomName2RealName(tagName)}>`
+    return temp
+}
+
 export function render(compName, compProps) {
     let comp = null
     if (typeof compName === 'object' && compName.render && typeof compName.render === 'function') {

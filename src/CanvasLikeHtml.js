@@ -5,8 +5,13 @@ import {
     toReactiveKey, 
     calcDynamicPropValue, 
     isObject, 
-    evalFn
+    evalFn,
+    obj2Temp
 } from './utils.js'
+import generateForRoot from './compile/generateForRoot.js'
+import translate from './compile/translate.js'
+import parse from './compile/parse.js'
+import { createAST } from './compile/utils.js'
 import Button from './Elements/Button.js'
 import Checkbox from './Elements/Checkbox.js'
 import CheckboxGroup from './Elements/CheckboxGroup.js'
@@ -65,9 +70,10 @@ export default function CanvasLikeHtml(props) {
         lineHeight: 12,
         mode: 'development',
     }
-    this.methods = {}
     this.elements = []
     this.eventObserver = new EventObserver()
+    this.data = {}
+    this.methods = {}
     const propsLinkedWithComps = {}
     const propsObj = props
     if (props) {
@@ -200,25 +206,41 @@ export default function CanvasLikeHtml(props) {
                             if (Array.isArray(target)) {
                                 if (prop === '$$for') {
                                     const parentEl = comp.parentElement
-                                    const compsInSameFor = parentEl.children.filter(({ $$for_key }) => $$for_key === comp.$$for_key)
-                                    const scopeObjIndex = comp.$$scope_chain.findLastIndex(item => item.$$loopExp === parentEl.$$for_exp)
-                                    const scopeObj = comp.$$scope_chain[scopeObjIndex]
-                                    const node = scopeObjIndex > -1 ? scopeObj : {}
-                                    const childTemplate = scopeObj.$$loopItemChildTemplate ? `{${scopeObj.$$loopItemChildTemplate}}` : ''
-                                    const aa = this.methods.generateForRoot(
-                                        target, 
-                                        node, 
-                                        scopeObj.$$loopItemName, 
-                                        scopeObj.$$loopIndexName,
-                                        childTemplate,
-                                        comp.constructor.elName,
-                                        '',
-                                        scopeObj.$$loopSource,
-                                        comp.$$for_key,
-                                        comp.$$for_exp,
-                                        ''
-                                    )
-                                    console.log(comp, scopeObj, aa)
+                                    // const compsInSameFor = parentEl.children.filter(({ $$for_key }) => $$for_key === comp.$$for_key)
+                                    const compScope = comp.$$scope_chain.findLast(item => item.$$loopExp === comp.$$for_exp)
+                                    let parentScope = comp.$$scope_chain.findLast(item => item.$$loopExp === parentEl.$$for_exp)
+                                    if (!parentScope) {
+                                        parentScope = compScope
+                                    }
+                                    let childTemplate = parentScope.$$loopItemChildTemplate
+                                    // const forItems = generateForRoot(
+                                    //     target, 
+                                    //     node, 
+                                    //     compScope.$$loopItemName, 
+                                    //     compScope.$$loopIndexName,
+                                    //     childTemplate,
+                                    //     comp.constructor.elName,
+                                    //     compScope.$$loopItemAttrs,
+                                    //     compScope.$$loopSource,
+                                    //     comp.$$for_key,
+                                    //     comp.$$for_exp,
+                                    //     compScope.$$loopItemContent
+                                    // )
+                                    // let elRenderList = []
+                                    // elRenderList.push(...translate(forItems, {}, {}, { ...this.data, ...this.methods }))
+                                    const renderRegExp = /^h\((?:'|")(?<elName>[^)(]+)(?:'|")(?:\s*,\s*(?<elProps>{(?:.|\r|\n)*}))\)$/
+                                    const rootChildTemplate = obj2Temp(evalFn(`(${childTemplate})`)(), parentEl.constructor.elName, parentScope.$$loopItemAttrs + ` *for="${parentScope.$$loopExp}"`)
+                                    const nodeList = parse(rootChildTemplate)
+                                    const root = createAST(nodeList)
+                                    const elList = translate(root, {}, {}, { ...this.data, ...this.methods })
+                                    elList.forEach(e => {
+                                        // const elName = e.match(renderRegExp).groups.elName
+                                        const elProps = evalFn(e.match(renderRegExp).groups.elProps)()
+                                        this.eventObserver.clear(parentEl.children)
+                                        parentEl.children = null
+                                        parentEl.$$render_children = elProps.$$render_children
+                                        parentEl.render()
+                                    })
                                 } else {
                                     comp.render({ [prop]: target })
                                 }
@@ -250,75 +272,11 @@ export default function CanvasLikeHtml(props) {
         if (propsObj?.render) {
             const $$canvasInstance = propsObj.render.call(this, this._c)
             if ($$canvasInstance.data) {
+                this.data = { data: $$canvasInstance.data }
                 reactiveData($$canvasInstance.data)
             }
             if ($$canvasInstance.methods) {
-                this.methods = $$canvasInstance.methods
-                this.methods.parse = source => {
-                    const nodes = []
-                    this.methods.HTMLParser(source, (function() {
-                        var obj = {}
-                        !['start', 'end', 'comment', 'chars'].forEach(x => {
-                            obj[x] = function (...args) {
-                                if (x !== 'chars' || !/^[\s\r\n\t]*$/g.test(args[0])) {
-                                    nodes.push({ tagType: x, attrs: args })
-                                }
-                            }
-                        })
-                        return obj
-                    })())
-                    return nodes
-                }
-                this.methods.generateForRoot = (forSourceList, node, loopItemName, loopItemIndex, elChildren, tagName, elAttrs, forListSource, for_key, for_exp, content) => {
-                    const forSource = forSourceList.map(() => `<${tagName} ${elAttrs} :$$for="${forListSource}" $$for_key="${for_key}" $$for_exp="${for_exp}">${content}</${tagName}>`).join('\n')
-                    const nodeList = this.methods.parse(forSource)
-                    const nodeRoot = this.methods.createAST(nodeList)
-                    Reflect.ownKeys(nodeRoot.children).forEach((elName, i) => {
-                        if (node.$$loopItem) {
-                            if (!nodeRoot.children[elName].$$loopChain) {
-                                nodeRoot.children[elName].$$loopChain = []
-                                nodeRoot.children[elName].$$loopChain.push({
-                                    $$loopSource: node.$$loopSource,
-                                    $$loopExp: node.$$loopExp,
-                                    $$loopItem: node.$$loopItem,
-                                    $$loopIndex: node.$$loopIndex,
-                                    $$loopItemName: node.$$loopItemName,
-                                    $$loopIndexName: node.$$loopIndexName,
-                                    $$loopItemChildTemplate: node.$$loopItemChildTemplate
-                                })
-                            }
-                        }
-                        nodeRoot.children[elName].$$loopItemName = loopItemName
-                        nodeRoot.children[elName].$$loopIndexName = loopItemIndex
-                        nodeRoot.children[elName].$$loopItem = {
-                            [loopItemName]: forSourceList[i]
-                        }
-                        nodeRoot.children[elName].$$loopIndex = {
-                            [loopItemIndex]: i
-                        }
-                        nodeRoot.children[elName].$$loopExp = for_exp
-                        nodeRoot.children[elName].$$loopSource = forListSource
-                        if (elChildren) {
-                            nodeRoot.children[elName].$$loopItemChildTemplate = this.methods.obj2Str(elChildren)
-                        }
-                        if (!nodeRoot.children[elName].$$loopChain) {
-                            nodeRoot.children[elName].$$loopChain = []
-                        }
-                        nodeRoot.children[elName].$$loopChain.push({
-                            $$loopExp: nodeRoot.children[elName].$$loopExp,
-                            $$loopSource: nodeRoot.children[elName].$$loopSource,
-                            $$loopItem: nodeRoot.children[elName].$$loopItem,
-                            $$loopIndex: nodeRoot.children[elName].$$loopIndex,
-                            $$loopItemName: nodeRoot.children[elName].$$loopItemName,
-                            $$loopIndexName: nodeRoot.children[elName].$$loopIndexName,
-                            $$loopItemChildTemplate: nodeRoot.children[elName].$$loopItemChildTemplate
-                        })
-                        if (elChildren) {
-                            nodeRoot.children[elName].children = _.cloneDeep(elChildren)
-                        }
-                    })
-                    return nodeRoot
-                }
+                this.methods = { methods: $$canvasInstance.methods }
             }
             if ($$canvasInstance.comps) {
                 this.elements = $$canvasInstance.comps

@@ -166,5 +166,6 @@ export default function Radio(props) {
         }
         this.ctx.restore()
     }
+    initDefaultAttrs()
     initEvents()
 }

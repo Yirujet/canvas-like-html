@@ -1,5 +1,5 @@
-import parse from './parse.mjs'
-import { createAST, obj2Str } from './utils.mjs'
+import parse from './parse.js'
+import { createAST, obj2Str } from './utils.js'
 import _ from 'lodash'
 
 const generateForRoot = (forSourceList, node, loopItemName, loopItemIndex, elChildren, tagName, elAttrs, forListSource, for_key, for_exp, content) => {
@@ -34,7 +34,7 @@ const generateForRoot = (forSourceList, node, loopItemName, loopItemIndex, elChi
         nodeRoot.children[elName].$$loopExp = for_exp
         nodeRoot.children[elName].$$loopSource = forListSource
         if (elChildren) {
-            nodeRoot.children[elName].$$loopItemChildTemplate = `{${obj2Str(elChildren, true)}}`
+            nodeRoot.children[elName].$$loopItemChildTemplate = obj2Str(elChildren)
         }
         nodeRoot.children[elName].$$loopItemAttrs = elAttrs
         nodeRoot.children[elName].$$loopItemContent = content
