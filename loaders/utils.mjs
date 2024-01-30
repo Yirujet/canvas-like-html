@@ -121,7 +121,7 @@ export const calcDynamicTemplate = (exp, scopeList, data) => {
     return result
 }
 
-export const obj2Str = (target, reserveSymbol) => {
+export const obj2Str = (target, reserveSymbol = false, excludeAttrs = []) => {
     let str = ''
     let isAsync = false
     if (typeof target === 'string') return target
@@ -135,37 +135,39 @@ export const obj2Str = (target, reserveSymbol) => {
             }
         }
         let targetItem = target[item]
-        if (isObject(targetItem)) {
-            if (itemName === 'on') {
-                str += `"${itemName}":{${obj2Str(targetItem, reserveSymbol)}},`
-            } else {
-                str += `"${itemName}":{${obj2Str(targetItem, reserveSymbol)}},`
-            }
-        } else if (Array.isArray(targetItem)) {
-            if (itemName === '$$render_children') {
-                str += `"${itemName}": h => [${targetItem}],`
-            } else {
-                str += `"${itemName}":${JSON.stringify(targetItem)},`
-            }
-        } else if (typeof targetItem === 'function') {
-            let fnBody, fnArgs
-            if (isArrowFunction(targetItem)) {
-                fnBody = targetItem.toString().slice(targetItem.toString().indexOf('>') + 1)
-                fnArgs = targetItem.toString().replace(fnBody, '').replace('=>', '').trim()
-                if (fnArgs.startsWith('(') && fnArgs.endsWith(')')) {
-                    fnArgs = fnArgs.slice(1,  -1)
+        if ((excludeAttrs.length > 0 && !excludeAttrs.includes(itemName)) || excludeAttrs.length === 0) {
+            if (isObject(targetItem)) {
+                if (itemName === 'on') {
+                    str += `"${itemName}":{${obj2Str(targetItem, reserveSymbol, excludeAttrs)}},`
+                } else {
+                    str += `"${itemName}":{${obj2Str(targetItem, reserveSymbol, excludeAttrs)}},`
                 }
+            } else if (Array.isArray(targetItem)) {
+                if (itemName === '$$render_children') {
+                    str += `"${itemName}": h => [${targetItem}],`
+                } else {
+                    str += `"${itemName}":${JSON.stringify(targetItem)},`
+                }
+            } else if (typeof targetItem === 'function') {
+                let fnBody, fnArgs
+                if (isArrowFunction(targetItem)) {
+                    fnBody = targetItem.toString().slice(targetItem.toString().indexOf('>') + 1)
+                    fnArgs = targetItem.toString().replace(fnBody, '').replace('=>', '').trim()
+                    if (fnArgs.startsWith('(') && fnArgs.endsWith(')')) {
+                        fnArgs = fnArgs.slice(1,  -1)
+                    }
+                } else {
+                    fnBody = targetItem.toString().slice(targetItem.toString().indexOf('{') + 1, targetItem.toString().lastIndexOf('}'))
+                    fnArgs = targetItem.toString().replace(fnBody, '').trim()
+                    isAsync = fnArgs.startsWith('async')
+                    fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
+                }
+                str += `"${itemName}":${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
+            } else if (['boolean', 'number'].includes(typeof targetItem)) {
+                str += `"${itemName}":${targetItem},`
             } else {
-                fnBody = targetItem.toString().slice(targetItem.toString().indexOf('{') + 1, targetItem.toString().lastIndexOf('}'))
-                fnArgs = targetItem.toString().replace(fnBody, '').trim()
-                isAsync = fnArgs.startsWith('async')
-                fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
+                str += `"${itemName}":"${targetItem}",`
             }
-            str += `"${itemName}":${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
-        } else if (['boolean', 'number'].includes(typeof targetItem)) {
-            str += `"${itemName}":${targetItem},`
-        } else {
-            str += `"${itemName}":"${targetItem}",`
         }
     })
     return str

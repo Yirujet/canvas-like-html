@@ -9,7 +9,23 @@ const translate = (node, data, methods, scriptObj) => {
     Reflect.ownKeys(node.children).forEach(elName => {
         const elProps = {
             $$key: uuidV4(),
-            $$scope_chain: []
+            $$scope_chain: [],
+            $$template: [`{${obj2Str(
+                node.children[elName], 
+                true, 
+                [
+                    '$$loopItemName', 
+                    '$$loopIndexName', 
+                    '$$loopItem',
+                    '$$loopIndex',
+                    '$$loopExp',
+                    '$$loopSource',
+                    '$$loopItemChildTemplate',
+                    '$$loopItemContent',
+                    '$$loopItemAttrs',
+                    '$$loopChain'
+                ]
+            )}}`]
         }
         const attrsList = Object.keys(node.children[elName].attrs)
         attrsList.sort((e1, e2) => {

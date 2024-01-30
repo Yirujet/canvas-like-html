@@ -205,6 +205,10 @@ export default function CanvasLikeHtml(props) {
                         propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
                             if (Array.isArray(target)) {
                                 if (prop === '$$for') {
+                                    // let parentEl = comp
+                                    // while (parentEl.$$for_key) {
+                                    //     parentEl = comp.parentElement
+                                    // }
                                     const parentEl = comp.parentElement
                                     // const compsInSameFor = parentEl.children.filter(({ $$for_key }) => $$for_key === comp.$$for_key)
                                     const compScope = comp.$$scope_chain.findLast(item => item.$$loopExp === comp.$$for_exp)
@@ -228,6 +232,9 @@ export default function CanvasLikeHtml(props) {
                                     // )
                                     // let elRenderList = []
                                     // elRenderList.push(...translate(forItems, {}, {}, { ...this.data, ...this.methods }))
+
+                                    const aa = evalFn(`(${parentEl.$$template[0]})`)()
+
                                     const renderRegExp = /^h\((?:'|")(?<elName>[^)(]+)(?:'|")(?:\s*,\s*(?<elProps>{(?:.|\r|\n)*}))\)$/
                                     const rootChildTemplate = obj2Temp(evalFn(`(${childTemplate})`)(), parentEl.constructor.elName, parentScope.$$loopItemAttrs + ` *for="${parentScope.$$loopExp}"`)
                                     const nodeList = parse(rootChildTemplate)
