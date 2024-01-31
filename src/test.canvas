@@ -1,154 +1,53 @@
 <canvas width="1000" height="500">
-    <!--
-    <button x="10" y="10" @click="(a, b) => { console.log(this) }">默认按钮</button>
-    <button x="130" y="10" type="primary" @click="handleClick">主要按钮</button>
-    <button x="250" y="10" type="success" @click="handleChangeRadioText">成功按钮</button>
-    <button x="370" y="10" type="info">信息按钮</button>
-    <button x="490" y="10" type="warning">警告按钮</button>
-    <button x="610" y="10" type="danger">危险按钮</button>
-    <button x="10" y="60" plain>朴素按钮</button>
-    <button x="130" y="60" type="primary" plain>主要按钮</button>
-    <button x="250" y="60" type="success" plain>成功按钮</button>
-    <button x="370" y="60" type="info" plain>信息按钮</button>
-    <button x="490" y="60" type="warning" plain>警告按钮</button>
-    <button x="610" y="60" type="danger" plain>危险按钮</button>
-    <button x="10" y="110" round>圆角按钮</button>
-    <button x="130" y="110" type="primary" round>主要按钮</button>
-    <button x="250" y="110" type="success" round>成功按钮</button>
-    <button x="370" y="110" type="info" round>信息按钮</button>
-    <button x="490" y="110" type="warning" round>警告按钮</button>
-    <button x="610" y="110" type="danger" round>危险按钮</button>
-    <button x="10" y="160" disabled>禁用按钮</button>
-    <button x="130" y="160" type="primary" disabled>主要按钮</button>
-    <button x="250" y="160" type="success" disabled>成功按钮</button>
-    <button x="370" y="160" type="info" disabled>信息按钮</button>
-    <button x="490" y="160" type="warning" disabled>警告按钮</button>
-    <button x="610" y="160" type="danger" disabled>危险按钮</button>
-    <dropdown 
-        x="10" 
-        y="220" 
-        :list="list1"
-    >下拉菜单</dropdown>
-    <radio-group x="10" y="280" @change="handleRadioGroupChange">
-        <radio value="备选项1">备选项1</radio>
-        <radio value="备选项2">备选项2</radio>
-        <radio value="备选项3">备选项3</radio>
-    </radio-group>
-    <checkbox x="10" y="310">custom-checkbox</checkbox>
-
-    <link x="10" y="370" :underline="false" type="warning" href="https://www.baidu.com/" :text="text"></link>
-    <link x="130" y="370">默认链接</link>
-    <link x="200" y="370" type="primary">主要链接</link>
-    <link x="270" y="370" type="success">成功链接</link>
-    <link x="340" y="370" type="warning">警告链接</link>
-    <link x="410" y="370" type="danger">危险链接</link>
-    <link x="480" y="370" type="info">信息链接</link>
-    <radio x="10" y="400" :text="obj.innerObj.name"></radio>
-    <input x="10" y="460" value="test" clearable disabled @input="handleInput"></input>
-    <switch x="10" y="520" inactiveText="按年付费" activeText="按月付费"></switch>
-    <checkbox-group x="10" y="340" @change="handleCheckboxGroupChange">
-        <checkbox value="value1">复选框1</checkbox>
-        <checkbox value="value2">复选框2</checkbox>
-    </checkbox-group>
-    -->
-    <row align="middle" justify="space-between">
-        <!--<col span="2">
-            <button>按钮1</button>
-            <button disabled>按钮2</button>
-            <button>按钮3</button>
-        </col>
-        <col span="4">
-            <rate 
-                value="3.5" 
-                allowHalf 
-                allowClear
-                :tooltips="[1, 2, 3, 4, 5]"
-            ></rate>
-        </col>-->
-        <col span="20" offset="2">
-            <!--<span>aaa</span>
-            <link>bbb</link>
-            <row justify="center">
-                <col span="6">
-                    <button type="primary" round @click="handleClick">主要按钮</button>
-                    <switch inactiveText="按年付费" activeText="按月付费"></switch>
+    <row>
+        <col span="24">
+            <row>
+                <col span="24">
+                    <span>testaaa</span>
                 </col>
             </row>
-            <row align="bottom">
-                <col span="6" push="18"><span>span-12</span></col>
-                <col span="18" pull="6">
-                    <button type="primary" plain>按钮</button>
-                    <tag type="warning">tag 1</tag>
-                    <tag type="danger">tag 2</tag>
-                </col>
-            </row>-->
-            <row align="middle" justify="space-evenly">
-                <!--<col span="4"><tag closable>span-4</tag></col>
-                <col span="4"><tag closable type="success" @change="handleTagClick" @close="handleTagClose">span-4</tag></col>
-                <col span="4"><tag closable type="info">span-4</tag></col>
-                <col span="12">
-                    <tag *for="(item, index) in tagList">{{item}}</tag>
-                </col>-->
-                <col :span="colItem.span" *for="(colItem, index) in colList">
-                    <row justify="end">
-                        <col span="12">
-                            <span :text="index + obj.innerObj.name"></span>
+            <row align="middle" justify="space-between">
+                <col span="20" offset="2">
+                    <row align="middle" justify="space-evenly">
+                        <col :span="colItem.span" *for="(colItem, index) in colList">
+                            <row justify="end">
+                                <col span="12">
+                                    <span :text="index + obj.innerObj.name"></span>
+                                </col>
+                            </row>
+                            <span 
+                                *for="(tagItem, tagIndex) in colItem.tagList" 
+                            >{{ "test " + index + tagIndex }}</span>
+                            <tag 
+                                *for="(tagItem, tagIndex) in colItem.tagList" 
+                                @change="handleTagClick(tagItem, colItem, 'aaa')"
+                            >{{ tagItem + index + tagIndex }}</tag>
+                        </col>
+                        <col span="6">
+                            <dropdown 
+                                x="10" 
+                                y="250" 
+                                :list="[
+                                    { name: 'dropdown-item-1', value: 'dropdown-item-1' },
+                                    { name: 'dropdown-item-2', value: 'dropdown-item-2' }
+                                ]"
+                                trigger="click"
+                                @command="handleCommand"
+                            >下拉菜单-点击触发</dropdown>
+                            <progress
+                                type="dashboard"
+                                :percentage="percentage" 
+                                :textInside="true" 
+                                status="success"
+                                :width="100"
+                                strokeWidth="5"
+                                strokeLinecap="round"
+                            ></progress>
                         </col>
                     </row>
-                    <!--<span :text="index + obj.innerObj.name"></span>-->
-                    <span 
-                        *for="(tagItem, tagIndex) in colItem.tagList" 
-                    >{{ "test " + index + tagIndex }}</span>
-                    <tag 
-                        *for="(tagItem, tagIndex) in colItem.tagList" 
-                        @change="handleTagClick(tagItem, colItem, 'aaa')"
-                    >{{ tagItem + index + tagIndex }}</tag>
-                </col>
-                <col span="6">
-                    <dropdown 
-                        x="10" 
-                        y="250" 
-                        :list="[
-                            { name: 'dropdown-item-1', value: 'dropdown-item-1' },
-                            { name: 'dropdown-item-2', value: 'dropdown-item-2' }
-                        ]"
-                        trigger="click"
-                        @command="handleCommand"
-                    >下拉菜单-点击触发</dropdown>
-                    <progress
-                        type="dashboard"
-                        :percentage="percentage" 
-                        :textInside="true" 
-                        status="success"
-                        :width="100"
-                        strokeWidth="5"
-                        strokeLinecap="round"
-                    ></progress>
                 </col>
             </row>
         </col>
-        <!--<col span="8">
-            <row>
-                <col>
-                    <progress
-                        type="circle"
-                        :percentage="percentage" 
-                        :textInside="false" 
-                        :color="colors" 
-                        :width="80"
-                        :strokeWidth="strokeWidth"
-                        strokeLinecap="butt"
-                    ></progress>
-                    <progress
-                        :percentage="percentage" 
-                        :textInside="false" 
-                        :width="200"
-                        strokeWidth="20"
-                        strokeLinecap="square"
-                    ></progress>
-                </col>
-            </row>
-        </col>-->
     </row>
     <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->
 </canvas>
@@ -242,6 +141,7 @@ export default {
                 span: 2,
                 tagList: ['tag3-1']
             })*/
+            console.log(this)
             this.colList.value[1].tagList.push('tag2-3')
         }, 2000)
     }

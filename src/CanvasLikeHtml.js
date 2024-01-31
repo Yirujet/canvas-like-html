@@ -187,7 +187,7 @@ export default function CanvasLikeHtml(props) {
     }
     const reCompileForDirectiveTemplate = (comp) => {
         let parentEl = comp
-        while (parentEl.$$for_key !== null) {
+        while (parentEl.parentElement !== this) {
             parentEl = parentEl.parentElement
         }
         const templateObj = evalFn(`(${parentEl.$$template[0].replace(/(?:\r|\n)*/g, '')})`)()

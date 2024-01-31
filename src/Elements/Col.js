@@ -70,6 +70,9 @@ export default function Col(props) {
         if ((this.y + this.height) > (this.parentElement.y + this.parentElement.height)) {
             this.ctx.clearRect(this.x, this.y + this.height, this.width, this.y + this.height - (this.parentElement.y + this.parentElement.height))
         }
+        if (this.y < this.parentElement.y) {
+            this.ctx.clearRect(this.x, this.y, this.width, this.parentElement.y - this.y)
+        }
         if (this.globalProps.mode === 'development') {
             this.ctx.save()
             this.ctx.strokeStyle = 'blue'
