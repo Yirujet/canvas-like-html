@@ -90,12 +90,12 @@
                     <tag *for="(item, index) in tagList">{{item}}</tag>
                 </col>-->
                 <col :span="colItem.span" *for="(colItem, index) in colList">
-                    <!--<row justify="end">
+                    <row justify="end">
                         <col span="12">
                             <span :text="index + obj.innerObj.name"></span>
                         </col>
-                    </row>-->
-                    <span :text="index + obj.innerObj.name"></span>
+                    </row>
+                    <!--<span :text="index + obj.innerObj.name"></span>-->
                     <span 
                         *for="(tagItem, tagIndex) in colItem.tagList" 
                     >{{ "test " + index + tagIndex }}</span>

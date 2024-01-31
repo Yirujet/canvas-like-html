@@ -15,6 +15,8 @@ export default function Element() {
     this.root = null
     this.watchedProps = {}
     this.watchedEvents = {}
+    this.parentElement = null
+    this.cursor = 'default'
     this.$$key = null
     this.$$template = null
     this.$$for = null
@@ -23,8 +25,6 @@ export default function Element() {
     this.$$props = {}
     this.$$render_children = null
     this.$$scope_chain = []
-    this.parentElement = null
-    this.cursor = 'default'
     this.initProps = props => {
         if (props) {
             for (let name in props) {

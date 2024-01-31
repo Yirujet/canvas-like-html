@@ -180,9 +180,6 @@ export default function CanvasLikeHtml(props) {
                     })
                 }
                 return result
-            },
-            apply(target, thisArg, argumentsList) {
-                console.log(target, thisArg, argumentsList)
             }
         })
         proxyObj.set(target, observed)
@@ -205,45 +202,25 @@ export default function CanvasLikeHtml(props) {
                         propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
                             if (Array.isArray(target)) {
                                 if (prop === '$$for') {
-                                    // let parentEl = comp
-                                    // while (parentEl.$$for_key) {
-                                    //     parentEl = comp.parentElement
-                                    // }
-                                    const parentEl = comp.parentElement
-                                    // const compsInSameFor = parentEl.children.filter(({ $$for_key }) => $$for_key === comp.$$for_key)
-                                    const compScope = comp.$$scope_chain.findLast(item => item.$$loopExp === comp.$$for_exp)
-                                    let parentScope = comp.$$scope_chain.findLast(item => item.$$loopExp === parentEl.$$for_exp)
-                                    if (!parentScope) {
-                                        parentScope = compScope
+                                    let parentEl = comp
+                                    while (parentEl.$$for_key !== null) {
+                                        parentEl = parentEl.parentElement
                                     }
-                                    let childTemplate = parentScope.$$loopItemChildTemplate
-                                    // const forItems = generateForRoot(
-                                    //     target, 
-                                    //     node, 
-                                    //     compScope.$$loopItemName, 
-                                    //     compScope.$$loopIndexName,
-                                    //     childTemplate,
-                                    //     comp.constructor.elName,
-                                    //     compScope.$$loopItemAttrs,
-                                    //     compScope.$$loopSource,
-                                    //     comp.$$for_key,
-                                    //     comp.$$for_exp,
-                                    //     compScope.$$loopItemContent
-                                    // )
-                                    // let elRenderList = []
-                                    // elRenderList.push(...translate(forItems, {}, {}, { ...this.data, ...this.methods }))
-
-                                    const aa = evalFn(`(${parentEl.$$template[0]})`)()
-
-                                    const renderRegExp = /^h\((?:'|")(?<elName>[^)(]+)(?:'|")(?:\s*,\s*(?<elProps>{(?:.|\r|\n)*}))\)$/
-                                    const rootChildTemplate = obj2Temp(evalFn(`(${childTemplate})`)(), parentEl.constructor.elName, parentScope.$$loopItemAttrs + ` *for="${parentScope.$$loopExp}"`)
+                                    const templateObj = evalFn(`(${parentEl.$$template[0].replace(/(?:\r|\n)*/g, '')})`)()
+                                    const rootChildTemplate = obj2Temp(templateObj, parentEl.constructor.elName, '')
                                     const nodeList = parse(rootChildTemplate)
                                     const root = createAST(nodeList)
                                     const elList = translate(root, {}, {}, { ...this.data, ...this.methods })
+                                    const renderRegExp = /^h\((?:'|")(?<elName>[^)(]+)(?:'|")(?:\s*,\s*(?<elProps>{(?:.|\r|\n)*}))\)$/
                                     elList.forEach(e => {
-                                        // const elName = e.match(renderRegExp).groups.elName
                                         const elProps = evalFn(e.match(renderRegExp).groups.elProps)()
-                                        this.eventObserver.clear(parentEl.children)
+                                        const clear = (target) => {
+                                            this.eventObserver.clear([target])
+                                            if (target.children) {
+                                                target.children.forEach(child => clear(child))
+                                            }
+                                        }
+                                        clear(parentEl)
                                         parentEl.children = null
                                         parentEl.$$render_children = elProps.$$render_children
                                         parentEl.render()

@@ -159,21 +159,24 @@ export const randomName2RealName = name => {
     return name.replace(/^(.+)__.+$/, '$1')
 }
 
-export const obj2Temp = (target, tagName, attrs) => {
+export const obj2Temp = (target, tagName) => {
     let temp = ''
     let subTagList = []
-    for (let subTagName in target) {
-        let sub = target[subTagName]
-        const attrs = Object.entries(sub.attrs).map(([name, value]) => `${name}="${value}"`).join(' ')
-        if (sub.children) {
-            subTagList.push(obj2Temp(sub.children, subTagName, attrs))
-        } else {
-            if (!['content'].includes(subTagName)) {
-                subTagList.push(`<${randomName2RealName(subTagName)} ${attrs}>${sub.content || ''}</${randomName2RealName(subTagName)}>`)
-            }
-        }
+    let attrs = target.attrs
+    let content = target.content
+    let children = target.children
+    let attrsStr = ''
+    if (attrs) {
+        attrsStr = Object.entries(attrs).map(([name, value]) => `${name}="${value}"`).join(' ')
     }
-    temp = `<${randomName2RealName(tagName)} ${attrs}>${subTagList.join('')}</${randomName2RealName(tagName)}>`
+    if (children) {
+        Object.entries(children).forEach(([subTagName, subTarget]) => {
+            subTagList.push(obj2Temp(subTarget, subTagName))
+        })
+        temp = `<${randomName2RealName(tagName)} ${attrsStr}>${subTagList.join('')}</${randomName2RealName(tagName)}>`
+    } else {
+        temp = `<${randomName2RealName(tagName)} ${attrsStr}>${content || ''}</${randomName2RealName(tagName)}>`
+    }
     return temp
 }
 
