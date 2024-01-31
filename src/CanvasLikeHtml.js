@@ -185,6 +185,31 @@ export default function CanvasLikeHtml(props) {
         proxyObj.set(target, observed)
         return observed
     }
+    const reCompileForDirectiveTemplate = (comp) => {
+        let parentEl = comp
+        while (parentEl.$$for_key !== null) {
+            parentEl = parentEl.parentElement
+        }
+        const templateObj = evalFn(`(${parentEl.$$template[0].replace(/(?:\r|\n)*/g, '')})`)()
+        const rootChildTemplate = obj2Temp(templateObj, parentEl.constructor.elName, '')
+        const nodeList = parse(rootChildTemplate)
+        const root = createAST(nodeList)
+        const elList = translate(root, {}, {}, { ...this.data, ...this.methods })
+        const renderRegExp = /^h\((?:'|")(?<elName>[^)(]+)(?:'|")(?:\s*,\s*(?<elProps>{(?:.|\r|\n)*}))\)$/
+        elList.forEach(e => {
+            const elProps = evalFn(e.match(renderRegExp).groups.elProps)()
+            const clear = (target) => {
+                this.eventObserver.clear([target])
+                if (target.children) {
+                    target.children.forEach(child => clear(child))
+                }
+            }
+            clear(parentEl)
+            parentEl.children = null
+            parentEl.$$render_children = elProps.$$render_children
+            parentEl.render()
+        })
+    }
     const reactiveData = (data) => {
         for (let propName in data) {
             this[propName] = reactive({
@@ -194,7 +219,11 @@ export default function CanvasLikeHtml(props) {
                 if (propsLinkedWithComps[bindingChain]) {
                     const propWatcher = propsLinkedWithComps[bindingChain]
                     propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
-                        comp.render({ [prop]: calcDynamicPropValue(exp, loopChain, this) })
+                        if (prop === '$$for') {
+                            reCompileForDirectiveTemplate(comp)
+                        } else {
+                            comp.render({ [prop]: calcDynamicPropValue(exp, loopChain, this) })
+                        }
                     })
                 } else {
                     if (propsLinkedWithComps[parentProp]) {
@@ -202,29 +231,7 @@ export default function CanvasLikeHtml(props) {
                         propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
                             if (Array.isArray(target)) {
                                 if (prop === '$$for') {
-                                    let parentEl = comp
-                                    while (parentEl.$$for_key !== null) {
-                                        parentEl = parentEl.parentElement
-                                    }
-                                    const templateObj = evalFn(`(${parentEl.$$template[0].replace(/(?:\r|\n)*/g, '')})`)()
-                                    const rootChildTemplate = obj2Temp(templateObj, parentEl.constructor.elName, '')
-                                    const nodeList = parse(rootChildTemplate)
-                                    const root = createAST(nodeList)
-                                    const elList = translate(root, {}, {}, { ...this.data, ...this.methods })
-                                    const renderRegExp = /^h\((?:'|")(?<elName>[^)(]+)(?:'|")(?:\s*,\s*(?<elProps>{(?:.|\r|\n)*}))\)$/
-                                    elList.forEach(e => {
-                                        const elProps = evalFn(e.match(renderRegExp).groups.elProps)()
-                                        const clear = (target) => {
-                                            this.eventObserver.clear([target])
-                                            if (target.children) {
-                                                target.children.forEach(child => clear(child))
-                                            }
-                                        }
-                                        clear(parentEl)
-                                        parentEl.children = null
-                                        parentEl.$$render_children = elProps.$$render_children
-                                        parentEl.render()
-                                    })
+                                    reCompileForDirectiveTemplate(comp)
                                 } else {
                                     comp.render({ [prop]: target })
                                 }
