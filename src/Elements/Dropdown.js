@@ -207,6 +207,7 @@ export default function Dropdown(props) {
         closeDropdownTimer = null
     }
     this.render = function(config) {
+        this.ctx.clearRect(this.x, this.y, this.width, this.height)
         this.initProps(config)
         initDefaultAttrs()
         this.ctx.clearRect(this.x, this.y, this.width, this.height)

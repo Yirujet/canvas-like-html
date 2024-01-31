@@ -85,7 +85,7 @@ export default function CanvasLikeHtml(props) {
     }
     this._c = render.bind(this)
 
-    const addPropsLinkdWithComp = (propChain, data, comp, compProp, exp, loopChain) => {
+    const addPropsLinkedWithComp = (propChain, data, comp, compProp, exp, loopChain) => {
         let bindDataProp = toReactiveKey(propChain, data)
         if (!propsLinkedWithComps[bindDataProp]) {
             propsLinkedWithComps[bindDataProp] = new Watcher()
@@ -96,6 +96,15 @@ export default function CanvasLikeHtml(props) {
             exp,
             loopChain
         })
+    }
+
+    const updatePropsLinkedWithComp = (comps) => {
+        for (let prop in propsLinkedWithComps) {
+            comps.forEach(comp => propsLinkedWithComps[prop].remove(comp))
+            if (propsLinkedWithComps[prop].length === 0) {
+                delete propsLinkedWithComps[prop]
+            }
+        }
     }
 
     const linkCompsWithData = (data) => {
@@ -122,7 +131,7 @@ export default function CanvasLikeHtml(props) {
                                                 } else {
                                                     sourceProp = sourceName
                                                 }
-                                                addPropsLinkdWithComp(sourceProp, data, comp, compProp, exp, loopChain)
+                                                addPropsLinkedWithComp(sourceProp, data, comp, compProp, exp, loopChain)
                                             }
                                             if (propList.length > 0) {
                                                 propList.push(`.${sourceName}.${$$loopIndex[$$loopIndexName]}`)
@@ -140,7 +149,7 @@ export default function CanvasLikeHtml(props) {
                                 if (propList.length > 0) {
                                     realBindingProp = propList.join('')
                                 }
-                                addPropsLinkdWithComp(realBindingProp, data, comp, compProp, exp, loopChain)
+                                addPropsLinkedWithComp(realBindingProp, data, comp, compProp, exp, loopChain)
                             })
                         }
                     })
@@ -198,15 +207,20 @@ export default function CanvasLikeHtml(props) {
         const renderRegExp = /^h\((?:'|")(?<elName>[^)(]+)(?:'|")(?:\s*,\s*(?<elProps>{(?:.|\r|\n)*}))\)$/
         elList.forEach(e => {
             const elProps = evalFn(e.match(renderRegExp).groups.elProps)()
+            const collectComps = []
             const clear = (target) => {
+                collectComps.push(target)
                 this.eventObserver.clear([target])
                 if (target.children) {
                     target.children.forEach(child => clear(child))
                 }
             }
             clear(parentEl)
+            updatePropsLinkedWithComp(collectComps)
+            linkCompsWithData(this.data.data)
             parentEl.children = null
             parentEl.$$render_children = elProps.$$render_children
+            this.ctx.clearRect(parentEl.x, parentEl.y, parentEl.width, parentEl.height)
             parentEl.render()
         })
     }
@@ -236,7 +250,7 @@ export default function CanvasLikeHtml(props) {
                                     comp.render({ [prop]: target })
                                 }
                             } else {
-                                comp.render({ [prop]: calcDynamicPropValue(exp, loopChain, this) })
+                                comp.render({[prop]: calcDynamicPropValue(exp, loopChain, this)})
                             }
                         })
                     }
