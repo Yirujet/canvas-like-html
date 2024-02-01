@@ -198,7 +198,7 @@ export default function CanvasLikeHtml(props) {
         proxyObj.set(target, observed)
         return observed
     }
-    const reCompileForDirectiveTemplate = (comp) => {
+    const reCompile = (comp) => {
         let parentEl = comp
         while (parentEl.parentElement !== this) {
             parentEl = parentEl.parentElement
@@ -226,7 +226,6 @@ export default function CanvasLikeHtml(props) {
             updatePropsLinkedWithComp(collectComps)
             parentEl.children = null
             parentEl.$$render_children = elProps.$$render_children
-            this.ctx.clearRect(parentEl.x, parentEl.y, parentEl.width, parentEl.height)
             parentEl.render()
             this.elements.push(parentEl)
             linkCompsWithData(this)
@@ -238,30 +237,19 @@ export default function CanvasLikeHtml(props) {
                 value: data[propName]
             }, propName, (function(target, prop, value, receiver, propInfo) {
                 const { parentProp, bindingChain, parentType } = propInfo
+                let effectiveProp = ''
                 if (propsLinkedWithComps[bindingChain]) {
-                    const propWatcher = propsLinkedWithComps[bindingChain]
-                    propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
-                        if (prop === '$$for') {
-                            reCompileForDirectiveTemplate(comp)
-                        } else {
-                            comp.render({[prop]: calcDynamicPropValue(exp, loopChain, this)})
-                        }
-                    })
+                    effectiveProp = bindingChain
                 } else {
                     if (propsLinkedWithComps[parentProp]) {
-                        const propWatcher = propsLinkedWithComps[parentProp]
-                        propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
-                            if (Array.isArray(target)) {
-                                if (prop === '$$for') {
-                                    reCompileForDirectiveTemplate(comp)
-                                } else {
-                                    comp.render({[prop]: target})
-                                }
-                            } else {
-                                comp.render({[prop]: calcDynamicPropValue(exp, loopChain, this)})
-                            }
-                        })
+                        effectiveProp = parentProp
                     }
+                }
+                if (effectiveProp) {
+                    const propWatcher = propsLinkedWithComps[effectiveProp]
+                    propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
+                        reCompile(comp)
+                    })
                 }
             }).bind(this))
         }
