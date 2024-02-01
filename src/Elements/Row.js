@@ -52,9 +52,6 @@ export default function Row(props) {
     }
     this.render = function(config) {
         this.initProps(config)
-        if (this.children === null && this.$$render_children) {
-            this.children = this.$$render_children.call(this, this.root._c)
-        }
         initDefaultAttrs()
         const calcPosition = (cols, colH, colOffset, colPull, colPush, colI, rowX, rowY, rowW, rowH, align, justify) => {
             let x, y

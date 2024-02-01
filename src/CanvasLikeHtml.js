@@ -100,7 +100,11 @@ export default function CanvasLikeHtml(props) {
 
     const updatePropsLinkedWithComp = (comps) => {
         for (let prop in propsLinkedWithComps) {
-            comps.forEach(comp => propsLinkedWithComps[prop].remove(comp))
+            comps.forEach(comp => {
+                propsLinkedWithComps[prop].remove(comp)
+                const i = this.elements.findIndex(e => e === comp)
+                this.elements.splice(i, 1)
+            })
             if (propsLinkedWithComps[prop].length === 0) {
                 delete propsLinkedWithComps[prop]
             }
@@ -199,6 +203,9 @@ export default function CanvasLikeHtml(props) {
         while (parentEl.parentElement !== this) {
             parentEl = parentEl.parentElement
         }
+        for (let item in this.data.data) {
+            this.data.data[item] = this[item].value
+        }
         const templateObj = evalFn(`(${parentEl.$$template[0].replace(/(?:\r|\n)*/g, '')})`)()
         const rootChildTemplate = obj2Temp(templateObj, parentEl.constructor.elName, '')
         const nodeList = parse(rootChildTemplate)
@@ -217,11 +224,12 @@ export default function CanvasLikeHtml(props) {
             }
             clear(parentEl)
             updatePropsLinkedWithComp(collectComps)
-            linkCompsWithData(this.data.data)
             parentEl.children = null
             parentEl.$$render_children = elProps.$$render_children
             this.ctx.clearRect(parentEl.x, parentEl.y, parentEl.width, parentEl.height)
             parentEl.render()
+            this.elements.push(parentEl)
+            linkCompsWithData(this)
         })
     }
     const reactiveData = (data) => {
@@ -236,7 +244,7 @@ export default function CanvasLikeHtml(props) {
                         if (prop === '$$for') {
                             reCompileForDirectiveTemplate(comp)
                         } else {
-                            comp.render({ [prop]: calcDynamicPropValue(exp, loopChain, this) })
+                            comp.render({[prop]: calcDynamicPropValue(exp, loopChain, this)})
                         }
                     })
                 } else {
@@ -247,7 +255,7 @@ export default function CanvasLikeHtml(props) {
                                 if (prop === '$$for') {
                                     reCompileForDirectiveTemplate(comp)
                                 } else {
-                                    comp.render({ [prop]: target })
+                                    comp.render({[prop]: target})
                                 }
                             } else {
                                 comp.render({[prop]: calcDynamicPropValue(exp, loopChain, this)})
