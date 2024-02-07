@@ -57,15 +57,17 @@ export default function Radio(props) {
     this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
-    this.ctx.save()
-    if (this.fontSize) {
-        this.ctx.font = `400 ${this.fontSize}px Helvetica`
-    }
-    this.ctx.restore()
-    const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
-    this.width = Radio.RADIO_BOX_WIDTH + (this.text ? wordWidth + Radio.RADIO_LABEL_MARGIN : 0)
-    this.height = wordHeight
     const initDefaultAttrs = () => {
+        this.ctx.save()
+        if (this.fontSize) {
+            this.ctx.font = `400 ${this.fontSize}px Helvetica`
+        } else {
+            this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
+        }
+        const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
+        this.width = Radio.RADIO_BOX_WIDTH + (this.text ? wordWidth + Radio.RADIO_LABEL_MARGIN : 0)
+        this.height = Math.max(wordHeight, Radio.RADIO_BOX_WIDTH)
+        this.ctx.restore()
         this.area = {
             leftTop: { x: this.x, y: this.y },
             rightTop: { x: this.x + this.width + Radio.RADIO_LABEL_MARGIN, y: this.y },
@@ -127,14 +129,14 @@ export default function Radio(props) {
         this.registerListenerFromOnProp(defaultEventListeners)
     }
     this.render = function(config) {
+        this.ctx.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height + 2)
         this.initProps(config)
-        const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
-        this.width = Radio.RADIO_BOX_WIDTH + (this.text ? wordWidth + Radio.RADIO_LABEL_MARGIN : 0)
-        this.height = wordHeight
         initDefaultAttrs()
         this.ctx.save()
         if (this.fontSize) {
             this.ctx.font = `400 ${this.fontSize}px Helvetica`
+        } else {
+            this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
         }
         this.ctx.textBaseline = 'middle'
         const type = this.disabled 
@@ -144,7 +146,7 @@ export default function Radio(props) {
             : this.boxMouseEntered 
             ? 'hover' 
             : 'default'
-        this.ctx.clearRect(this.x - 1, this.y - 1, this.width + 1, this.height + 1)
+        this.ctx.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height + 2)
         this.ctx.beginPath()
         this.ctx.strokeStyle = colorObj[type].radio.border
         this.ctx.lineWidth = 0.5
