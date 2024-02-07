@@ -66,16 +66,15 @@ export default function Checkbox(props) {
     this.initProps(props)
     this.x = parseFloat(this.x)
     this.y = parseFloat(this.y)
-    this.ctx.save()
-    if (this.fontSize) {
-        this.ctx.font = `400 ${this.fontSize}px Helvetica`
-    }
-    this.ctx.restore()
-    const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
-    this.width = Checkbox.CHECKBOX_BOX_WIDTH + (this.text ? wordWidth + Checkbox.CHECKBOX_LABEL_MARGIN : 0)
-    this.height = wordHeight
     const initDefaultAttrs = () => {
+        this.ctx.save()
+        if (this.fontSize) {
+            this.ctx.font = `400 ${this.fontSize}px Helvetica`
+        } else {
+            this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
+        }
         const { width: wordWidth, height: wordHeight } = getTextMetricsOfPrecision(this.text, this.ctx)
+        this.ctx.restore()
         this.width = Checkbox.CHECKBOX_BOX_WIDTH + (this.text ? wordWidth + Checkbox.CHECKBOX_LABEL_MARGIN : 0)
         this.height = wordHeight
         this.area = {
@@ -138,11 +137,14 @@ export default function Checkbox(props) {
         this.registerListenerFromOnProp(defaultEventListeners)
     }
     this.render = function(config) {
+        this.ctx.clearRect(this.x, this.y, this.width, this.height)
         this.initProps(config)
         initDefaultAttrs()
         this.ctx.save()
         if (this.fontSize) {
             this.ctx.font = `400 ${this.fontSize}px Helvetica`
+        } else {
+            this.ctx.font = `400 ${this.globalProps.fontSize}px Helvetica`
         }
         this.ctx.textBaseline = 'middle'
         const type = this.disabled 
@@ -154,7 +156,6 @@ export default function Checkbox(props) {
             : this.boxMouseEntered 
             ? 'hover' 
             : 'default'
-        this.ctx.clearRect(this.x, this.y, this.width, this.height)
         this.ctx.beginPath()
         this.ctx.fillStyle = colorObj[type].checkbox.bg
         this.ctx.fillRect(this.x, this.y, Checkbox.CHECKBOX_BOX_WIDTH, Checkbox.CHECKBOX_BOX_WIDTH)
