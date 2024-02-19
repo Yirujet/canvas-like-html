@@ -610,22 +610,30 @@ export default function Table(props) {
     }
     this.render = function() {
         init()
-        this.clear()
-        drawTable()
+        this.redraw()
         console.log(`${this.data.length}行,${this.normalCols.length}列`)
     }
     this.clear = function() {
         let scrollbarWidth = 0
+        let scrollbarHeight = 0
         if (this.verticalScrollBar.show) {
             scrollbarWidth = this.verticalScrollBar.track.width
         }
-        this.ctx.clearRect(0, 0, this.width + scrollbarWidth, this.height)
+        if (this.horizontalScrollBar.show) {
+            scrollbarHeight = this.horizontalScrollBar.track.height
+        }
+        this.ctx.beginPath()
+        this.ctx.rect(0, 0, this.width + scrollbarWidth, this.height + scrollbarHeight)
+        this.ctx.clip()
+        this.ctx.clearRect(0, 0, this.width + scrollbarWidth, this.height + scrollbarHeight)
         this.eventObserver.clear(this.eventGarbageCollection)
         this.eventGarbageCollection = []
     }
     this.redraw = function() {
+        this.ctx.save()
         this.clear()
         drawTable()
+        this.ctx.restore()
     }
     this.toggleRowSelection = function(selection) {
         this.triggerEvent('selection-change', selection.map(e => this.data[e]))

@@ -48,7 +48,7 @@
 			</row>
 		</col>
 	</row>-->
-    <table :width="1000" :height="500" :data="tblData" :columns="columns"></table>
+    <table :width="800" :height="500" :data="tblData" :columns="columns"></table>
 </canvas>
 <script>
 import axios from 'axios'
