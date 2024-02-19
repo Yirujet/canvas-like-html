@@ -256,7 +256,15 @@ export default function CanvasLikeHtml(props) {
                 if (effectiveProp) {
                     const propWatcher = propsLinkedWithComps[effectiveProp]
                     propWatcher.comps.forEach(({comp, prop, exp, loopChain}) => {
-                        reCompile(comp)
+                        if (comp.$$for_key) {
+                            reCompile(comp)
+                        } else {
+                            if (Array.isArray(value)) {
+                                comp.render({[prop]: value})
+                            } else {
+                                comp.render({[prop]: calcDynamicPropValue(exp, loopChain, this)})
+                            }
+                        }
                     })
                 }
             }).bind(this))

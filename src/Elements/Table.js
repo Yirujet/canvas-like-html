@@ -608,7 +608,8 @@ export default function Table(props) {
         drawScrollShadow()
         this.ctx.restore()
     }
-    this.render = function() {
+    this.render = function(config) {
+        this.initProps(config)
         init()
         this.redraw()
         console.log(`${this.data.length}行,${this.normalCols.length}列`)
