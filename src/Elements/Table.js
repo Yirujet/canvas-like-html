@@ -41,8 +41,8 @@ export default function Table(props) {
     this.checkAll = false
     const propsObj = props
     this.initProps(props)
-    this.x = parseFloat(this.x)
-    this.y = parseFloat(this.y)
+    this.x = parseFloat(this.x || 0)
+    this.y = parseFloat(this.y || 0)
     const initProps = () => {
         this.fixedLeftWidth = 0
         this.fixedRightWidth = 0
@@ -175,6 +175,8 @@ export default function Table(props) {
     }
     const initScrollbar = () => {
         const layout = {
+            x: this.x,
+            y: this.y,
             width: this.width,
             height: this.height,
             headerHeight: this.headerHeight,
@@ -407,6 +409,7 @@ export default function Table(props) {
                                 let i = this.selection.findIndex(e => e === curIndex)
                                 this.selection.splice(i, 1)
                             }
+                            this.checkAll = this.selection.length === this.data.length
                             this.toggleRowSelection(this.selection)
                             this.redraw()
                         }
@@ -613,6 +616,7 @@ export default function Table(props) {
         init()
         this.redraw()
         console.log(`${this.data.length}行,${this.normalCols.length}列`)
+        console.log(this)
     }
     this.clear = function() {
         let scrollbarWidth = 0

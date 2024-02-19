@@ -36,6 +36,8 @@ export default function Scrollbar(layout, dataSize, callback, eventObserver) {
     this.callback = null
     this.isLast = false
     this.layout = {
+        x: 0,
+        y: 0,
         width: 0,
         height: 0,
         headerHeight: 0,

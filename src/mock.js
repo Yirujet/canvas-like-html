@@ -1,5 +1,5 @@
 const colLen = 50
-const rowLen = 100
+const rowLen = 20
 const fixedColIndex = []
 
 export const head = Array.from({ length: colLen }).map((e, i) => ({
@@ -88,7 +88,7 @@ head.push({
     slot: {
         head: (h, col) => {
             return h('span', {
-                text: `${col.label}=aaa`
+                text: `${col.label}`
             })
         },
         body: (h, scope) => {

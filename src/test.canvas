@@ -47,7 +47,8 @@
 				<col :span="6" :pull="18"><span>col-6 pull-18</span></col>
 			</row>
 		</col>
-	</row>-->
+	</row>
+    <button x="20" y="50" :text="text"></button>-->
     <table :width="800" :height="500" :data="tblData" :columns="columns"></table>
 </canvas>
 <script>
@@ -140,6 +141,9 @@ export default {
             })
             console.log(this)
             this.colList.value[1].tagList.push('tag2-3')
+        }, 2000)
+        setTimeout(() => {
+            this.text.value = 'happy yirujet'
         }, 2000)*/
         this.columns.value = tblHead;
         this.tblData.value = tblData;
