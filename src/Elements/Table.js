@@ -1,6 +1,6 @@
 import HorizontalScrollbar from './scrollbar/HorizontalScrollbar.js'
 import VerticalScrollbar from './scrollbar/VerticalScrollbar.js'
-import { render, getEllipsisText } from '../utils.js'
+import { render, getEllipsisText, evalFn } from '../utils.js'
 import EventObserver from '../EventObserver.js'
 import inheritProto from '../inherite.js'
 import Checkbox from './Checkbox.js'
@@ -258,7 +258,13 @@ export default function Table(props) {
             ctx.clearRect(x + offsetX, y, scroll ? $$cellWidth : item.width || $$cellWidth, $$cellHeight)
             ctx.strokeRect(x + offsetX, y, scroll ? $$cellWidth : item.width || $$cellWidth, $$cellHeight)
             if (item.slot && item.slot.head) {
-                let comp = item.slot.head.call(this, render.bind(this), item)
+                let comp, slotFn
+                if (typeof item.slot.head === 'string') {
+                    slotFn = evalFn(item.slot.head)()
+                } else {
+                    slotFn = item.slot.head
+                }
+                comp = slotFn.call(this, render.bind(this), item)
                 if (comp) {
                     if (Array.isArray(comp)) {
                         comp.forEach((slotComp, i, ary) => {
@@ -287,6 +293,7 @@ export default function Table(props) {
                             fontSize: this.ctx.fontSize,
                             ctx: this.ctx,
                             eventObserver: this.eventObserver,
+                            globalProps: this.globalProps,
                             on: {
                                 change: ({ checked }) => {
                                     if (this.selection.length > 0 && this.selection.length < this.data.length) {
@@ -356,7 +363,13 @@ export default function Table(props) {
         const drawCell = (item, text, rowData, rowIndex, x, y, contentY) => {
             const { slot, type } = item
             const drawSlotCell = () => {
-                let comp = slot.body.call(this, render.bind(this), {
+                let comp, slotFn
+                if (typeof slot.body === 'string') {
+                    slotFn = evalFn(slot.body)()
+                } else {
+                    slotFn = slot.body
+                }
+                comp = slotFn.call(this, render.bind(this), {
                     row: rowData,
                     column: item,
                     $index: rowIndex + this.verticalScrollBar.start
@@ -384,6 +397,7 @@ export default function Table(props) {
                     checked: this.selection.includes(rowIndex + this.verticalScrollBar.start),
                     ctx: this.ctx,
                     eventObserver: this.eventObserver,
+                    globalProps: this.globalProps,
                     on: {
                         change: ({ checked }) => {
                             let curIndex = rowIndex + this.verticalScrollBar.start

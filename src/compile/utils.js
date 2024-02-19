@@ -11,6 +11,24 @@ export const isArrowFunction = fn => {
     return arrowFnRegExp.test(str)
 }
 
+export const func2Str = fn => {
+    let fnBody, fnArgs
+    let isAsync = false
+    if (isArrowFunction(fn)) {
+        fnBody = fn.toString().slice(fn.toString().indexOf('>') + 1)
+        fnArgs = fn.toString().replace(fnBody, '').replace('=>', '').trim()
+        if (fnArgs.startsWith('(') && fnArgs.endsWith(')')) {
+            fnArgs = fnArgs.slice(1,  -1)
+        }
+    } else {
+        fnBody = fn.toString().slice(fn.toString().indexOf('{') + 1, fn.toString().lastIndexOf('}'))
+        fnArgs = fn.toString().replace(fnBody, '').trim()
+        isAsync = fnArgs.startsWith('async')
+        fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
+    }
+    return `${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}}`
+}
+
 export const getVars = exp => {
     const varRegExp = /['"(0-9a-zA-Z_$]+(\.['")0-9a-zA-Z_$]+)*/g
     const jsBuiltInObj = [
@@ -106,7 +124,14 @@ export const calcDynamicTemplate = (exp, scopeList, data) => {
             } else if (typeof val === 'number') {
                 val = parseFloat(val)
             } else if (Array.isArray(val)) {
-                val = `${JSON.stringify(val)}`
+                val = JSON.stringify(val, (key, value) => {
+                    if (typeof value === 'function') {
+                        return func2Str(value)
+                    }
+                    return value
+                })
+            } else if (typeof val === 'function') {
+                val = func2Str(val)
             } else {
                 val = `"${JSON.stringify(val)}"`
             }
@@ -121,7 +146,6 @@ export const calcDynamicTemplate = (exp, scopeList, data) => {
 
 export const obj2Str = target => {
     let str = ''
-    let isAsync = false
     if (typeof target === 'string') return target
     Reflect.ownKeys(target).forEach(item => {
         let itemName = item
@@ -139,23 +163,15 @@ export const obj2Str = target => {
             if (itemName === '$$render_children') {
                 str += `"${itemName}": h => [${targetItem}],`
             } else {
-                str += `"${itemName}":${JSON.stringify(targetItem)},`
+                str += `"${itemName}":${JSON.stringify(targetItem, (key, value) => {
+                    if (typeof value === 'function') {
+                        return func2Str(value)
+                    }
+                    return value
+                })},`
             }
         } else if (typeof targetItem === 'function') {
-            let fnBody, fnArgs
-            if (isArrowFunction(targetItem)) {
-                fnBody = targetItem.toString().slice(targetItem.toString().indexOf('>') + 1)
-                fnArgs = targetItem.toString().replace(fnBody, '').replace('=>', '').trim()
-                if (fnArgs.startsWith('(') && fnArgs.endsWith(')')) {
-                    fnArgs = fnArgs.slice(1,  -1)
-                }
-            } else {
-                fnBody = targetItem.toString().slice(targetItem.toString().indexOf('{') + 1, targetItem.toString().lastIndexOf('}'))
-                fnArgs = targetItem.toString().replace(fnBody, '').trim()
-                isAsync = fnArgs.startsWith('async')
-                fnArgs = fnArgs.slice(fnArgs.indexOf('(') + 1, fnArgs.indexOf(')'))
-            }
-            str += `"${itemName}":${isAsync ? 'async ' : ''}function(${fnArgs}) {${fnBody}},`
+            str += `"${itemName}":${func2Str(targetItem)},`
         } else if (['boolean', 'number'].includes(typeof targetItem)) {
             str += `"${itemName}":${targetItem},`
         } else {

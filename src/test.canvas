@@ -1,46 +1,54 @@
 <canvas width="1000" height="500">
-    <row align="middle" justify="space-between">
-        <col span="20" offset="2">
-            <row align="middle" justify="space-evenly">
-                <col :span="colItem.span" *for="(colItem, index) in colList">
-                    <row justify="end">
-                        <col span="6">
-                            <span :text="index + obj.innerObj.name"></span>
-                        </col>
-                    </row>
-                    <span 
-                        *for="(tagItem, tagIndex) in colItem.tagList" 
-                    >{{ "test " + index + tagIndex }}</span>
-                    <tag 
-                        *for="(tagItem, tagIndex) in colItem.tagList" 
-                        @change="handleTagClick(tagItem, colItem, 'aaa')"
-                    >{{ tagItem + index + tagIndex }}</tag>
-                </col>
-                <col span="6">
-                    <dropdown 
-                        x="10" 
-                        y="250" 
-                        :list="[
-                            { name: 'dropdown-item-1', value: 'dropdown-item-1' },
-                            { name: 'dropdown-item-2', value: 'dropdown-item-2' }
-                        ]"
-                        trigger="click"
-                        @command="handleCommand"
-                    >下拉菜单-点击触发</dropdown>
-                    <progress
-                        type="dashboard"
-                        :percentage="percentage" 
-                        :textInside="true" 
-                        status="success"
-                        :width="100"
-                        strokeWidth="5"
-                        strokeLinecap="round"
-                    ></progress>
-                </col>
-            </row>
+    <!--<row align="middle" justify="space-evenly">
+        <col :span="colItem.span" *for="(colItem, index) in colList">
+            <span :text="index + obj.innerObj.name"></span>
+            <span 
+                *for="(tagItem, tagIndex) in colItem.tagList" 
+            >{{ "test " + index + tagIndex }}</span>
+            <tag 
+                *for="(tagItem, tagIndex) in colItem.tagList" 
+                @change="handleTagClick(tagItem, colItem, 'aaa')"
+            >{{ tagItem + index + tagIndex }}</tag>
+        </col>
+        <col span="6">
+            <dropdown 
+                x="10" 
+                y="250" 
+                :list="[
+                    { name: 'dropdown-item-1', value: 'dropdown-item-1' },
+                    { name: 'dropdown-item-2', value: 'dropdown-item-2' }
+                ]"
+                trigger="click"
+                @command="handleCommand"
+            >下拉菜单-点击触发</dropdown>
+            <progress
+                type="dashboard"
+                :percentage="percentage" 
+                :textInside="true" 
+                status="success"
+                :width="100"
+                strokeWidth="5"
+                strokeLinecap="round"
+            ></progress>
         </col>
     </row>
-    <!--<table :width="1000" :height="500" :data="tblData" :columns="columns"></table>-->
+    <row>
+		<col :span="24">
+			<row>
+				<col :span="6" :push="2"><span>col-6 push-2</span></col>
+				<col :span="6" :push="3"><span>col-6 push-3</span></col>
+			</row>
+			<row justify="end">
+				<col :span="4" :push="2"><span>col-4 push-2</span></col>
+				<col :span="6" :push="2"><span>col-6 push-2</span></col>
+			</row>
+			<row>
+				<col :span="18" :push="6"><span>col-18 push-6</span></col>
+				<col :span="6" :pull="18"><span>col-6 pull-18</span></col>
+			</row>
+		</col>
+	</row>-->
+    <table :width="1000" :height="500" :data="tblData" :columns="columns"></table>
 </canvas>
 <script>
 import axios from 'axios'
@@ -120,8 +128,6 @@ export default {
             this.text.value = 'happy yirujet'
             this.test.value.a[0].b = 321
         }, 2000)
-        this.columns.value = tblHead;
-        this.tblData.value = tblData;*/
         setTimeout(() => {
             let percentVal = Math.floor(100 * Math.random())
             this.obj.value.innerObj.name = percentVal
@@ -133,8 +139,10 @@ export default {
                 tagList: ['tag3-1']
             })
             console.log(this)
-            /*this.colList.value[1].tagList.push('tag2-3')*/
-        }, 2000)
+            this.colList.value[1].tagList.push('tag2-3')
+        }, 2000)*/
+        this.columns.value = tblHead;
+        this.tblData.value = tblData;
     }
 }
 </script>

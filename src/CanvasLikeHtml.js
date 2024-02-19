@@ -225,7 +225,15 @@ export default function CanvasLikeHtml(props) {
             clear(parentEl)
             updatePropsLinkedWithComp(collectComps)
             parentEl.children = null
-            parentEl.$$render_children = elProps.$$render_children
+            if (elProps.$$render_children) {
+                parentEl.$$render_children = elProps.$$render_children
+            }
+            if (elProps.columns) {
+                parentEl.columns = elProps.columns
+            }
+            if (elProps.data) {
+                parentEl.data = elProps.data
+            }
             parentEl.render()
             this.elements.push(parentEl)
             linkCompsWithData(this)

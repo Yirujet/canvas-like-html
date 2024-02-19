@@ -88,7 +88,7 @@ head.push({
     slot: {
         head: (h, col) => {
             return h('span', {
-                text: `${col.label}`
+                text: `${col.label}=aaa`
             })
         },
         body: (h, scope) => {
