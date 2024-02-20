@@ -23,7 +23,8 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         clean: true,
-        library: 'CanvasLikeHtml'
+        library: 'CanvasLikeHtml',
+        libraryTarget: 'umd',
     },
     module: {
         rules: [
