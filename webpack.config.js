@@ -17,8 +17,8 @@ module.exports = {
     //     }
     // },
     entry: {
-        index: process.env.mode === 'production' ? './src/CanvasLikeHtml.js' : './src/demo.js'
-        // index: './src/CanvasLikeHtml.js'
+        // index: process.env.mode === 'production' ? './src/CanvasLikeHtml.js' : './src/demo.js'
+        index: './src/CanvasLikeHtml.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
