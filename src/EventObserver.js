@@ -89,7 +89,7 @@ export default function EventObserver() {
                     if (!!~i) {
                         this[name].splice(i, 1)
                     }
-                    if (item.destroy) {
+                    if (item && item.destroy) {
                         item.destroy()
                     }
                 })

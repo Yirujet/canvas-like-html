@@ -38,7 +38,7 @@ export default function VerticalScrollbar(layout, sliceUnitVal, dataSize, callba
             e.stopPropagation()
             e.preventDefault()
             const { offsetX, offsetY } = e
-            if (this.show && (offsetX >= this.layout.x && offsetX <= (this.layout.x + this.layout.width) && offsetY >= this.layout.y && offsetY <= (this.layout.y + this.layout.height))) {
+            if (this.show && (offsetX >= this.layout.x && offsetX <= (this.layout.x + this.layout.width + this.track.width) && offsetY >= this.layout.y && offsetY <= (this.layout.y + this.layout.height))) {
                 this.value -= e.deltaY * (this.track.height / this.layout.bodyRealHeight)
                 this.isLast = false
                 if (e.deltaY > 0) {

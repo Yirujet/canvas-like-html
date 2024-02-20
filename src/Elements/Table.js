@@ -613,6 +613,8 @@ export default function Table(props) {
     }
     this.render = function(config) {
         this.initProps(config)
+        this.clear()
+        this.eventObserver.clear([this.verticalScrollBar, this.horizontalScrollBar])
         init()
         this.redraw()
         console.log(`${this.data.length}行,${this.normalCols.length}列`)
@@ -621,10 +623,10 @@ export default function Table(props) {
     this.clear = function() {
         let scrollbarWidth = 0
         let scrollbarHeight = 0
-        if (this.verticalScrollBar.show) {
+        if (this.verticalScrollBar && this.verticalScrollBar.show) {
             scrollbarWidth = this.verticalScrollBar.track.width
         }
-        if (this.horizontalScrollBar.show) {
+        if (this.horizontalScrollBar && this.horizontalScrollBar.show) {
             scrollbarHeight = this.horizontalScrollBar.track.height
         }
         this.ctx.beginPath()
