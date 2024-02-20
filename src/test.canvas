@@ -52,7 +52,6 @@
     <table :width="800" :height="500" :data="tblData" :columns="columns"></table>
 </canvas>
 <script>
-import axios from 'axios'
 import { data as tblData, head as tblHead } from './mock.js'
 
 export default {

@@ -617,8 +617,6 @@ export default function Table(props) {
         this.eventObserver.clear([this.verticalScrollBar, this.horizontalScrollBar])
         init()
         this.redraw()
-        console.log(`${this.data.length}行,${this.normalCols.length}列`)
-        console.log(this)
     }
     this.clear = function() {
         let scrollbarWidth = 0

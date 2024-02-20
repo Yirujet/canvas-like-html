@@ -9,13 +9,13 @@ module.exports = {
         open: true,
         hot: true
     },
-    resolveLoader: {
-        modules: ['node_modules', './loaders'],
-        extensions: ['.canvas'],
-        alias: {
-            'canvas-loader': './loaders/index.mjs'
-        }
-    },
+    // resolveLoader: {
+    //     modules: ['node_modules', './loaders'],
+    //     extensions: ['.canvas'],
+    //     alias: {
+    //         'canvas-loader': './loaders/index.mjs'
+    //     }
+    // },
     entry: {
         index: process.env.mode === 'production' ? './src/CanvasLikeHtml.js' : './src/demo.js'
         // index: './src/CanvasLikeHtml.js'
@@ -35,7 +35,7 @@ module.exports = {
             {
                 test: /\.canvas$/,
                 use: [
-                    'canvas-loader'
+                    'canvas-loaders'
                 ]
             }
         ]
