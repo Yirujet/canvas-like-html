@@ -28,6 +28,8 @@ import Tag from './Elements/Tag.js'
 import Rate from './Elements/Rate.js'
 import Row from './Elements/Row.js'
 import Col from './Elements/Col.js'
+import Element from './Element.js'
+import inheritProto from './inherite.js'
 
 import Watcher from './Watcher.js'
 
@@ -55,6 +57,9 @@ CanvasLikeHtml.element(toLowerCase(Tag.elName), Tag)
 CanvasLikeHtml.element(toLowerCase(Rate.elName), Rate)
 CanvasLikeHtml.element(toLowerCase(Row.elName), Row)
 CanvasLikeHtml.element(toLowerCase(Col.elName), Col)
+CanvasLikeHtml.element('element', Element)
+
+CanvasLikeHtml.inherit = inheritProto
 
 export default function CanvasLikeHtml(props) {
     this.target = null
