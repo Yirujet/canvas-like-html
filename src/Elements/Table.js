@@ -5,7 +5,7 @@ import EventObserver from '../EventObserver.js'
 import inheritProto from '../inherite.js'
 import Checkbox from './Checkbox.js'
 import Element from '../Element.js'
-import _, { pad } from 'lodash'
+import _ from 'lodash'
 
 Table.elName = 'table'
 
@@ -361,6 +361,7 @@ export default function Table(props) {
         let fixedRightX = 0
         let scrollOffsetX = (this.horizontalScrollBar.start % this.scrollOffsetUnitVal) / this.scrollOffsetUnitVal * this.defaultVirtualColWidth
         let scrollOffsetY = (this.verticalScrollBar.start % this.scrollOffsetUnitVal) / this.scrollOffsetUnitVal * this.globalProps.rowHeight
+        console.log('*******', this.horizontalScrollBar.offsetPercent, this.horizontalScrollBar.isLast)
         let lastScrollOffsetX = this.horizontalScrollBar.offsetPercent * width
         let lastScrollOffsetY = this.verticalScrollBar.offsetPercent * this.globalProps.rowHeight
         const drawCell = (item, text, rowData, rowIndex, x, y, contentY) => {
@@ -635,18 +636,14 @@ export default function Table(props) {
         this.redraw()
     }
     this.clear = function() {
-        let scrollbarWidth = 0
         let scrollbarHeight = 0
-        if (this.verticalScrollBar && this.verticalScrollBar.show) {
-            scrollbarWidth = this.verticalScrollBar.track.width
-        }
         if (this.horizontalScrollBar && this.horizontalScrollBar.show) {
             scrollbarHeight = this.horizontalScrollBar.track.height
         }
         this.ctx.beginPath()
-        this.ctx.rect(0, 0, this.width + scrollbarWidth, this.height + scrollbarHeight)
+        this.ctx.rect(0, 0, this.width, this.height + scrollbarHeight)
         this.ctx.clip()
-        this.ctx.clearRect(0, 0, this.width + scrollbarWidth, this.height + scrollbarHeight)
+        this.ctx.clearRect(0, 0, this.width, this.height + scrollbarHeight)
         this.eventObserver.clear(this.eventGarbageCollection)
         this.eventGarbageCollection = []
     }
