@@ -1,6 +1,6 @@
 {
   "name": "canvas-like-html",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "draw canvas like html",
   "main": "dist/index.js",
   "files": [
