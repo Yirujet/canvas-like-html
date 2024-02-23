@@ -138,14 +138,14 @@ export default function Row(props) {
                 y,
             })
         })
-        if (this.globalProps.mode === 'development') {
-            this.ctx.save()
-            this.ctx.strokeStyle = 'red'
-            this.ctx.lineWidth = 0.5
-            this.ctx.setLineDash([3, 3])
-            this.ctx.strokeRect(this.x, this.y, this.width, this.height)
-            this.ctx.restore()
-        }
+        // if (this.globalProps.mode === 'development') {
+        //     this.ctx.save()
+        //     this.ctx.strokeStyle = 'red'
+        //     this.ctx.lineWidth = 0.5
+        //     this.ctx.setLineDash([3, 3])
+        //     this.ctx.strokeRect(this.x, this.y, this.width, this.height)
+        //     this.ctx.restore()
+        // }
     }
     initDefaultAttrs()
 }

@@ -5,7 +5,7 @@ import EventObserver from '../EventObserver.js'
 import inheritProto from '../inherite.js'
 import Checkbox from './Checkbox.js'
 import Element from '../Element.js'
-import _ from 'lodash'
+import _, { pad } from 'lodash'
 
 Table.elName = 'table'
 
@@ -39,6 +39,7 @@ export default function Table(props) {
     this.eventGarbageCollection = []
     this.selection = []
     this.checkAll = false
+    this.stripe = false
     const propsObj = props
     this.initProps(props)
     this.x = parseFloat(this.x || 0)
@@ -437,6 +438,18 @@ export default function Table(props) {
                 drawDefaultCell()
             }
         }
+        const drawStripeCell = (x, y, width, height, rowIndex) => {
+            if (this.stripe) {
+                this.ctx.save()
+                if (rowIndex % 2 !== 0) {
+                    this.ctx.fillStyle = '#fafafa'
+                } else {
+                    this.ctx.fillStyle = '#fff'
+                }
+                this.ctx.fillRect(x, y, width, height)
+                this.ctx.restore()
+            }
+        }
         this.data.slice(this.verticalScrollBar.start, this.verticalScrollBar.end).forEach((rowData, rowIndex) => {
             this.flattenCols.slice(this.horizontalScrollBar.start, this.horizontalScrollBar.end).forEach((item, colIndex) => {
                 const { field, type } = item
@@ -459,6 +472,7 @@ export default function Table(props) {
                 text = getEllipsisText(text, contentWidth, this.globalProps.fontSize)
                 this.ctx.clearRect(x + this.fixedLeftWidth, y, width, height)
                 this.ctx.strokeRect(x + this.fixedLeftWidth, y, width, height)
+                drawStripeCell(x + this.fixedLeftWidth, y, width, height, rowIndex)
                 drawCell(item, text, rowData, rowIndex, x + this.fixedLeftWidth + padding, y + padding, height / 2 + y)
             })
             this.fixedLeftCols.forEach((item, colIndex, ary) => {
@@ -477,6 +491,7 @@ export default function Table(props) {
                 text = getEllipsisText(text, contentWidth, this.globalProps.fontSize)
                 this.ctx.clearRect(fixedLeftX, y, width, height)
                 this.ctx.strokeRect(fixedLeftX, y, width, height)
+                drawStripeCell(fixedLeftX, y, width, height, rowIndex)
                 drawCell(item, text, rowData, rowIndex, fixedLeftX + padding, y + padding, height / 2 + y)
             })
             this.fixedRightCols.forEach((item, colIndex, ary) => {
@@ -495,6 +510,7 @@ export default function Table(props) {
                 text = getEllipsisText(text, contentWidth, this.globalProps.fontSize)
                 this.ctx.clearRect(fixedRightX + this.width - this.fixedRightWidth, y, width, height)
                 this.ctx.strokeRect(fixedRightX + this.width - this.fixedRightWidth, y, width, height)
+                drawStripeCell(fixedRightX + this.width - this.fixedRightWidth, y, width, height, rowIndex)
                 drawCell(item, text, rowData, rowIndex, fixedRightX + this.width - this.fixedRightWidth + padding, y + padding, height / 2 + y)
             })
         })
