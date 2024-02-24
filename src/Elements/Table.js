@@ -159,6 +159,9 @@ export default function Table(props) {
         this.bodyHeight = this.height - this.headerHeight
         if (this.bodyHeight < this.bodyRealHeight) {
             this.width -= 16
+            if (this.fixedRightWidth > 0) {
+                this.width += 16
+            }
         }
         if (this.normalWidth > this.width - this.fixedLeftWidth - this.fixedRightWidth) {
             this.height -= 16
@@ -191,15 +194,22 @@ export default function Table(props) {
             restWidth: this.restWidth,
             deviationCompareValue: this.deviationCompareValue,
         }
+        const horizontalLayout = _.cloneDeep(layout)
+        const verticalLayout = _.cloneDeep(layout)
+        if (this.bodyHeight < this.bodyRealHeight) {
+            if (this.fixedRightWidth > 0) {
+                horizontalLayout.restWidth -= 16
+            }
+        }
         this.horizontalScrollBar = new HorizontalScrollbar(
-            layout,
+            horizontalLayout,
             this.defaultVirtualColWidth,
             this.horizontalDataSize,
             this.redraw.bind(this),
             this.eventObserver
         )
         this.verticalScrollBar = new VerticalScrollbar(
-            layout,
+            verticalLayout,
             this.globalProps.rowHeight,
             this.data.length,
             this.redraw.bind(this),
@@ -273,14 +283,14 @@ export default function Table(props) {
                         comp.forEach((slotComp, i, ary) => {
                             slotComp.render({
                                 x: i > 0 ? ary[i - 1].x + ary[i - 1].width + this.slotCompMargin : x + offsetX + padding,
-                                y: $$cellHeight / 2 + y
+                                y: $$cellHeight / 2 + y - slotComp.height / 2
                             })
                             this.eventGarbageCollection.push(slotComp)
                         })
                     } else {
                         comp.render({
                             x: x + offsetX + padding,
-                            y: $$cellHeight / 2 + y
+                            y: $$cellHeight / 2 + y - comp.height / 2
                         })
                         this.eventGarbageCollection.push(comp)
                     }
@@ -361,7 +371,6 @@ export default function Table(props) {
         let fixedRightX = 0
         let scrollOffsetX = (this.horizontalScrollBar.start % this.scrollOffsetUnitVal) / this.scrollOffsetUnitVal * this.defaultVirtualColWidth
         let scrollOffsetY = (this.verticalScrollBar.start % this.scrollOffsetUnitVal) / this.scrollOffsetUnitVal * this.globalProps.rowHeight
-        console.log('*******', this.horizontalScrollBar.offsetPercent, this.horizontalScrollBar.isLast)
         let lastScrollOffsetX = this.horizontalScrollBar.offsetPercent * width
         let lastScrollOffsetY = this.verticalScrollBar.offsetPercent * this.globalProps.rowHeight
         const drawCell = (item, text, rowData, rowIndex, x, y, contentY) => {
